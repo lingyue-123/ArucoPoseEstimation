@@ -1,0 +1,61 @@
+# 检测与滤波参数配置 | Detection & Filtering Configuration
+# 来源: aruco_pose_from_hkws_cam_multi_aruco.py 中的全局常量
+
+kalman:
+  # 角点卡尔曼滤波参数
+  state_dim: 8       # 状态维度（4个角点 × 2坐标）
+  measure_dim: 8     # 测量维度
+  process_noise: 0.1  # 过程噪声协方差（对角线值）
+  measurement_noise: 0.05  # 测量噪声协方差（对角线值）
+  error_cov_init: 1.0  # 初始误差协方差
+
+  # 跟踪丢失阈值（帧数）
+  lost_threshold: 30
+
+pnp:
+  # PnP求解方法（按优先级尝试）
+  methods: ["IPPE_SQUARE", "ITERATIVE"]
+
+pose_smoother:
+  # 旋转 SLERP 平滑参数
+  rot_slerp_alpha_normal: 0.35    # 正常状态
+  rot_slerp_alpha_cautious: 0.15  # 谨慎状态（异常警告时）
+
+  # 平移 EMA 平滑参数
+  trans_ema_alpha_normal: 0.40
+  trans_ema_alpha_cautious: 0.15
+
+  # 速度估计窗口大小
+  velocity_window_size: 5
+  motion_threshold: 5.0  # 判定为运动状态的速度阈值（毫米/帧）
+
+anomaly_gate:
+  # 重投影误差阈值（像素）
+  reproj_warn_px: 8.0
+  reproj_max_px: 20.0
+
+  # 角度跳变阈值（度）
+  angle_jump_warn_deg: 15.0
+  angle_jump_max_deg: 40.0
+
+  # 平移跳变阈值（毫米）
+  trans_jump_warn_mm: 30.0
+  trans_jump_max_mm: 120.0
+
+  # 运动状态下阈值倍数
+  motion_threshold_multiplier: 2.0
+
+  # 连续异常帧数触发 HOLD
+  anomaly_confirm_frames: 3
+
+visualization:
+  # 图像显示缩放比例
+  display_scale: 0.4   # 40% 缩放
+  window_width: 1280
+  window_height: 720
+
+  # 绘制参数
+  corner_radius: 3
+  line_thickness: 2
+  font_scale_small: 0.8
+  font_scale_mid: 1.0

@@ -1,0 +1,34 @@
+# ArUco Marker 与标定板配置 | Marker & Calibration Board Configuration
+
+aruco:
+  # ArUco 字典类型（对应 cv2.aruco.DICT_4X4_50）
+  dictionary: DICT_4X4_50
+
+  # 有效 Marker ID 列表
+  valid_ids: [0, 1, 2]
+
+  # 每个 Marker 的物理尺寸（毫米）
+  # 来源: aruco_pose_from_hkws_cam_multi_aruco.py MARKER_LENGTHS
+  marker_sizes:
+    0: 15.0   # ID0: 10cm
+    1: 15.0    # ID1: 1.5cm
+    2: 8.0    # ID2: 4cm
+
+  # 输出文件映射
+  pose_files:
+    0: "aruco_pose_id0.txt"
+    1: "aruco_pose_id1.txt"
+    2: "aruco_pose_id2.txt"
+
+chessboard:
+  # 棋盘格内角点数 (列, 行)
+  # 来源: Handeyecalib/chessboard_est_hkws_cam_0225.py
+  pattern_size: [11, 8]
+
+  # 每格物理尺寸（毫米）
+  square_size: 25.0    # 2.5cm
+
+  # 用于手眼标定的棋盘格
+  handeye:
+    pattern_size: [11, 8]
+    square_size: 25.0

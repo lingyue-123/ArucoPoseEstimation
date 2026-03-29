@@ -1,0 +1,40 @@
+# 机械臂配置 | Robot Configuration
+# 支持多驱动并存，通过 default_driver 或命令行 --robot-driver 选择
+
+# 默认驱动（不传 --robot-driver 时使用）
+default_driver: jaka
+
+# 共享参数
+timeout: 10
+pose_convention: ZYX
+
+# 各驱动独立配置
+drivers:
+  modbus:
+    ip: "192.168.1.133"
+    port: 502
+    network:
+      iface: eth0
+      local_ip: "192.168.1.132/24"
+      target_ip: "192.168.1.133"
+      delete_default_route: true
+
+  jaka:
+    ip: "192.168.1.106"
+    sdk_path: "third_party/jaka-python-sdk"
+    network:
+      iface: eth0
+      local_ip: "192.168.1.132/24"
+      target_ip: "192.168.1.106"
+      delete_default_route: true
+
+  crp:
+    ip: "192.168.1.133"
+    so_path: "third_party/crp_robot_sdk/libRobotService.so"
+    sdk_path: "third_party/crp_robot_sdk"
+    disable_hardware: true
+    network:
+      iface: eth0
+      local_ip: "192.168.1.132/24"
+      target_ip: "192.168.1.133"
+      delete_default_route: true

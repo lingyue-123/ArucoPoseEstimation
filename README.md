@@ -15,11 +15,12 @@
 ### 转换公式
 将四元数 \( q = [w, x, y, z] \) 转换为旋转矩阵 \( R \) 的公式如下：
 
-\[
+$$
 R = \begin{pmatrix}
 1 - 2y^2 - 2z^2 & 2xy - 2zw & 2xz + 2yw \\
 2xy + 2zw & 1 - 2x^2 - 2z^2 & 2yz - 2xw \\
 2xz - 2yw & 2yz + 2xw & 1 - 2x^2 - 2y^2
 \end{pmatrix}
-\]
+$$
+
 

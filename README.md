@@ -267,3 +267,7 @@ scripts/             # 入口脚本（替代原有各独立脚本）
 - **相机位姿**：`[tx(m), ty(m), tz(m), rx(°), ry(°), rz(°)]`，XYZ内旋
 - **手眼标定输出**：`cam2gripper`（相机到机械臂末端的变换）
 
+## 依赖环境
+- **mech相机**：mecheye 
+    - 安装方式：pip install MechEyeApi
+    - 注意不要加sudo，否则会强制安装到系统Python环境中，而不是当前的conda环境；此外MechEyeApi包只适用python版本为3.7至3.11

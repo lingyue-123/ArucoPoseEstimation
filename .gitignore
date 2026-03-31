@@ -1,1 +1,3 @@
-vscode/
+.vscode/
+images/
+__pycache__/

@@ -1,7 +1,31 @@
 #!/usr/bin/env python3
 """
-一次性到位运动 | One-Shot Move（Mech-Eye 相机版）
-集成 Mech-Eye 相机拉流逻辑，替换原有 hikvision 相机驱动
+一次性到位运动 | One-Shot Move
+
+检测 ArUco → 计算最终目标位姿 → 一次运动到位。
+与 visual_servo.py 的区别：无 gain 缩放、无 SLERP 插值、安全阈值更大。
+支持按 i 键进行插入操作：切换到 2 号工具坐标系，沿 z 轴前进指定距离。
+
+工作流：
+    1. 实时画面 + ArUco 检测
+    2. 按 'r'：记录当前 ArUco 位姿为参考
+    3. 按 'm'：计算最终目标（gain=1.0），安全检查后一次到位
+    4. 按 'i'：实时读取当前 2 号工具坐标系 TCP，沿局部 z 轴前进 --insert-cm
+    5. 运动完成后继续显示画面，可观察残差或再按 'm' 微调
+    6. 按 'q' 退出
+
+用法：
+    # 仅计算，不连机械臂
+    python scripts/oneshot_move.py --camera hikvision_normal --no-robot
+
+    # 实际运动
+    python scripts/oneshot_move.py --camera hikvision_normal
+
+    # 自定义安全阈值
+    python scripts/oneshot_move.py --camera hikvision_normal --max-trans 300 --max-rot 45
+
+    # 插入操作
+    python scripts/oneshot_move.py --camera hikvision_normal --insert-cm 5
 """
 
 import argparse
@@ -20,33 +44,20 @@ import numpy as np
 import math
 
 JAKA_SDK_PATH = "/home/nvidia/Downloads/jaka-python-sdk"
-
-# 1. 配置 Linux 动态库环境（让系统找到 libjakaAPI.so）
 if sys.platform.startswith("linux"):
     os.environ["LD_LIBRARY_PATH"] = f"{JAKA_SDK_PATH}:{os.environ.get('LD_LIBRARY_PATH', '')}"
-
-# 2. 让 Python 找到 jkrc.so 模块
 sys.path.insert(0, JAKA_SDK_PATH)
 
 import jkrc
 
-# =============================
-# 【Mech-Eye SDK 2.5.x 相关接口导入】
-# =============================
-_MECHEYE_SYSTEM_PATH = '/usr/local/lib/python3.8/dist-packages'
-if _MECHEYE_SYSTEM_PATH not in sys.path:
-    sys.path.append(_MECHEYE_SYSTEM_PATH)
-
-from mecheye.shared import *
-from mecheye.area_scan_3d_camera import *
-from mecheye.area_scan_3d_camera_utils import find_and_connect
-
+from robovision.cameras import build_camera
 from robovision.cameras.base import CameraIntrinsics
 from robovision.config.loader import get_config
 from robovision.detection.aruco import ArucoDetector
 from robovision.geometry.transforms import (
     rotmat_to_euler, rotation_angle_deg,
     pose_to_matrix, matrix_to_pose, compute_new_tool_pose,
+    offset_pose_along_tool_axis,
 )
 from robovision.robot import build_robot
 from robovision.calibration.hand_eye import load_hand_eye_result
@@ -60,82 +71,20 @@ logger = logging.getLogger(__name__)
 cv2.setNumThreads(1)
 cv2.setUseOptimized(True)
 
-# 默认安全阈值（比 visual_servo 的 50mm/5° 更大）
 DEFAULT_MAX_TRANS_MM = 350.0
 DEFAULT_MAX_ROT_DEG = 30.0
-DEFAULT_SPEED = 2
+DEFAULT_SPEED = 5
 MOVE_TIMEOUT = 30.0
+INSERT_COORD_SYS = 2
+BASE_COORD_SYS = 0
+COORD_SWITCH_TIMEOUT = 1.0
+COORD_SWITCH_SETTLE_SEC = 0.2
 
 _FONT = cv2.FONT_HERSHEY_SIMPLEX
 _FONT_SCALE = 0.65
 _FONT_THICK = 2
 
-# =====================================================
-# 【Mech-Eye 实时相机类，直接操作 Mech-Eye SDK】
-# =====================================================
-class MechEyeRealTimeCamera:
-    def __init__(self, intrinsics: CameraIntrinsics):
-        self.camera = Camera()
-        self.intrinsics = intrinsics
-        self.is_open = False
-        self.frame_width = None
-        self.frame_height = None
 
-    def open(self):
-        """连接并打开 Mech-Eye 相机"""
-        if find_and_connect(self.camera):
-            self.is_open = True
-            logger.info("Mech-Eye 相机连接成功")
-            self._get_camera_resolution()
-        else:
-            raise RuntimeError("Mech-Eye 相机连接失败")
-
-    def close(self):
-        """断开相机连接"""
-        if self.is_open:
-            self.camera.disconnect()
-            self.is_open = False
-            logger.info("Mech-Eye 相机已断开连接")
-
-    def _get_camera_resolution(self):
-        """获取相机分辨率（用于内参匹配）"""
-        frame_2d = Frame2D()
-        error = self.camera.capture_2d(frame_2d)
-        if error.is_ok():
-            sz = frame_2d.image_size()
-            self.frame_width = sz.width
-            self.frame_height = sz.height
-            logger.info(f"Mech-Eye 相机分辨率: {self.frame_width}x{self.frame_height}")
-        else:
-            show_error(error)
-            raise RuntimeError("无法获取 Mech-Eye 相机分辨率")
-
-    def get_intrinsics(self):
-        """返回相机内参（兼容原有接口）"""
-        return self.intrinsics
-
-    def read_frame(self):
-        """读取单帧图像（兼容原有接口）"""
-        if not self.is_open:
-            return False, None
-        frame_2d = Frame2D()
-        error = self.camera.capture_2d(frame_2d)
-        if not error.is_ok():
-            show_error(error)
-            return False, None
-        # 处理图像格式
-        if frame_2d.color_type() == ColorTypeOf2DCamera_Monochrome:
-            image_data = frame_2d.get_gray_scale_image().data()
-        elif frame_2d.color_type() == ColorTypeOf2DCamera_Color:
-            image_data = cv2.cvtColor(frame_2d.get_color_image().data(), cv2.COLOR_RGB2BGR)
-        else:
-            logger.error("未知的 Mech-Eye 图像格式")
-            return False, None
-        return True, image_data
-
-# =====================================================
-# 【原有核心函数保留】
-# =====================================================
 def aruco_to_matrix(data: dict) -> np.ndarray:
     """ArUco 检测结果 dict → 4x4 齐次矩阵。"""
     T = np.eye(4)
@@ -164,11 +113,59 @@ def put_text(img, text, y, color=(200, 200, 200)):
     """基础文字绘制。"""
     cv2.putText(img, text, (20, y), _FONT, _FONT_SCALE, color, _FONT_THICK)
 
+
+def get_coord_sys(robot):
+    if robot is None or not hasattr(robot, 'get_coord_sys'):
+        return None
+    try:
+        return robot.get_coord_sys()
+    except Exception as exc:
+        logger.warning("读取坐标系失败: %s", exc)
+        return None
+
+
+def set_coord_sys(robot, coord, label=None):
+    if robot is None or not hasattr(robot, 'set_coord_sys'):
+        return True
+    try:
+        ret = robot.set_coord_sys(coord)
+    except Exception as exc:
+        logger.warning("坐标系切换到 %s 失败: %s", coord, exc)
+        return False
+
+    ok = (ret == 0 or ret is True)
+    desc = label or str(coord)
+    if ok:
+        logger.info("坐标系设置 → %s", desc)
+    else:
+        logger.warning("坐标系设置失败 → %s (%s)", desc, ret)
+    return ok
+
+
+def ensure_coord_sys(robot, coord, label=None,
+                     timeout=COORD_SWITCH_TIMEOUT,
+                     settle_sec=COORD_SWITCH_SETTLE_SEC):
+    """切换并等待坐标系真正生效，避免读位姿或发运动时仍处于旧坐标系。"""
+    if robot is None:
+        return False
+    if not set_coord_sys(robot, coord, label=label):
+        return False
+
+    deadline = time.time() + float(timeout)
+    last_coord = None
+    while time.time() < deadline:
+        last_coord = get_coord_sys(robot)
+        if last_coord == coord:
+            if settle_sec > 0:
+                time.sleep(float(settle_sec))
+            return True
+        time.sleep(0.05)
+
+    logger.warning("坐标系切换超时，期望=%s 实际=%s", coord, last_coord)
+    return False
+
 def execute_move(robot, step_pose_6dof, timeout=MOVE_TIMEOUT):
     """封装 CartesianPose 创建 + move_and_wait。"""
-    robot.robot_powered()
-    robot.robot_enable()
-    
     cart = CartesianPose(
         x=step_pose_6dof[0], y=step_pose_6dof[1], z=step_pose_6dof[2],
         rx=step_pose_6dof[3], ry=step_pose_6dof[4], rz=step_pose_6dof[5],
@@ -254,14 +251,14 @@ def check_oneshot_safety(trans_mm, rot_deg, max_trans, max_rot):
     return True, ""
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='一次性到位运动（One-Shot Move）- Mech-Eye 版')
-    parser.add_argument('--camera', type=str, default='mecheye',
-                        help='cameras.yaml 中的相机名称（默认 mecheye）')
+    parser = argparse.ArgumentParser(description='一次性到位运动（One-Shot Move）')
+    parser.add_argument('--camera', type=str, default=None,
+                        help='cameras.yaml 中的相机名称')
     parser.add_argument('--hand-eye', type=str, default='data/handeye/hand_eye_result.txt',
                         help='手眼标定结果文件（4x4 矩阵）')
     parser.add_argument('--aruco-ref', type=str, default='data/aruco/aruco_pose_ref.txt',
                         help='参考 ArUco 位姿文件')
-    parser.add_argument('--target-marker', type=int, default=0,
+    parser.add_argument('--target-marker', type=int, default=1,
                         help='ArUco Marker ID（默认 1）')
     parser.add_argument('--robot-ip', type=str, default=None,
                         help='机械臂 IP（覆盖 config/robot.yaml）')
@@ -278,15 +275,17 @@ def parse_args():
                         help=f'运动速度 %%（默认 {DEFAULT_SPEED}）')
     parser.add_argument('--raw', action='store_true',
                         help='使用 RAW 检测模式（IPPE_SQUARE，无 Kalman/SLERP 滤波）')
+    parser.add_argument('--insert-cm', type=float, default=15.0,
+                        help='按 i 时沿 2 号工具坐标系 z 轴前进距离（cm）')
     parser.add_argument('--debug', action='store_true')
-    parser.add_argument('--image-folder', type=str, default=None,
-                        help='Mech-Eye 离线图片文件夹路径（设置后以文件夹模式运行）')
     return parser.parse_args()
 
 def main():
     args = parse_args()
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)
+
+    insert_mm = args.insert_cm * 10.0
 
     cfg = get_config()
     marker_cfg = cfg.get_marker()
@@ -338,23 +337,12 @@ def main():
     else:
         logger.info("--no-robot 模式：不连接机械臂，仅计算")
 
-    # =============================
-    # 【替换为 Mech-Eye 相机初始化】
-    # =============================
-    camera = None
-    cam_cfg_data = cfg.get_camera(args.camera)
-    intrinsics = CameraIntrinsics.from_config(cam_cfg_data.intrinsics, name=args.camera)
-    
-    if args.image_folder:
-        logger.info("Mech-Eye 离线图片文件夹模式: %s", args.image_folder)
-        from robovision.cameras.mecheye import MechEyeImageFolderCamera
-        camera = MechEyeImageFolderCamera(intrinsics=intrinsics, folder=args.image_folder)
-    else:
-        logger.info("Mech-Eye 实时拉流模式")
-        camera = MechEyeRealTimeCamera(intrinsics=intrinsics)
-    
+    # 相机与检测器
+    camera = build_camera(args.camera, cfg)
     camera.open()
     intrinsics = camera.get_intrinsics()
+    K = intrinsics.camera_matrix
+    dist = intrinsics.dist_coeffs
 
     # 检测器初始化
     use_raw = args.raw
@@ -377,7 +365,7 @@ def main():
     ref_set = T_aruco2cam_ref is not None
     moving = False
 
-    win = f"OneShot [Mech-Eye] ID={target_id}"
+    win = f"OneShot [{args.camera}] ID={target_id}"
     cv2.namedWindow(win, cv2.WINDOW_NORMAL)
     cv2.resizeWindow(win, 1280, 720)
 
@@ -406,7 +394,7 @@ def main():
 
     det_thread = threading.Thread(target=_detection_loop, daemon=True)
     det_thread.start()
-    logger.info("就绪。r=设参考  m=一次到位  q=退出  (检测线程已启动)")
+    logger.info("就绪。r=设参考  m=一次到位  b=回r点  i=插入  q=退出  (检测线程已启动)")
 
     try:
         while True:
@@ -505,8 +493,7 @@ def main():
             # 状态栏
             robot_str = "Robot:ON" if robot_connected else ("Robot:OFF(dry)" if args.no_robot else "Robot:OFF")
             ref_str = "Ref:SET" if ref_set else "Ref:NONE"
-            cam_mode = "Offline" if args.image_folder else "RealTime"
-            status = f"ONESHOT [Mech-Eye:{cam_mode}] | {ref_str} | {robot_str} | r=Ref m=Move q=Quit"
+            status = f"ONESHOT [{args.camera}] | {ref_str} | {robot_str} | r=Ref m=Move b=Back i=Insert q=Quit"
             put_text(vis, status, h_orig - 20, (140, 140, 140))
 
             # resize 后显示
@@ -583,6 +570,112 @@ def main():
                                             *ref_xyz)
                             logger.info("  实际 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                                         *new_tcp)
+
+            elif key == ord('b'):
+                if moving:
+                    logger.warning("运动中，请等待完成")
+                    continue
+                if T_g2b_ref is None:
+                    logger.warning("尚未保存 r 点机械臂位置，请先按 r")
+                    continue
+
+                back_pose = matrix_to_pose(T_g2b_ref)
+                if T_g2b_cur is not None:
+                    back_trans_err, back_rot_err = compute_pose_error(T_g2b_cur, T_g2b_ref)
+                else:
+                    back_trans_err, back_rot_err = 0.0, 0.0
+
+                logger.info("回到 r 点位(坐标系0): 平移=%.2f mm, 旋转=%.2f deg",
+                            back_trans_err, back_rot_err)
+                logger.info("  目标 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                            *back_pose)
+
+                safe, reason = check_oneshot_safety(
+                    back_trans_err, back_rot_err, args.max_trans, args.max_rot)
+                if not safe:
+                    logger.warning(reason)
+                    continue
+
+                if args.no_robot:
+                    logger.info("[DRY RUN] 不执行回 r 点位运动")
+                else:
+                    if not ensure_coord_sys(robot, BASE_COORD_SYS, label=f"{BASE_COORD_SYS}(回r点位坐标系)"):
+                        continue
+                    moving = True
+                    ok = execute_move(robot, back_pose)
+                    moving = False
+                    if ok:
+                        new_tcp = robot.get_tcp_pose()
+                        if new_tcp is not None:
+                            logger.info("  回r点位后实际 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                                        *new_tcp)
+
+            elif key == ord('i'):
+                if moving:
+                    logger.warning("运动中，请等待完成")
+                    continue
+                if args.insert_cm <= 0:
+                    logger.warning("请通过 --insert-cm 指定插入距离（cm）")
+                    continue
+                if not robot_connected:
+                    logger.warning("机械臂未连接，无法读取当前 2 号工具坐标系 TCP")
+                    continue
+
+                # 设置工具0
+                if hasattr(robot, 'set_tool_id'):
+                    try:
+                        rt = robot.set_tool_id(0)
+                        logger.info("设置 tool_id=0: %s", rt)
+                    except Exception as exc:
+                        logger.warning("设置 tool_id=0 失败: %s", exc)
+                        continue
+                else:
+                    logger.warning("不支持 set_tool_id 接口，无法进行插入")
+                    continue
+
+                current_tool_pose = robot.get_tcp_pose()
+                if current_tool_pose is None:
+                    logger.warning("无法读取当前 2 号工具坐标系 TCP")
+                    continue
+
+                # 当前位姿 * Z 轴平移矩阵
+                current_matrix = pose_to_matrix(current_tool_pose)
+                last_z_trans = np.eye(4)
+                last_z_trans[2, 3] = insert_mm
+                insert_matrix = current_matrix @ last_z_trans
+                insert_pose = matrix_to_pose(insert_matrix)
+
+                safe, reason = check_oneshot_safety(abs(insert_mm), 0.0, args.max_trans, args.max_rot)
+                if not safe:
+                    logger.warning(reason)
+                    continue
+
+                logger.info("插入动作(坐标系2): 基于当前实时 TCP，沿工具 z 轴前进 %.2f cm (%.2f mm)",
+                            args.insert_cm, insert_mm)
+                logger.info("  坐标系2当前 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                            *current_tool_pose)
+                logger.info("  坐标系2目标 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                            *insert_pose)
+
+                if args.no_robot:
+                    logger.info("[DRY RUN] 不执行插入运动")
+                else:
+                    if not ensure_coord_sys(robot, INSERT_COORD_SYS, label=f"{INSERT_COORD_SYS}(插入坐标系)"):
+                        continue
+                    moving = True
+                    ok = execute_move(robot, insert_pose)
+                    moving = False
+
+                    try:
+                        tcp_after_insert = robot.get_tcp_pose()
+                    except Exception:
+                        tcp_after_insert = None
+
+                    if tcp_after_insert is not None:
+                        logger.info("  插入后坐标系2 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                                    *tcp_after_insert)
+
+                    ensure_coord_sys(robot, BASE_COORD_SYS, label=f"{BASE_COORD_SYS}(恢复基准坐标系)")
 
     finally:
         stop_event.set()

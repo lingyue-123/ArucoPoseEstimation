@@ -105,6 +105,41 @@ class JAKARobot(RobotBase):
             logger.warning("机械臂使能失败，错误码: %s", ret_enable)
             return False
         
+    def get_coord_sys(self) -> Optional[int]:
+        """获取当前坐标系 ID，失败时返回 None。"""
+        if not self._connected or self._robot is None:
+            logger.warning("机械臂未连接，无法获取坐标系")
+            return None
+        try:
+            ret = self._robot.get_tool_id()
+            if ret[0] == 0:
+                coord_sys_id = ret[1]
+                logger.info("当前坐标系 ID: %d", coord_sys_id)
+                return coord_sys_id
+            else:
+                logger.warning("获取坐标系失败，错误码: %s", ret)
+                return None
+        except Exception as e:
+            logger.error("获取坐标系异常: %s", e)
+            return None
+        
+    def set_tool_id(self, tool_id: int) -> bool:
+        """设置工具坐标系 ID，返回是否成功。"""
+        if not self._connected or self._robot is None:
+            logger.warning("机械臂未连接，无法设置工具坐标系")
+            return False
+        try:
+            ret = self._robot.set_tool_id(tool_id)
+            if ret[0] == 0:
+                logger.info("设置工具坐标系成功: tool_id=%d", tool_id)
+                return True
+            else:
+                logger.warning("设置工具坐标系失败，错误码: %s", ret)
+                return False
+        except Exception as e:
+            logger.error("设置工具坐标系异常: %s", e)
+            return False
+        
     def move_and_wait(self, target, move_mode, move_block, move_speed, timeout: float = 30.0) -> bool:
         """直线运动并等待完成。返回 True=成功到达。"""
         ret = self._robot.linear_move(target, move_mode, move_block, move_speed)

@@ -1,0 +1,10 @@
+# Compiled bridge — robot_bridge.so is tracked for deployment
+# *.so
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# SDK (third-party, do not commit)
+../CrobotpOSSDK/

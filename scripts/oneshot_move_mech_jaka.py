@@ -19,6 +19,17 @@ import cv2
 import numpy as np
 import math
 
+JAKA_SDK_PATH = "/home/nvidia/Downloads/jaka-python-sdk"
+
+# 1. 配置 Linux 动态库环境（让系统找到 libjakaAPI.so）
+if sys.platform.startswith("linux"):
+    os.environ["LD_LIBRARY_PATH"] = f"{JAKA_SDK_PATH}:{os.environ.get('LD_LIBRARY_PATH', '')}"
+
+# 2. 让 Python 找到 jkrc.so 模块
+sys.path.insert(0, JAKA_SDK_PATH)
+
+import jkrc
+
 # =============================
 # 【Mech-Eye SDK 2.5.x 相关接口导入】
 # =============================

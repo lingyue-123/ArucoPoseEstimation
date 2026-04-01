@@ -11,8 +11,9 @@
     2. 按 'r'：记录当前 ArUco 位姿为参考
     3. 按 'm'：计算最终目标（gain=1.0），安全检查后一次到位
     4. 按 'i'：实时读取当前 2 号工具坐标系 TCP，沿局部 z 轴前进 --insert-cm
-    5. 运动完成后继续显示画面，可观察残差或再按 'm' 微调
-    6. 按 'q' 退出
+    5. 按 'o'：实时读取当前 2 号工具坐标系 TCP，沿局部 z 轴后退 --insert-cm（反插入）
+    6. 运动完成后继续显示画面，可观察残差或再按 'm' 微调
+    7. 按 'q' 退出
 
 用法：
     # 仅计算，不连机械臂
@@ -73,7 +74,7 @@ cv2.setUseOptimized(True)
 
 DEFAULT_MAX_TRANS_MM = 350.0
 DEFAULT_MAX_ROT_DEG = 30.0
-DEFAULT_SPEED = 5
+DEFAULT_SPEED = 10
 MOVE_TIMEOUT = 30.0
 INSERT_COORD_SYS = 2
 BASE_COORD_SYS = 0
@@ -394,7 +395,7 @@ def main():
 
     det_thread = threading.Thread(target=_detection_loop, daemon=True)
     det_thread.start()
-    logger.info("就绪。r=设参考  m=一次到位  b=回r点  i=插入  q=退出  (检测线程已启动)")
+    logger.info("就绪。r=设参考  m=一次到位  b=回r点  i=插入  o=反插入  q=退出  (检测线程已启动)")
 
     try:
         while True:
@@ -493,7 +494,7 @@ def main():
             # 状态栏
             robot_str = "Robot:ON" if robot_connected else ("Robot:OFF(dry)" if args.no_robot else "Robot:OFF")
             ref_str = "Ref:SET" if ref_set else "Ref:NONE"
-            status = f"ONESHOT [{args.camera}] | {ref_str} | {robot_str} | r=Ref m=Move b=Back i=Insert q=Quit"
+            status = f"ONESHOT [{args.camera}] | {ref_str} | {robot_str} | r=Ref m=Move b=Back i=Insert o=Reverse q=Quit"
             put_text(vis, status, h_orig - 20, (140, 140, 140))
 
             # resize 后显示
@@ -618,7 +619,7 @@ def main():
                     logger.warning("请通过 --insert-cm 指定插入距离（cm）")
                     continue
                 if not robot_connected:
-                    logger.warning("机械臂未连接，无法读取当前 2 号工具坐标系 TCP")
+                    logger.warning("机械臂未连接，无法读取当前 TCP位姿，无法执行插入")
                     continue
 
                 # 设置工具0
@@ -635,7 +636,7 @@ def main():
 
                 current_tool_pose = robot.get_tcp_pose()
                 if current_tool_pose is None:
-                    logger.warning("无法读取当前 2 号工具坐标系 TCP")
+                    logger.warning("无法读取当前 TCP位姿，无法执行插入")
                     continue
 
                 # 当前位姿 * Z 轴平移矩阵
@@ -650,18 +651,18 @@ def main():
                     logger.warning(reason)
                     continue
 
-                logger.info("插入动作(坐标系2): 基于当前实时 TCP，沿工具 z 轴前进 %.2f cm (%.2f mm)",
+                logger.info("插入动作: 基于当前实时 TCP，沿工具 z 轴前进 %.2f cm (%.2f mm)",
                             args.insert_cm, insert_mm)
-                logger.info("  坐标系2当前 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                logger.info("  当前 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                             *current_tool_pose)
-                logger.info("  坐标系2目标 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                logger.info("  目标 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                             *insert_pose)
 
                 if args.no_robot:
                     logger.info("[DRY RUN] 不执行插入运动")
                 else:
-                    if not ensure_coord_sys(robot, INSERT_COORD_SYS, label=f"{INSERT_COORD_SYS}(插入坐标系)"):
-                        continue
+                    # if not ensure_coord_sys(robot, INSERT_COORD_SYS, label=f"{INSERT_COORD_SYS}(插入坐标系)"):
+                    #     continue
                     moving = True
                     ok = execute_move(robot, insert_pose)
                     moving = False
@@ -672,11 +673,77 @@ def main():
                         tcp_after_insert = None
 
                     if tcp_after_insert is not None:
-                        logger.info("  插入后坐标系2 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                        logger.info("  插入后 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                                     *tcp_after_insert)
 
                     ensure_coord_sys(robot, BASE_COORD_SYS, label=f"{BASE_COORD_SYS}(恢复基准坐标系)")
 
+            elif key == ord('o'):
+                if moving:
+                    logger.warning("运动中，请等待完成")
+                    continue
+                if args.insert_cm <= 0:
+                    logger.warning("请通过 --insert-cm 指定反插入距离（cm）")
+                    continue
+                if not robot_connected:
+                    logger.warning("机械臂未连接，无法执行反插入操作")
+                    continue
+
+                # 设置工具0
+                if hasattr(robot, 'set_tool_id'):
+                    try:
+                        rt = robot.set_tool_id(0)
+                        logger.info("设置 tool_id=0: %s", rt)
+                    except Exception as exc:
+                        logger.warning("设置 tool_id=0 失败: %s", exc)
+                        continue
+                else:
+                    logger.warning("不支持 set_tool_id 接口，无法进行反插入")
+                    continue
+
+                current_tool_pose = robot.get_tcp_pose()
+                if current_tool_pose is None:
+                    logger.warning("无法读取当前 TCP位姿，无法执行反插入")
+                    continue
+
+                # 当前位姿 * Z 轴反向平移矩阵
+                current_matrix = pose_to_matrix(current_tool_pose)
+                last_z_trans = np.eye(4)
+                last_z_trans[2, 3] = -insert_mm  # 反向移动
+                reverse_insert_matrix = current_matrix @ last_z_trans
+                reverse_insert_pose = matrix_to_pose(reverse_insert_matrix)
+
+                safe, reason = check_oneshot_safety(abs(insert_mm), 0.0, args.max_trans, args.max_rot)
+                if not safe:
+                    logger.warning(reason)
+                    continue
+
+                logger.info("反插入动作: 基于当前实时 TCP，沿工具 z 轴后退 %.2f cm (%.2f mm)",
+                            args.insert_cm, insert_mm)
+                logger.info("  当前 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                            *current_tool_pose)
+                logger.info("  目标 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                            *reverse_insert_pose)
+
+                if args.no_robot:
+                    logger.info("[DRY RUN] 不执行反插入运动")
+                else:
+                    # if not ensure_coord_sys(robot, INSERT_COORD_SYS, label=f"{INSERT_COORD_SYS}(反插入坐标系)"):
+                    #     continue
+                    moving = True
+                    ok = execute_move(robot, reverse_insert_pose)
+                    moving = False
+
+                    try:
+                        tcp_after_reverse_insert = robot.get_tcp_pose()
+                    except Exception:
+                        tcp_after_reverse_insert = None
+
+                    if tcp_after_reverse_insert is not None:
+                        logger.info("  反插入后 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                                    *tcp_after_reverse_insert)
+
+                    ensure_coord_sys(robot, BASE_COORD_SYS, label=f"{BASE_COORD_SYS}(恢复基准坐标系)")
     finally:
         stop_event.set()
         det_thread.join(timeout=2.0)

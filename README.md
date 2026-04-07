@@ -36,3 +36,10 @@
         import jkrc
         print('JAKA SDK imported successfully.')
         ```
+
+## JAKA 机械臂沿法兰 Z 轴移动时的矩阵逻辑：
+- 目标位姿应由当前 TCP 位姿齐次矩阵右乘局部 Z 轴平移矩阵得到：`T_new = T_current @ T_z`
+
+- 这样表示“先到当前工具位姿，再沿工具坐标系 Z 轴移动”
+
+- 如果写成 `T_new = T_z @ T_current`，则表示“先在基坐标系中平移，再变换到当前工具位姿”，不符合沿法兰 Z 轴插入/反插入的语义

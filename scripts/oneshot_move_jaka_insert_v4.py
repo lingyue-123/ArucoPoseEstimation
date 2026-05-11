@@ -41,7 +41,6 @@ from robovision.geometry.transforms import (
     pose_to_matrix, matrix_to_pose, compute_new_tool_pose,
     offset_pose_along_tool_axis,
 )
-from robovision.robot import build_robot
 from robovision.calibration.hand_eye import load_hand_eye_result
 from robovision.io.pose_file import load_pose_file, save_pose_file
 from robovision.visualization.aruco_overlay import (
@@ -52,15 +51,25 @@ from robovision.servo.core import (
 )
 
 # --- 第三方驱动 ---
-from third_party.robot_driver.robot_driver_interface import CartesianPose
+from crobot_driver_interface import CartesianPose
 from cover_main import CoverActionFlow
 from gripper import GripperController
 from relative_move import apply_relative_pose, load_offset_from_file, compute_distance
 from Intergration.stereo_camera_calib.yrq.pose_estimation.cover_pose_estimator import CoverPoseEstimator
 from Intergration.FTServo_Linux_main.examples.sms_sts_driver import SMSSTSController
-from robovision.robot.tool_coord import (
-    ensure_tool_id, get_tcp_pose_in_tool, check_oneshot_safety,
-)
+# --- 本地辅助 (替代 robovision.robot.tool_coord，适配 CRP 驱动) ---
+def check_oneshot_safety(trans_mm, rot_deg, max_trans, max_rot):
+    if trans_mm > max_trans:
+        return False, (f"平移 {trans_mm:.1f} mm 超过阈值 {max_trans:.1f} mm，请手动移近后重试或增大 --max-trans")
+    if rot_deg > max_rot:
+        return False, (f"旋转 {rot_deg:.2f} deg 超过阈值 {max_rot:.1f} deg，请手动调整姿态后重试或增大 --max-rot")
+    return True, ""
+
+def ensure_tool_id(robot, tool_id, label=None):
+    return True
+
+def get_tcp_pose_in_tool(robot, tool_id, label=None):
+    return robot.get_tcp_pose()
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(name)s: %(message)s')
 logger = logging.getLogger(__name__)
@@ -271,25 +280,16 @@ def main():
     if loaded_offset is not None:
         takegun_offset = loaded_offset
 
-    # 工艺流程控制器 (护盖动作等)
-    flow = CoverActionFlow()
-
-    # --- 初始化机器人 | Robot init ---
+    # --- 初始化机器人 (CoverActionFlow 单例) | Robot init ---
+    flow = CoverActionFlow.get_instance(ip=args.robot_ip)
     robot = None
     robot_connected = False
     if not args.no_robot:
-        if args.robot_ip:
-            robot_cfg.ip = args.robot_ip
-        robot = build_robot(robot_cfg)
-        robot_connected = robot.connect()
+        robot_connected = flow.connect()
         if robot_connected:
-            if hasattr(robot, 'set_speed'):
-                ret = robot.set_speed(args.speed)
-                logger.info("Speed set to %d%%: %s", args.speed,
-                            "OK" if ret == 0 else f"Failed({ret})")
-            else:
-                logger.info("Robot driver does not support speed setting (e.g. KEBA)")
-            ensure_tool_id(robot, BASE_TOOL_ID, label=f"tool {BASE_TOOL_ID}(flange)")
+            robot = flow.arm
+            robot.set_speed(args.speed)
+            logger.info("Speed set to %d%%: OK", args.speed)
         else:
             logger.warning("Robot connection failed")
     else:
@@ -813,11 +813,10 @@ def main():
                 moving = False
 
             elif key == ord('v'):
-                # 夹爪控制: 关闭夹爪 (GripperController)
-                gripper = GripperController(port='/dev/ttysWK3', baudrate=115200, device_id=4)
-                if gripper.connect():
-                    gripper.set_speed(15)
-                    gripper.set_position(550)
+                # 夹爪控制: 关闭夹爪 (使用单例 CoverActionFlow 的 gripper)
+                if flow.gripper.connect():
+                    flow.gripper.set_speed(15)
+                    flow.gripper.set_position(32)
                
             elif key == ord('2'):
                 # 硬编码: 取枪初始位置 (调试用)
@@ -877,7 +876,7 @@ def main():
                     ensure_tool_id(robot, BASE_TOOL_ID, label=f"tool {BASE_TOOL_ID}(flange)")
                            
             elif key == ord('5'):
-                # 复合动作: offset [-110, -130] → 前进 60mm | Insert offset → advance 60mm
+                # 复合动作: offset [-110, -130] → 前进 100mm | Insert offset → advance 100mm
                 if moving:
                     logger.warning("Motion in progress, please wait")
                     continue
@@ -898,15 +897,15 @@ def main():
                 target_matrix = current_tool_matrix @ offset_matrix
                 target_pose = matrix_to_pose(target_matrix)
 
-                # 第二步: 沿工具 z 轴前进 60mm
-                advance_pose = offset_pose_along_tool_axis(target_pose, 60.0, axis='z')
+                # 第二步: 沿工具 z 轴前进 100mm
+                advance_pose = offset_pose_along_tool_axis(target_pose, 100.0, axis='z')
 
-                logger.info("Insert offset [-110, -130] + advance 60mm along Z")
+                logger.info("Insert offset [-110, -130] + advance 100mm along Z")
                 logger.info("  Current TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                             *current_tool_pose)
 
                 if args.no_robot:
-                    logger.info("[DRY RUN] Skip insert offset + 60mm advance")
+                    logger.info("[DRY RUN] Skip insert offset + 100mm advance")
                 else:
                     moving = True
                     robot.set_speed(100)
@@ -916,9 +915,9 @@ def main():
                         robot.set_speed(80)
                         ok = execute_move(robot, advance_pose, timeout=args.move_timeout)
                         if ok:
-                            logger.info("Advance 60mm complete")
+                            logger.info("Advance 100mm complete")
                         else:
-                            logger.warning("Advance 60mm failed")
+                            logger.warning("Advance 100mm failed")
                     else:
                         logger.warning("Offset move failed")
                     moving = False
@@ -1038,10 +1037,10 @@ def main():
 
             elif key == ord('6'):
                 # 硬编码: 关节运动到预定义位置 1 (调试用)
-                robot.arm_move_joint([6.938, -67.507, 83.516, 140.491, 86.041, -90.24])
+                robot.move_joint([6.938, -67.507, 83.516, 140.491, 86.041, -90.24])
             elif key == ord('7'):
                 # 硬编码: 关节运动到预定义位置 2 (调试用)
-                robot.arm_move_joint([6.364, -77.978, 58.77, 126.224, 86.605, -90.345])
+                robot.move_joint([6.364, -77.978, 58.77, 126.224, 86.605, -90.345])
 
             elif key == ord('8'):
                 # 舵机: 按下扳机 (SMSSTSController)
@@ -1129,19 +1128,15 @@ def main():
             elif key == ord('g'):
                 # 工艺流程: 步骤 1
                 flow.run(1)
-                flow.arm.disconnect()
             elif key == ord('h'):
                 # 工艺流程: 步骤 2
                 flow.run(2)
-                flow.arm.disconnect() 
             elif key == ord('j'):
                 # 工艺流程: 步骤 3
                 flow.run(3)
-                flow.arm.disconnect()     
             elif key == ord('k'):
                 # 工艺流程: 步骤 4
                 flow.run(4)
-                flow.arm.disconnect()     
         
     finally:
         stop_event.set()
@@ -1149,8 +1144,8 @@ def main():
         cv2.destroyAllWindows()
         if camera is not None:
             camera.close()
-        if robot is not None:
-            robot.disconnect()
+        if robot_connected:
+            flow.disconnect()
 
 
 if __name__ == '__main__':

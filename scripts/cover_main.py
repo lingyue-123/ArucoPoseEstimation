@@ -17,33 +17,36 @@ with open("/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json", "r", en
     CFG = json.load(f)
 
 class CoverActionFlow:
-    def __init__(self):
-        self.arm = CRobot(ip='192.168.1.12')#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-import sys
-import time
-import logging
-import json
-import fcntl
-import numpy as np
+    _instance = None
 
-from crobot_driver_interface import CRobot, CartesianPose, pose_to_homogeneous_matrix, homogeneous_matrix_to_pose, get_flange_relative_move
-from gripper import GripperController
+    @classmethod
+    def get_instance(cls, ip=None):
+        if cls._instance is None:
+            cls._instance = cls(ip=ip)
+        return cls._instance
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("CoverAction")
+    def __init__(self, ip=None):
+        self.arm = CRobot(ip=ip or '192.168.1.12')
+        self._connected = False
+        self.gripper = GripperController(port='/dev/ttysWK3', baudrate=115200, device_id=4)
 
-class CoverActionFlow:
-    def __init__(self):
-        self.arm = CRobot(ip='192.168.1.12')
-        self.connect_all()
-
-    def connect_all(self):
+    def connect(self):
+        if self._connected:
+            logger.info("Robot already connected, skipping")
+            return True
         logger.info("=== 开始连接设备 ===")
         if not self.arm.connect():
             logger.error("机器人连接失败！")
-            sys.exit(1)
+            return False
+        self._connected = True
         logger.info("=== 设备已就绪 ===")
+        return True
+
+    def disconnect(self):
+        if self._connected:
+            self.arm.disconnect()
+            self._connected = False
+            logger.info("Robot disconnected")
 
     def run_relative_trajectory(
         self,
@@ -139,10 +142,9 @@ class CoverActionFlow:
     # ----------------------------------------------------------------------------------------------
     def run_open_cover(self):
         logger.info("\n[动作 1] 开始开盖")
-        gripper = GripperController(port='/dev/ttysWK3', baudrate=115200, device_id=4)
-        if gripper.connect():
-            gripper.set_speed(100) 
-            gripper.set_position(1000)
+        if self.gripper.connect():
+            self.gripper.set_speed(100) 
+            self.gripper.set_position(45)
 
         self.arm.set_speed(50) # 全局速度
         pose0 = CartesianPose(*CFG["OPEN_START"]).to_list()
@@ -198,15 +200,14 @@ class CoverActionFlow:
     # 动作 3：夹盖
     # ----------------------------------------------------------------------------------------------
     def gripper_action(self):
-        gripper = GripperController(port='/dev/ttysWK3', baudrate=115200, device_id=4)
-        if gripper.connect():
-            gripper.set_speed(100) 
+        if self.gripper.connect():
+            self.gripper.set_speed(100) 
 
         ref_pose = CartesianPose(*CFG["POINT_NEW_REF"])
         base_pose = CartesianPose(*CFG["POINT_TEMPLATE_REF"])
 
-        if gripper.connect():
-            gripper.set_position(700)
+        if self.gripper.connect():
+            self.gripper.set_position(32)
 
         init_pose = self.relative_pose(
             base_pose=base_pose,
@@ -218,8 +219,8 @@ class CoverActionFlow:
         init_speed = [100]
         self.arm.move_by_pose_list(init_poses, init_speed)
 
-        if gripper.connect():
-            gripper.set_position(1000)
+        if self.gripper.connect():
+            self.gripper.set_position(45)
 
         all_targets = [
             CartesianPose(*CFG["PUSH_POINT2"]), # 夹住后撤点1
@@ -237,8 +238,8 @@ class CoverActionFlow:
         self.arm.move_by_pose_list(poses, speeds)
         # self.arm.move_relative_tool(dz=3) # 放盖经常走不到底，这里找补一下，继续前进3mm
 
-        if gripper.connect():
-            gripper.set_position(0)
+        if self.gripper.connect():
+            self.gripper.set_position(0)
 
 
         take_gun_pose = self.relative_pose(
@@ -298,7 +299,7 @@ class CoverActionFlow:
         self.arm.move_by_pose_list(poses=gun_init_poses, speeds=gun_speeds)
        
 
-        gripper = GripperController(port='/dev/ttysWK3', baudrate=115200, device_id=4)
+        gripper = self.gripper
         if gripper.connect():
             gripper.set_speed(100)
             gripper.set_position(0)
@@ -312,7 +313,7 @@ class CoverActionFlow:
 
         if gripper.connect():
             gripper.set_speed(100) 
-            gripper.set_position(700)
+            gripper.set_position(32)
 
         logger.info("[动作 5] 归枪")
 
@@ -320,7 +321,7 @@ class CoverActionFlow:
     # 动作 6：关内盖
     # ----------------------------------------------------------------------------------------------
     def inner_cover_close(self):
-        gripper = GripperController(port='/dev/ttysWK3', baudrate=115200, device_id=4)
+        gripper = self.gripper
         if gripper.connect():
             gripper.set_speed(100) 
 
@@ -343,7 +344,7 @@ class CoverActionFlow:
         self.arm.move_by_pose_list(poses=init_poses, speeds=init_speeds)
 
         if gripper.connect():
-            gripper.set_position(1000)
+            gripper.set_position(45)
 
         all_targets = [
             CartesianPose(*CFG["PUSH_POINT3"]),
@@ -363,7 +364,7 @@ class CoverActionFlow:
 
 
         if gripper.connect():
-            gripper.set_position(700)
+            gripper.set_position(32)
         current_pose = self.arm.get_tcp_pose()
         pose1 = self.arm.relative_tool_pose(dz=-350, init_pose=current_pose).to_list()
         poses1 = [pose1]
@@ -372,7 +373,7 @@ class CoverActionFlow:
 
 
         if gripper.connect():
-            gripper.set_position(1000)
+            gripper.set_position(45)
 
     # ----------------------------------------------------------------------------------------------
     # 动作 7：关外盖
@@ -418,23 +419,19 @@ class CoverActionFlow:
                 self.run_open_cover()
                 self.run_screw_cover()
                 self.gripper_action()
-                #此时已经移动到取枪瞄准点，在ONESHOT中执行取枪动作
             elif mode == 2:
                 self.gun_insert_before()
             elif mode == 3:
                 self.gun_home()
             elif mode == 4:
-                # self.inner_cover_close()
                 self.outer_cover_close()
             elif mode == 5:
                 self.move()
             else:
-                logger.error("模式错误：请输入 1/2/3/4")
+                logger.error("模式错误：请输入 1/2/3/4/5")
         except KeyboardInterrupt:
             logger.warning("手动中断")
-        finally:
-            self.arm.close()
-            logger.info("已断开机器人连接")
+            raise
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -446,8 +443,12 @@ if __name__ == "__main__":
         sys.exit(1)
 
     mode = int(sys.argv[1])
-    flow = CoverActionFlow()
+    flow = CoverActionFlow.get_instance()
+    if not flow.connect():
+        logger.error("连接失败，退出")
+        sys.exit(1)
     flow.run(mode)
+    flow.disconnect()
 
     
     

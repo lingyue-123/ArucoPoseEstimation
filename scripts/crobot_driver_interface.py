@@ -546,9 +546,21 @@ class CRobot(RobotBase):
 
     def move_and_wait(self, target, timeout: float = 30) -> bool:
         logger.info(f"移动并等待，超时时间: {timeout}秒")
-        result = super().move_and_wait(target, timeout)
-        logger.info(f"移动完成，结果: {'成功' if result else '失败'}")
-        return result
+        try:
+            start_time = time.time()
+            if self.move_linear(target, start=True, end=True) != 1:
+                logger.error("发起运动失败")
+                return False
+            while self.is_moving():
+                if time.time() - start_time > timeout:
+                    logger.warning(f"运动超时 ({timeout}s)")
+                    return False
+                time.sleep(0.1)
+            logger.info("运动完成")
+            return True
+        except Exception as e:
+            logger.error(f"move_and_wait 异常: {e}")
+            return False
     
     def set_speed(self, speed_pct: int) -> bool:
         if not 0 <= speed_pct <= 100:

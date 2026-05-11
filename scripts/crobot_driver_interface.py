@@ -8,7 +8,7 @@ from scipy.spatial.transform import Rotation as R
 import math
 import crobotsdk
 from robovision.robot.base import RobotBase
-from crobotsdk import RobotMode, InstMoveJ, InstMoveC, InstMoveL, InstMoveAbsJ, MoveStrategy, MovePathResult, MotionType,JointPosition,RobotPosition,RobotPosture
+from crobotsdk import RobotMode, InstMoveJ, InstMoveC, InstMoveL, InstMoveAbsJ, MoveStrategy, MovePathResult, MotionType,JointPosition,RobotPosition,RobotPosture,ProgramStatus
 from typing import Tuple
 
 # 配置日志（只输出 INFO 及以上）
@@ -395,9 +395,18 @@ class CRobot(RobotBase):
                 logger.info("伺服上电成功")
             
             # 启动程序
-            if not self.robot_service.start_program("guidanceInst.pro", 0):
-                logger.error("启动程序失败")
-                return 0
+            p_status = self.robot_service.get_program_status()
+            if p_status == ProgramStatus.STOP:
+                if not self.robot_service.start_program("guidanceInst.pro", 0):
+                    logger.error("=====启动程序失败=====")
+                    return 0
+            elif p_status == ProgramStatus.PAUSE:
+                if not self.robot_service.resume_program("guidanceInst.pro"):
+                    logger.error("=====恢复程序失败=====")
+                    return 0
+            else:
+                logger.info("=====程序正在运行=====")
+            
             
             # 等待运动服务就绪
             wait_count = 0
@@ -500,10 +509,19 @@ class CRobot(RobotBase):
                 logger.info("伺服上电成功")
             
             # 启动程序
-            if not self.robot_service.start_program("guidanceInst.pro", 0):
-                logger.error("启动程序失败")
-                return 0
+            p_status = self.robot_service.get_program_status()
+            if p_status == ProgramStatus.STOP:
+                if not self.robot_service.start_program("guidanceInst.pro", 0):
+                    logger.error("启动程序失败")
+                    return 0
+            elif p_status == ProgramStatus.PAUSE:
+                if not self.robot_service.resume_program("guidanceInst.pro"):
+                    logger.error("恢复程序失败")
+                    return 0
+            else:
+                logger.info("=====程序正在运行=====")
             
+
             # 等待运动服务就绪
             wait_count = 0
             while not self.motion_service.is_ready(MotionType.INSTRUCTION):

@@ -836,9 +836,12 @@ def main():
                 
                 cover_3D_pose = cover_pose_estimator.pose_estimation()
                 logger.info("Cover 3D pose: %s", cover_3D_pose)
+                cover_3D_pose[0] += 65
+                cover_3D_pose[1] -= 15
+                cover_3D_pose[2] -= 450
 
-                z_offset = [cover_3D_pose[0][0] + 65, cover_3D_pose[1][0] - 15, cover_3D_pose[2][0] - 450, 0, 0, 0]
-                z_offset_matrix = pose_to_matrix(z_offset)
+                # z_offset = [cover_3D_pose[0][0] + 65, cover_3D_pose[1][0] - 15, cover_3D_pose[2][0] - 450, 0, 0, 0]
+                z_offset_matrix = pose_to_matrix(cover_3D_pose)
                 
                 current_tool_pose = get_tcp_pose_in_tool_mm(
                     robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
@@ -854,26 +857,27 @@ def main():
 
                 logger.info("  Target TCP for coarse alignment: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                             *target_pose)
+                flow.run_open_cover(target_pose)
 
-                if args.no_robot:
-                    logger.info("[DRY RUN] Skip coarse alignment")
-                else:
-                    if not ensure_tool_id(robot, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)"):
-                        continue
-                    moving = True
-                    ok = execute_move(robot, target_pose, timeout=args.move_timeout)
-                    moving = False
+                # if args.no_robot:
+                #     logger.info("[DRY RUN] Skip coarse alignment")
+                # else:
+                #     if not ensure_tool_id(robot, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)"):
+                #         continue
+                #     moving = True
+                #     ok = execute_move(robot, target_pose, timeout=args.move_timeout)
+                #     moving = False
 
-                    try:
-                        tcp_after_first_moved = get_robot_tcp_pose_mm(robot, robot_cfg)
-                    except Exception:
-                        tcp_after_first_moved = None
+                #     try:
+                #         tcp_after_first_moved = get_robot_tcp_pose_mm(robot, robot_cfg)
+                #     except Exception:
+                #         tcp_after_first_moved = None
 
-                    if tcp_after_first_moved is not None:
-                        logger.info("  After coarse alignment TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                                    *tcp_after_first_moved)
+                #     if tcp_after_first_moved is not None:
+                #         logger.info("  After coarse alignment TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                #                     *tcp_after_first_moved)
 
-                    ensure_tool_id(robot, BASE_TOOL_ID, label=f"tool {BASE_TOOL_ID}(flange)")
+                #     ensure_tool_id(robot, BASE_TOOL_ID, label=f"tool {BASE_TOOL_ID}(flange)")
                            
             elif key == ord('5'):
                 # 复合动作: offset [-110, -130] → 前进 100mm | Insert offset → advance 100mm
@@ -1137,6 +1141,7 @@ def main():
             elif key == ord('k'):
                 # 工艺流程: 步骤 4
                 flow.run(4)
+                flow.run(5)
         
     finally:
         stop_event.set()

@@ -148,10 +148,12 @@ class CoverActionFlow:
 
         self.arm.set_speed(50) # 全局速度
         pose0 = CartesianPose(*CFG["OPEN_START"]).to_list()
-        pose1 = self.arm.relative_tool_pose(dz=66,init_pose=pose0).to_list()
-        pose2 = self.arm.relative_tool_pose(dz=71, init_pose=pose0).to_list()
-        pose3 = self.arm.relative_tool_pose(dz=42, init_pose=pose0).to_list()
+        # pose0 = CartesianPose(*pose).to_list()
+        pose1 = self.arm.relative_tool_pose(dz=203.93,init_pose=pose0).to_list()
+        pose2 = self.arm.relative_tool_pose(dz=208.93, init_pose=pose0).to_list()
+        pose3 = self.arm.relative_tool_pose(dz=179, init_pose=pose0).to_list()
         poses = [pose0, pose1, pose2, pose3]
+        # poses = [pose0]
         speeds = [100,100,50,100]
         self.arm.move_by_pose_list(poses=poses, speeds=speeds)
 
@@ -209,13 +211,13 @@ class CoverActionFlow:
         if self.gripper.connect():
             self.gripper.set_position(32)
 
-        init_pose = self.relative_pose(
+        init_poses = self.relative_pose(
             base_pose=base_pose,
             target_poses=[CartesianPose(*CFG["PUSH_POINT1"])],
             ref_pose=ref_pose,
             motion_type="linear"
         )
-        init_poses = [init_pose]
+        # init_poses = [init_pose]
         init_speed = [100]
         self.arm.move_by_pose_list(init_poses, init_speed)
 
@@ -239,18 +241,21 @@ class CoverActionFlow:
         # self.arm.move_relative_tool(dz=3) # 放盖经常走不到底，这里找补一下，继续前进3mm
 
         if self.gripper.connect():
-            self.gripper.set_position(0)
+            self.gripper.set_position(35)
 
 
-        take_gun_pose = self.relative_pose(
+        take_gun_poses = self.relative_pose(
             base_pose=base_pose,
             target_poses=[CartesianPose(*CFG["PUSH_POINT5"])],
             ref_pose=ref_pose,
             motion_type="linear"
         )
-        take_gun_poses = [take_gun_pose]
+        # take_gun_poses = [take_gun_pose]
         speeds = [50]
         self.arm.move_by_pose_list(take_gun_poses, speeds)
+
+        if self.gripper.connect():
+            self.gripper.set_position(0)
 
 
         # 移动到取枪对准点
@@ -324,6 +329,7 @@ class CoverActionFlow:
         gripper = self.gripper
         if gripper.connect():
             gripper.set_speed(100) 
+            gripper.set_position(35)
 
         ref_pose = CartesianPose(*CFG["POINT_NEW_REF"])
         base_pose = CartesianPose(*CFG["POINT_TEMPLATE_REF"])
@@ -364,7 +370,7 @@ class CoverActionFlow:
 
 
         if gripper.connect():
-            gripper.set_position(32)
+            gripper.set_position(35)
         current_pose = self.arm.get_tcp_pose()
         pose1 = self.arm.relative_tool_pose(dz=-350, init_pose=current_pose).to_list()
         poses1 = [pose1]
@@ -385,6 +391,7 @@ class CoverActionFlow:
         base_pose = CartesianPose(*CFG["POINT_TEMPLATE_REF"])
 
         all_targets = [
+            CartesianPose(*CFG["OUTER_CLOSE_1"]),
             CartesianPose(*CFG["OUTER_CLOSE"]),
             CartesianPose(*CFG["POINT_TEMPLATE_REF"])
         ]
@@ -395,7 +402,7 @@ class CoverActionFlow:
             ref_pose=ref_pose,
             motion_type="linear"
         )
-        speeds = [100, 100]
+        speeds = [100, 100, 100]
         self.arm.move_by_pose_list(poses=init_poses, speeds=speeds)
 
         current_pose = self.arm.get_tcp_pose()
@@ -424,6 +431,7 @@ class CoverActionFlow:
             elif mode == 3:
                 self.gun_home()
             elif mode == 4:
+                self.inner_cover_close()
                 self.outer_cover_close()
             elif mode == 5:
                 self.move()

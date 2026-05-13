@@ -8,7 +8,7 @@ import fcntl
 import numpy as np
 
 from crobot_driver_interface import CRobot, CartesianPose, pose_to_homogeneous_matrix, homogeneous_matrix_to_pose, get_flange_relative_move
-from gripper import GripperController
+from gripper_controller import GripperController
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("CoverAction")
@@ -28,7 +28,7 @@ class CoverActionFlow:
     def __init__(self, ip=None):
         self.arm = CRobot(ip=ip or '192.168.1.12')
         self._connected = False
-        self.gripper = GripperController(port='/dev/ttysWK3', baudrate=115200, device_id=4)
+        self.gripper = GripperController(port='/dev/ttysWK3', baudrate=115200, slave_id=4)
 
     def connect(self):
         if self._connected:
@@ -38,6 +38,7 @@ class CoverActionFlow:
         if not self.arm.connect():
             logger.error("机器人连接失败！")
             return False
+        self.gripper.connect()
         self._connected = True
         logger.info("=== 设备已就绪 ===")
         return True
@@ -45,6 +46,7 @@ class CoverActionFlow:
     def disconnect(self):
         if self._connected:
             self.arm.disconnect()
+            self.gripper.disconnect()
             self._connected = False
             logger.info("Robot disconnected")
 
@@ -142,9 +144,8 @@ class CoverActionFlow:
     # ----------------------------------------------------------------------------------------------
     def run_open_cover(self):
         logger.info("\n[动作 1] 开始开盖")
-        if self.gripper.connect():
-            self.gripper.set_speed(100) 
-            self.gripper.set_position(45)
+        self.gripper.set_speed(100) 
+        self.gripper.set_position(45)
 
         self.arm.set_speed(50) # 全局速度
         pose0 = CartesianPose(*CFG["OPEN_START"]).to_list()
@@ -202,14 +203,12 @@ class CoverActionFlow:
     # 动作 3：夹盖
     # ----------------------------------------------------------------------------------------------
     def gripper_action(self):
-        if self.gripper.connect():
-            self.gripper.set_speed(100) 
+        self.gripper.set_speed(100) 
 
         ref_pose = CartesianPose(*CFG["POINT_NEW_REF"])
         base_pose = CartesianPose(*CFG["POINT_TEMPLATE_REF"])
 
-        if self.gripper.connect():
-            self.gripper.set_position(32)
+        self.gripper.set_position(32)
 
         init_poses = self.relative_pose(
             base_pose=base_pose,
@@ -221,8 +220,7 @@ class CoverActionFlow:
         init_speed = [100]
         self.arm.move_by_pose_list(init_poses, init_speed)
 
-        if self.gripper.connect():
-            self.gripper.set_position(45)
+        self.gripper.set_position(45)
 
         all_targets = [
             CartesianPose(*CFG["PUSH_POINT2"]), # 夹住后撤点1
@@ -240,8 +238,7 @@ class CoverActionFlow:
         self.arm.move_by_pose_list(poses, speeds)
         # self.arm.move_relative_tool(dz=3) # 放盖经常走不到底，这里找补一下，继续前进3mm
 
-        if self.gripper.connect():
-            self.gripper.set_position(35)
+        self.gripper.set_position(35)
 
 
         take_gun_poses = self.relative_pose(
@@ -254,11 +251,11 @@ class CoverActionFlow:
         speeds = [50]
         self.arm.move_by_pose_list(take_gun_poses, speeds)
 
-        if self.gripper.connect():
-            self.gripper.set_position(0)
+        self.gripper.set_position(0)
 
 
         # 移动到取枪对准点
+        # TODO:直线运动 -> 关节运动
         self.arm.move_linear(CartesianPose(*CFG["PUSH_POINT6_TAKEGUN"]), start=True, end = True)
 
     # ----------------------------------------------------------------------------------------------
@@ -303,11 +300,21 @@ class CoverActionFlow:
         gun_speeds = [100, 100, 100, 50]
         self.arm.move_by_pose_list(poses=gun_init_poses, speeds=gun_speeds)
        
-
         gripper = self.gripper
-        if gripper.connect():
-            gripper.set_speed(100)
-            gripper.set_position(0)
+        gripper.set_speed(100)
+        gripper.set_position(0)
+        # 等待夹爪张开到位（0=运动中, 1=到达位置, 2=夹住物体, 3=物体掉落）
+        timeout_s = 5.0
+        t0 = time.time()
+        while True:
+            status = gripper.get_grip_status()
+            if status in (1, 2):
+                logger.info("Gripper open complete (status=%d)", status)
+                break
+            if time.time() - t0 > timeout_s:
+                logger.warning("Gripper open timeout after %.1fs (status=%s)", timeout_s, status)
+                break
+            time.sleep(0.1)
 
         pose1 = self.arm.relative_tool_pose(dz = 104, init_pose=pose0).to_list()
         pose2 = self.arm.relative_tool_pose(dz = -36, init_pose=pose0).to_list()
@@ -316,9 +323,8 @@ class CoverActionFlow:
         self.arm.move_by_pose_list(poses=poses, speeds=speeds)
 
 
-        if gripper.connect():
-            gripper.set_speed(100) 
-            gripper.set_position(32)
+        gripper.set_speed(100) 
+        gripper.set_position(32)
 
         logger.info("[动作 5] 归枪")
 
@@ -327,9 +333,8 @@ class CoverActionFlow:
     # ----------------------------------------------------------------------------------------------
     def inner_cover_close(self):
         gripper = self.gripper
-        if gripper.connect():
-            gripper.set_speed(100) 
-            gripper.set_position(35)
+        gripper.set_speed(100) 
+        gripper.set_position(35)
 
         ref_pose = CartesianPose(*CFG["POINT_NEW_REF"])
         base_pose = CartesianPose(*CFG["POINT_TEMPLATE_REF"])
@@ -349,8 +354,7 @@ class CoverActionFlow:
         init_speeds = [100, 100]
         self.arm.move_by_pose_list(poses=init_poses, speeds=init_speeds)
 
-        if gripper.connect():
-            gripper.set_position(45)
+        gripper.set_position(45)
 
         all_targets = [
             CartesianPose(*CFG["PUSH_POINT3"]),
@@ -369,8 +373,7 @@ class CoverActionFlow:
         self.arm.move_by_pose_list(poses=poses, speeds=speeds)
 
 
-        if gripper.connect():
-            gripper.set_position(35)
+        gripper.set_position(35)
         current_pose = self.arm.get_tcp_pose()
         pose1 = self.arm.relative_tool_pose(dz=-350, init_pose=current_pose).to_list()
         poses1 = [pose1]
@@ -378,8 +381,7 @@ class CoverActionFlow:
         self.arm.move_by_pose_list(poses=poses1, speeds=speeds)
 
 
-        if gripper.connect():
-            gripper.set_position(45)
+        gripper.set_position(45)
 
     # ----------------------------------------------------------------------------------------------
     # 动作 7：关外盖

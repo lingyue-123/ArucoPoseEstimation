@@ -23,6 +23,8 @@ import os
 import sys
 import threading
 import time
+import fcntl
+import json
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _ROOT not in sys.path:
@@ -53,7 +55,6 @@ from robovision.servo.core import (
 # --- 第三方驱动 ---
 from crobot_driver_interface import CartesianPose
 from cover_main import CoverActionFlow
-from gripper import GripperController
 from relative_move import apply_relative_pose, load_offset_from_file, compute_distance
 from Intergration.stereo_camera_calib.yrq.pose_estimation.cover_pose_estimator import CoverPoseEstimator
 from Intergration.FTServo_Linux_main.examples.sms_sts_driver import SMSSTSController
@@ -359,7 +360,13 @@ def main():
     cover_pose_estimator = CoverPoseEstimator()
 
     try:
+        first_move = 0 # 随动标志位
         while True:
+            with open('/home/nvidia/Downloads/HD/HD_0323/Intergration/stereo_camera_calib/yrq/first_move.json', 'r', encoding='utf-8') as f:
+                fcntl.flock(f, fcntl.LOCK_SH)
+                first_move = json.load(f)
+                fcntl.flock(f, fcntl.LOCK_UN)
+                
             ok, frame = camera.read_frame()
             if not ok or frame is None:
                 if cv2.waitKey(10) & 0xFF in (ord('q'), 27):
@@ -501,6 +508,19 @@ def main():
             cv2.imshow(win, vis)
             key = cv2.waitKey(1) & 0xFF
 
+            if first_move == 1:
+                # TODO:机械臂随动至设定好的位置
+                robot.move_linear(CartesianPose(355.697, -335.04, 182.446, 103.439, -25.092, 37.714))
+
+                first_move = 0
+                with open('/home/nvidia/Downloads/HD/HD_0323/Intergration/stereo_camera_calib/yrq/first_move.json', 'w', encoding='utf-8') as f:
+                    fcntl.flock(f, fcntl.LOCK_EX)
+                    json.dump(0, f)
+                    f.flush()
+                    os.fsync(f.fileno())
+                    fcntl.flock(f, fcntl.LOCK_UN)
+
+            
             if key in (ord('q'), 27):
                 break
 
@@ -813,10 +833,26 @@ def main():
                 moving = False
 
             elif key == ord('v'):
-                # 夹爪控制: 关闭夹爪 (使用单例 CoverActionFlow 的 gripper)
-                if flow.gripper.connect():
-                    flow.gripper.set_speed(15)
-                    flow.gripper.set_position(32)
+                # 夹爪控制: 关闭夹爪 → 等待完成 → 自动触发舵机按下
+                flow.gripper.set_speed(15)
+                flow.gripper.set_position(32)
+                # 等待夹爪动作完成（0=运动中, 1=到达位置, 2=夹住物体, 3=物体掉落）
+                timeout_s = 5.0
+                t0 = time.time()
+                while True:
+                    status = flow.gripper.get_grip_status()
+                    if status in (1, 2):
+                        logger.info("Gripper action complete (status=%d)", status)
+                        break
+                    if time.time() - t0 > timeout_s:
+                        logger.warning("Gripper action timeout after %.1fs (status=%s)", timeout_s, status)
+                        break
+                    time.sleep(0.1)
+                # 自动触发舵机按下
+                arm_controller = SMSSTSController("/dev/ttysWK1")
+                arm_controller.connect()
+                arm_controller.press_trigger()
+                arm_controller.disconnect()
                
             elif key == ord('2'):
                 # 硬编码: 取枪初始位置 (调试用)
@@ -835,49 +871,31 @@ def main():
                     continue
                 
                 cover_3D_pose = cover_pose_estimator.pose_estimation()
-                logger.info("Cover 3D pose: %s", cover_3D_pose)
-                cover_3D_pose[0] += 65
-                cover_3D_pose[1] -= 15
-                cover_3D_pose[2] -= 450
+                if cover_3D_pose is not None:
+                    logger.info("Cover 3D pose: %s", cover_3D_pose)
+                    cover_3D_pose[0] += 65
+                    cover_3D_pose[1] -= 15
+                    cover_3D_pose[2] -= 450
 
-                # z_offset = [cover_3D_pose[0][0] + 65, cover_3D_pose[1][0] - 15, cover_3D_pose[2][0] - 450, 0, 0, 0]
-                z_offset_matrix = pose_to_matrix(cover_3D_pose)
-                
-                current_tool_pose = get_tcp_pose_in_tool_mm(
-                    robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
-                if current_tool_pose is None:
-                    logger.warning("Failed to read tool %d TCP", INSERT_TOOL_ID)
-                    continue
-                cur_tcp_matrix = pose_to_matrix(current_tool_pose)
-                target_matrix = cur_tcp_matrix @ z_offset_matrix
-                target_pose = matrix_to_pose(target_matrix)
-                target_pose[3] = 106.123
-                target_pose[4] = -23.693
-                target_pose[5] = 30.777
+                    # z_offset = [cover_3D_pose[0][0] + 65, cover_3D_pose[1][0] - 15, cover_3D_pose[2][0] - 450, 0, 0, 0]
+                    z_offset_matrix = pose_to_matrix(cover_3D_pose)
+                    
+                    current_tool_pose = get_tcp_pose_in_tool_mm(
+                        robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
+                    if current_tool_pose is None:
+                        logger.warning("Failed to read tool %d TCP", INSERT_TOOL_ID)
+                        continue
+                    cur_tcp_matrix = pose_to_matrix(current_tool_pose)
+                    target_matrix = cur_tcp_matrix @ z_offset_matrix
+                    target_pose = matrix_to_pose(target_matrix)
+                    # target_pose[3] = 106.123
+                    # target_pose[4] = -23.693
+                    # target_pose[5] = 30.777
 
-                logger.info("  Target TCP for coarse alignment: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                            *target_pose)
-                flow.run_open_cover(target_pose)
-
-                # if args.no_robot:
-                #     logger.info("[DRY RUN] Skip coarse alignment")
-                # else:
-                #     if not ensure_tool_id(robot, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)"):
-                #         continue
-                #     moving = True
-                #     ok = execute_move(robot, target_pose, timeout=args.move_timeout)
-                #     moving = False
-
-                #     try:
-                #         tcp_after_first_moved = get_robot_tcp_pose_mm(robot, robot_cfg)
-                #     except Exception:
-                #         tcp_after_first_moved = None
-
-                #     if tcp_after_first_moved is not None:
-                #         logger.info("  After coarse alignment TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                #                     *tcp_after_first_moved)
-
-                #     ensure_tool_id(robot, BASE_TOOL_ID, label=f"tool {BASE_TOOL_ID}(flange)")
+                    logger.info("  Target TCP for coarse alignment: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                                *target_pose)
+                    # robot.move_linear(CartesianPose(*target_pose))
+                    # flow.run_open_cover(target_pose)
                            
             elif key == ord('5'):
                 # 复合动作: offset [-110, -130] → 前进 100mm | Insert offset → advance 100mm
@@ -985,7 +1003,7 @@ def main():
                     ensure_tool_id(robot, BASE_TOOL_ID, label=f"tool {BASE_TOOL_ID}(flange)")
 
             elif key == ord('c'):
-                # 复合动作: 抬升 → 拔出 100mm | Lift → retract 100mm
+                # 拔出 100mm + 自动舵机复位 | Retract 100mm + auto servo reset
                 if moving:
                     logger.warning("Motion in progress, please wait")
                     continue
@@ -999,36 +1017,26 @@ def main():
                     logger.warning("Failed to read tool %d TCP", INSERT_TOOL_ID)
                     continue
 
-                lift_pose = [12.987, 9.984, 0, 0, 0, 0]
-                lift_matrix = pose_to_matrix(lift_pose)
-                current_tool_matrix = pose_to_matrix(current_tool_pose)
-                lifted_matrix = current_tool_matrix @ lift_matrix
-                lifted_pose = matrix_to_pose(lifted_matrix)
+                retract_pose = offset_pose_along_tool_axis(current_tool_pose, -100.0, axis='z')
 
-                retract_pose = offset_pose_along_tool_axis(lifted_pose, -100.0, axis='z')
-
-                logger.info("Lift before retract: dX=12.987 dY=9.984 mm")
+                logger.info("Retract 100 mm along tool Z-axis")
                 logger.info("  Current TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                             *current_tool_pose)
-                logger.info("  Lifted TCP:  X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                            *lifted_pose)
+                logger.info("  Target TCP:  X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                            *retract_pose)
 
                 if args.no_robot:
-                    logger.info("[DRY RUN] Skip lift + retract (100mm)")
+                    logger.info("[DRY RUN] Skip retract (100mm)")
                 else:
                     moving = True
-                    robot.set_speed(10)
-                    ok = execute_move(robot, lifted_pose, timeout=args.move_timeout)
+                    motion_success = True
+                    robot.set_speed(50)
+                    ok = execute_move(robot, retract_pose, timeout=args.move_timeout)
                     if ok:
-                        logger.info("Lift complete")
-                        robot.set_speed(50)
-                        ok = execute_move(robot, retract_pose, timeout=args.move_timeout)
-                        if ok:
-                            logger.info("Retract 100mm complete")
-                        else:
-                            logger.warning("Retract 100mm failed")
+                        logger.info("Retract 100mm complete")
                     else:
-                        logger.warning("Lift failed")
+                        logger.warning("Retract 100mm failed")
+                        motion_success = False
                     moving = False
 
                     try:
@@ -1036,8 +1044,21 @@ def main():
                     except Exception:
                         tcp_after = None
                     if tcp_after is not None:
-                        logger.info("  After lift+retract TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                        logger.info("  After retract TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                                     *tcp_after)
+
+                    # 自动触发舵机复位（原按键 9），仅在运动成功后执行
+                    if motion_success:
+                        while robot.is_moving():
+                            logger.info("Waiting for robot to stop before servo reset...")
+                            time.sleep(0.1)
+                        logger.info("Auto-trigger servo reset")
+                        arm_controller = SMSSTSController("/dev/ttysWK1")
+                        arm_controller.connect()
+                        arm_controller.reset_position()
+                        arm_controller.disconnect()
+                    else:
+                        logger.warning("Skipping servo reset due to motion failure")
 
             elif key == ord('6'):
                 # 硬编码: 关节运动到预定义位置 1 (调试用)
@@ -1096,6 +1117,7 @@ def main():
                     logger.info("[DRY RUN] Skip relative offset move + 120mm advance")
                 else:
                     moving = True
+                    motion_success = True
                     robot.set_speed(100)
                     cart = CartesianPose(
                         x=target_pose[0], y=target_pose[1], z=target_pose[2],
@@ -1119,27 +1141,60 @@ def main():
                                 logger.info("Take-gun advance 120mm complete")
                             else:
                                 logger.warning("Take-gun advance 120mm failed")
+                                motion_success = False
                         else:
                             logger.warning("Failed to read TCP for 120mm advance")
+                            motion_success = False
                     else:
                         logger.warning("Relative offset move timed out or failed")
+                        motion_success = False
                     moving = False
 
                     final_pose = get_robot_tcp_pose_mm(robot, robot_cfg)
                     if final_pose is not None:
                         logger.info("  Final: X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *final_pose)
 
+                    # 自动触发夹爪闭合 + 舵机按下（原按键 v，已合并按键 8）
+                    if motion_success:
+                        while robot.is_moving():
+                            logger.info("Waiting for robot to stop before gripper action...")
+                            time.sleep(0.1)
+                        logger.info("Auto-trigger gripper close + servo press")
+                        flow.gripper.set_speed(15)
+                        flow.gripper.set_position(32)
+                        timeout_s = 5.0
+                        t0 = time.time()
+                        while True:
+                            status = flow.gripper.get_grip_status()
+                            if status in (1, 2):
+                                logger.info("Gripper action complete (status=%d)", status)
+                                break
+                            if time.time() - t0 > timeout_s:
+                                logger.warning("Gripper action timeout after %.1fs (status=%s)", timeout_s, status)
+                                break
+                            time.sleep(0.1)
+                        arm_controller = SMSSTSController("/dev/ttysWK1")
+                        arm_controller.connect()
+                        arm_controller.press_trigger()
+                        arm_controller.disconnect()
+                    else:
+                        logger.warning("Skipping gripper+servo due to motion failure")
+
             elif key == ord('g'):
                 # 工艺流程: 步骤 1
+                # TODO:直线运动 -> 关节运动 / 开盖后移动到取枪对准点的运动
                 flow.run(1)
             elif key == ord('h'):
                 # 工艺流程: 步骤 2
+                # TODO:直线运动 -> 关节运动 / 取枪对准点 → 插枪对准点的运动
                 flow.run(2)
             elif key == ord('j'):
                 # 工艺流程: 步骤 3
+                # TODO:直线运动 -> 关节运动 / 归枪运动
                 flow.run(3)
             elif key == ord('k'):
                 # 工艺流程: 步骤 4
+                # TODO:直线运动 -> 关节运动 / 归枪后 -> 关盖点运动 & 关盖后 -> 回到机械臂初始姿态的运动
                 flow.run(4)
                 flow.run(5)
         

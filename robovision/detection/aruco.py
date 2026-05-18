@@ -34,6 +34,76 @@ from robovision.geometry.transforms import rotmat_to_euler
 logger = logging.getLogger(__name__)
 
 
+def build_raw_aruco_detector(dictionary: str):
+    """构建 RAW 模式使用的 OpenCV ArUcoDetector。"""
+    dict_id = getattr(cv2.aruco, dictionary, cv2.aruco.DICT_4X4_50)
+    aruco_dict = cv2.aruco.getPredefinedDictionary(dict_id)
+    params = cv2.aruco.DetectorParameters()
+    params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
+    return cv2.aruco.ArucoDetector(aruco_dict, params)
+
+
+def detect_raw_frame(
+    gray: np.ndarray,
+    aruco_detector,
+    valid_ids,
+    marker_sizes,
+    K: np.ndarray,
+    dist: np.ndarray,
+) -> Dict[int, dict]:
+    """最简 ArUco 检测：detectMarkers -> cornerSubPix -> IPPE_SQUARE."""
+    corners, ids, _ = aruco_detector.detectMarkers(gray)
+    if ids is None:
+        return {}
+
+    result: Dict[int, dict] = {}
+    valid_ids = set(valid_ids)
+    gray_blur = cv2.GaussianBlur(gray, (3, 3), 0)
+    criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+
+    for i, marker_id in enumerate(ids.flatten()):
+        marker_id = int(marker_id)
+        if marker_id not in valid_ids:
+            continue
+
+        corners_subpix = corners[i].reshape(-1, 1, 2).astype(np.float32)
+        cv2.cornerSubPix(gray_blur, corners_subpix, (5, 5), (-1, -1), criteria)
+        refined_corners = corners_subpix.reshape(4, 2).astype(np.float64)
+
+        marker_length = marker_sizes.get(marker_id, 100.0)
+        half = marker_length / 2
+        obj_pts = np.array([
+            [-half, half, 0],
+            [half, half, 0],
+            [half, -half, 0],
+            [-half, -half, 0],
+        ], dtype=np.float64)
+        ok, rvec, tvec = cv2.solvePnP(
+            obj_pts, refined_corners, K, dist, flags=cv2.SOLVEPNP_IPPE_SQUARE)
+        if not ok:
+            continue
+
+        proj_pts, _ = cv2.projectPoints(obj_pts, rvec, tvec, K, dist)
+        reproj_err = float(np.mean(np.linalg.norm(
+            proj_pts.reshape(-1, 2) - refined_corners, axis=1)))
+
+        R_m2c, _ = cv2.Rodrigues(rvec)
+        euler_zyx = rotmat_to_euler(R_m2c, order='ZYX')
+        result[marker_id] = {
+            'raw_corners': corners[i].reshape(4, 2),
+            'filtered_corners': refined_corners,
+            'rvec_m2c': rvec,
+            'tvec_m2c': tvec,
+            'R_m2c': R_m2c,
+            'euler_m2c_zyx': euler_zyx,
+            'reproj_err': reproj_err,
+            'method': 'IPPE_SQ',
+            'status': 'OK',
+            'marker_length': marker_length,
+        }
+    return result
+
+
 class ArucoDetector:
     """
     ArUco 多标记检测器（含卡尔曼滤波 + 位姿平滑 + 异常检测）。
@@ -185,7 +255,7 @@ class ArucoDetector:
             [-half, -half, 0],
         ], dtype=np.float64)
 
-    def detect(self, frame: np.ndarray) -> Dict[int, dict]:
+    def detect(self, frame: np.ndarray, depth_map: Optional[np.ndarray] = None) -> Dict[int, dict]:
         """
         检测帧中的 ArUco Marker 并估计位姿。
 
@@ -194,8 +264,13 @@ class ArucoDetector:
         - 角点坐标映射回全分辨率后，在全分辨率灰度图上做 cornerSubPix
         - PnP 使用全分辨率角点 + 全分辨率内参，精度不损失
 
+        当提供 depth_map 时，优先使用 SVD 刚体配准（基于深度的 3D 点），
+        深度不可用或配准质量差时自动回退到 PnP。
+
         Args:
             frame: BGR 图像 (H, W, 3) 或灰度图像 (H, W)
+            depth_map: 可选的深度图 (H, W)，uint16 毫米，0 表示无效。
+                       与 frame 像素对齐（RGB-Depth 已对齐）。
 
         Returns:
             dict[marker_id, data_dict]，其中 data_dict 包含：
@@ -205,8 +280,8 @@ class ArucoDetector:
             - tvec_m2c: 平移向量 (3, 1)，Marker -> Camera（毫米）
             - R_m2c: 旋转矩阵 (3, 3)
             - euler_m2c_zyx: ZYX 内旋欧拉角（度） [rx, ry, rz]
-            - reproj_err: 重投影误差（像素）
-            - method: 方法标签（'IPPE_SQ' | 'ITER' | 'HOLD' 等）
+            - reproj_err: 重投影误差（像素）或 RMSE（毫米，SVD 模式）
+            - method: 方法标签（'SVD' | 'PNP_FALLBACK(...)' | 'IPPE_SQ' | 'ITER' | 'HOLD' 等）
             - marker_length: Marker 物理尺寸（毫米）
         """
         K = self._intrinsics.camera_matrix
@@ -284,20 +359,31 @@ class ArucoDetector:
             )
             refined_corners = corners_subpix.reshape(4, 2).astype(np.float64)
 
-            # PnP 求解（全分辨率内参）
+            # 位姿求解（全分辨率内参）
             smoother = self._smoother_cache.get_smoother(marker_id)
-            ok, rvec, tvec, reproj_err, method = solve_pnp_best(
-                obj_pts, refined_corners, K, dist,
-                use_guess=smoother.has_prior,
-                rvec_guess=smoother.prior_rvec,
-                tvec_guess=smoother.prior_tvec,
-            )
+
+            if depth_map is not None:
+                # 深度增强路径：SVD 刚体配准（回退 PnP）
+                from robovision.detection.depth_pose import estimate_pose_from_depth
+                ok, rvec, tvec, R_direct, quality_metric, method = estimate_pose_from_depth(
+                    refined_corners, depth_map, obj_pts, K, dist,
+                )
+                reproj_err = quality_metric
+            else:
+                # 传统 PnP 路径
+                ok, rvec, tvec, reproj_err, method = solve_pnp_best(
+                    obj_pts, refined_corners, K, dist,
+                    use_guess=smoother.has_prior,
+                    rvec_guess=smoother.prior_rvec,
+                    tvec_guess=smoother.prior_tvec,
+                )
             if not ok:
                 continue
 
-            # 首帧过滤（reprojection 过大时丢弃）
-            if not smoother.has_prior and reproj_err > 20.0:
-                logger.debug("ID %d 首帧 reproj 过大 %.2fpx -> 丢弃", marker_id, reproj_err)
+            # 首帧过滤（reprojection/RMSE 过大时丢弃）
+            first_frame_threshold = 20.0 if depth_map is None else 5.0
+            if not smoother.has_prior and reproj_err > first_frame_threshold:
+                logger.debug("ID %d 首帧质量过大 %.2f -> 丢弃", marker_id, reproj_err)
                 continue
 
             # 位姿平滑 + 异常检测
@@ -334,6 +420,12 @@ class ArucoDetector:
         """重置所有状态（相机重启或场景切换时调用）。"""
         self._kf_cache.clear()
         self._smoother_cache.clear()
+
+    def set_temporal_filter(self, enabled: bool) -> None:
+        """统一控制 Kalman 角点滤波和位姿时序平滑。"""
+        enabled = bool(enabled)
+        self._use_kalman = enabled
+        self._use_smoother = enabled
 
     @property
     def intrinsics(self) -> CameraIntrinsics:

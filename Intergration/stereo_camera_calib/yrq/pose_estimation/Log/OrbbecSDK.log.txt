@@ -1,0 +1,1122 @@
+[04/18 09:42:11.677432][info][22968][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[04/18 09:42:11.677653][info][22968][DeviceManager.cpp:25] Current found device(s): (1)
+[04/18 09:42:11.677673][info][22968][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 09:42:11.677689][info][22968][DeviceManager.cpp:339] Enable net device enumeration: true
+[04/18 09:42:13.687222][info][22968][DeviceManager.cpp:25] Current device(s) list: (1)
+[04/18 09:42:13.687335][info][22968][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 09:42:13.701204][info][22968][DeviceBase.cpp:651] key: AppSlot,value:2
+[04/18 09:42:13.701251][info][22968][DeviceBase.cpp:651] key: HwType,value:G3
+[04/18 09:42:13.701256][info][22968][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[04/18 09:42:13.701259][info][22968][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[04/18 09:42:13.701262][info][22968][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[04/18 09:42:13.701264][info][22968][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[04/18 09:42:13.917268][info][22968][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[04/18 09:42:13.917432][info][22968][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x39D55B20
+[04/18 09:42:14.047870][info][22968][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[04/18 09:42:14.049356][info][22968][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[04/18 09:42:14.049377][info][22968][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 09:42:14.049408][info][22968][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[04/18 09:42:14.049423][info][22968][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 09:42:14.053084][info][22968][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[04/18 09:42:14.053106][info][22968][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[04/18 09:42:14.053120][info][22968][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[04/18 09:42:14.072880][info][22968][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[04/18 09:42:14.072937][info][22968][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[04/18 09:42:14.619364][info][23051][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[04/18 09:42:14.680125][info][23052][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[04/18 09:42:19.623693][info][23051][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=15.187849fps
+[04/18 09:42:19.623864][info][23061][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=15.187849fps
+[04/18 09:42:19.679376][info][23052][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=15.187849fps
+[04/18 09:42:19.750343][info][23062][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=15.211379fps
+[04/18 09:42:21.692685][warning][23061][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset!
+[04/18 09:42:22.297139][info][22968][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[04/18 09:42:22.297211][info][22968][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[04/18 09:42:22.297266][info][22968][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[04/18 09:42:22.386689][info][22968][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[04/18 09:42:22.386820][info][22968][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[04/18 09:42:22.386841][info][22968][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[04/18 09:42:22.468487][info][22968][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[04/18 09:42:22.468669][info][22968][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[04/18 09:42:22.468686][info][22968][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[04/18 09:42:22.470216][info][22968][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[04/18 09:42:22.475275][info][22968][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x39D55B20
+[04/18 09:42:22.476230][info][22968][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 09:42:22.488088][info][22968][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 09:42:22.488137][info][22968][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 09:42:22.488576][info][22968][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 09:42:22.504623][info][22968][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 09:42:22.504679][info][22968][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 09:42:22.751274][warning][23143][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**1 logs in 1058ms, last: 09:42:22.293362**]
+[04/18 09:43:42.844476][info][23654][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[04/18 09:43:42.844595][info][23654][DeviceManager.cpp:25] Current found device(s): (1)
+[04/18 09:43:42.844611][info][23654][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 09:43:42.844626][info][23654][DeviceManager.cpp:339] Enable net device enumeration: true
+[04/18 09:43:44.854952][info][23654][DeviceManager.cpp:25] Current device(s) list: (1)
+[04/18 09:43:44.855089][info][23654][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 09:43:44.866379][info][23654][DeviceBase.cpp:651] key: AppSlot,value:2
+[04/18 09:43:44.866428][info][23654][DeviceBase.cpp:651] key: HwType,value:G3
+[04/18 09:43:44.866433][info][23654][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[04/18 09:43:44.866436][info][23654][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[04/18 09:43:44.866439][info][23654][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[04/18 09:43:44.866443][info][23654][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[04/18 09:43:45.081135][info][23654][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[04/18 09:43:45.081292][info][23654][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x36677B20
+[04/18 09:43:45.204445][info][23654][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[04/18 09:43:45.205982][info][23654][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[04/18 09:43:45.206015][info][23654][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 09:43:45.206041][info][23654][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[04/18 09:43:45.206054][info][23654][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 09:43:45.209910][info][23654][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[04/18 09:43:45.209982][info][23654][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[04/18 09:43:45.210006][info][23654][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[04/18 09:43:45.216786][info][23654][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[04/18 09:43:45.216823][info][23654][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[04/18 09:43:45.776389][info][23737][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[04/18 09:43:45.838344][info][23738][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[04/18 09:43:50.780509][info][23737][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=15.187849fps
+[04/18 09:43:50.780740][info][23739][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=15.187849fps
+[04/18 09:43:50.836154][info][23738][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=15.190886fps
+[04/18 09:43:50.906660][info][23748][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=15.220399fps
+[04/18 09:43:53.727984][info][23654][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[04/18 09:43:53.728060][info][23654][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[04/18 09:43:53.728112][info][23654][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[04/18 09:43:53.817236][info][23654][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[04/18 09:43:53.817514][info][23654][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[04/18 09:43:53.817534][info][23654][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[04/18 09:43:53.898310][info][23654][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[04/18 09:43:53.898520][info][23654][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[04/18 09:43:53.898539][info][23654][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[04/18 09:43:53.900004][info][23654][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[04/18 09:43:53.903754][info][23654][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x36677B20
+[04/18 09:43:53.904739][info][23654][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 09:43:53.916251][info][23654][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 09:43:53.916305][info][23654][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 09:43:53.916714][info][23654][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 09:43:53.933325][info][23654][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 09:43:53.933375][info][23654][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 09:44:33.164347][info][24106][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[04/18 09:44:33.164519][info][24106][DeviceManager.cpp:25] Current found device(s): (1)
+[04/18 09:44:33.164535][info][24106][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 09:44:33.164550][info][24106][DeviceManager.cpp:339] Enable net device enumeration: true
+[04/18 09:44:35.174864][info][24106][DeviceManager.cpp:25] Current device(s) list: (1)
+[04/18 09:44:35.174949][info][24106][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 09:44:35.186225][info][24106][DeviceBase.cpp:651] key: AppSlot,value:2
+[04/18 09:44:35.186274][info][24106][DeviceBase.cpp:651] key: HwType,value:G3
+[04/18 09:44:35.186279][info][24106][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[04/18 09:44:35.186283][info][24106][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[04/18 09:44:35.186286][info][24106][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[04/18 09:44:35.186289][info][24106][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[04/18 09:44:35.401021][info][24106][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[04/18 09:44:35.401158][info][24106][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x15D2FCF0
+[04/18 09:44:35.524064][info][24106][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[04/18 09:44:35.525511][info][24106][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[04/18 09:44:35.525545][info][24106][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 09:44:35.525571][info][24106][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[04/18 09:44:35.525585][info][24106][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 09:44:35.529340][info][24106][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[04/18 09:44:35.529371][info][24106][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[04/18 09:44:35.529388][info][24106][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[04/18 09:44:35.536401][info][24106][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[04/18 09:44:35.536429][info][24106][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[04/18 09:44:36.095827][info][24190][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[04/18 09:44:36.158464][info][24191][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[04/18 09:44:39.395656][info][24106][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[04/18 09:44:39.395738][info][24106][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[04/18 09:44:39.395789][info][24106][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[04/18 09:44:39.485998][info][24106][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[04/18 09:44:39.486116][info][24106][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[04/18 09:44:39.486137][info][24106][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[04/18 09:44:39.566421][info][24106][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[04/18 09:44:39.566560][info][24106][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[04/18 09:44:39.566567][info][24106][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[04/18 09:44:39.567980][info][24106][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[04/18 09:44:39.576489][info][24106][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x15D2FCF0
+[04/18 09:44:39.578415][info][24106][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 09:44:39.590467][info][24106][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 09:44:39.590515][info][24106][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 09:44:39.591418][info][24106][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 09:44:39.606790][info][24106][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 09:44:39.606849][info][24106][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 09:48:10.540842][info][25487][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[04/18 09:48:10.541039][info][25487][DeviceManager.cpp:25] Current found device(s): (1)
+[04/18 09:48:10.541058][info][25487][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 09:48:10.541075][info][25487][DeviceManager.cpp:339] Enable net device enumeration: true
+[04/18 09:48:12.553004][info][25487][DeviceManager.cpp:25] Current device(s) list: (1)
+[04/18 09:48:12.553125][info][25487][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 09:48:12.564524][info][25487][DeviceBase.cpp:651] key: AppSlot,value:2
+[04/18 09:48:12.564571][info][25487][DeviceBase.cpp:651] key: HwType,value:G3
+[04/18 09:48:12.564575][info][25487][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[04/18 09:48:12.564578][info][25487][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[04/18 09:48:12.564582][info][25487][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[04/18 09:48:12.564584][info][25487][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[04/18 09:48:12.780749][info][25487][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[04/18 09:48:12.780874][info][25487][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x34BD71E0
+[04/18 09:48:12.899756][info][25487][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[04/18 09:48:12.901221][info][25487][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[04/18 09:48:12.901270][info][25487][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 09:48:12.901302][info][25487][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[04/18 09:48:12.901314][info][25487][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 09:48:12.904964][info][25487][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[04/18 09:48:12.904991][info][25487][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[04/18 09:48:12.905004][info][25487][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[04/18 09:48:12.912029][info][25487][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[04/18 09:48:12.912071][info][25487][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[04/18 09:48:13.470765][info][25569][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[04/18 09:48:13.533053][info][25570][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[04/18 09:48:18.475492][info][25569][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=15.184814fps
+[04/18 09:48:18.475720][info][25579][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=15.187849fps
+[04/18 09:48:18.531037][info][25570][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=15.193923fps
+[04/18 09:48:18.601537][info][25580][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=15.223408fps
+[04/18 09:48:23.480612][info][25569][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/18 09:48:23.480796][info][25579][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/18 09:48:23.536284][info][25570][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.982021fps
+[04/18 09:48:23.606578][info][25580][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/18 09:48:28.485843][info][25569][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/18 09:48:28.486012][info][25579][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.982021fps
+[04/18 09:48:28.541431][info][25570][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/18 09:48:28.552565][warning][25579][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset!
+[04/18 09:48:28.612377][info][25580][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.982021fps
+[04/18 09:48:31.689139][warning][25579][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**3 logs in 3136ms**]
+[04/18 09:48:33.490939][info][25569][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/18 09:48:33.491103][info][25579][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/18 09:48:33.546570][info][25570][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/18 09:48:33.617513][info][25580][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/18 09:48:37.762060][warning][25579][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**8 logs in 6072ms**]
+[04/18 09:48:38.496105][info][25569][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.982021fps
+[04/18 09:48:38.496277][info][25579][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/18 09:48:38.551707][info][25570][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/18 09:48:38.622696][info][25580][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/18 09:48:43.501206][info][25569][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/18 09:48:43.501365][info][25579][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/18 09:48:43.556917][info][25570][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/18 09:48:43.628084][info][25580][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.982021fps
+[04/18 09:48:48.506482][info][25569][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/18 09:48:48.506687][info][25579][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/18 09:48:48.564220][info][25570][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.976039fps
+[04/18 09:48:48.632656][info][25580][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.988009fps
+[04/18 09:48:49.774504][warning][25579][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**32 logs in 12012ms**]
+[04/18 09:48:50.777318][info][25487][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[04/18 09:48:50.777392][info][25487][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[04/18 09:48:50.777438][info][25487][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[04/18 09:48:50.866112][info][25487][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[04/18 09:48:50.866289][info][25487][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[04/18 09:48:50.866318][info][25487][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[04/18 09:48:50.946375][info][25487][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[04/18 09:48:50.946554][info][25487][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[04/18 09:48:50.946588][info][25487][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[04/18 09:48:50.948101][info][25487][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[04/18 09:48:50.958690][info][25487][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x34BD71E0
+[04/18 09:48:50.963691][info][25487][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 09:48:50.977217][info][25487][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 09:48:50.977309][info][25487][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 09:48:50.978726][info][25487][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 09:48:50.995952][info][25487][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 09:48:50.996006][info][25487][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 09:48:51.858378][warning][25962][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**4 logs in 2083ms, last: 09:48:50.775422**]
+[04/18 09:52:47.432659][info][27035][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[04/18 09:52:47.432844][info][27035][DeviceManager.cpp:25] Current found device(s): (1)
+[04/18 09:52:47.432865][info][27035][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 09:52:47.432885][info][27035][DeviceManager.cpp:339] Enable net device enumeration: true
+[04/18 09:52:49.445043][info][27035][DeviceManager.cpp:25] Current device(s) list: (1)
+[04/18 09:52:49.445170][info][27035][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 09:52:49.456454][info][27035][DeviceBase.cpp:651] key: AppSlot,value:2
+[04/18 09:52:49.456507][info][27035][DeviceBase.cpp:651] key: HwType,value:G3
+[04/18 09:52:49.456512][info][27035][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[04/18 09:52:49.456515][info][27035][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[04/18 09:52:49.456518][info][27035][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[04/18 09:52:49.456521][info][27035][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[04/18 09:52:49.671128][info][27035][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[04/18 09:52:49.671335][info][27035][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x36EF4640
+[04/18 09:52:49.775278][info][27035][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[04/18 09:52:49.776733][info][27035][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[04/18 09:52:49.776756][info][27035][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 09:52:49.776781][info][27035][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[04/18 09:52:49.776795][info][27035][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 09:52:49.780470][info][27035][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[04/18 09:52:49.780503][info][27035][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[04/18 09:52:49.780528][info][27035][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[04/18 09:52:49.787656][info][27035][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[04/18 09:52:49.787700][info][27035][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[04/18 09:52:50.346719][info][27125][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[04/18 09:52:50.408520][info][27126][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[04/18 09:52:55.351101][info][27125][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=15.184814fps
+[04/18 09:52:55.351293][info][27127][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=15.190886fps
+[04/18 09:52:55.406774][info][27126][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=15.190886fps
+[04/18 09:52:55.478072][info][27128][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=15.208374fps
+[04/18 09:53:00.356385][info][27125][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/18 09:53:00.356564][info][27127][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/18 09:53:00.412003][info][27126][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/18 09:53:00.483101][info][27128][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/18 09:53:05.361689][info][27125][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/18 09:53:05.361899][info][27127][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/18 09:53:05.417202][info][27126][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.982021fps
+[04/18 09:53:05.488788][info][27128][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/18 09:53:06.296160][warning][27127][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset!
+[04/18 09:53:09.706363][warning][27299][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**3 logs in 3410ms, last: 09:53:08.965507**]
+[04/18 09:53:10.366920][info][27125][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/18 09:53:10.367100][info][27127][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.982021fps
+[04/18 09:53:10.422552][info][27126][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/18 09:53:10.494054][info][27128][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.982021fps
+[04/18 09:53:15.372195][info][27125][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.982021fps
+[04/18 09:53:15.372383][info][27127][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/18 09:53:15.427833][info][27126][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/18 09:53:15.498725][info][27128][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.988009fps
+[04/18 09:53:15.839458][warning][27127][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**19 logs in 6133ms**]
+[04/18 09:53:17.458747][info][27035][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[04/18 09:53:17.458821][info][27035][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[04/18 09:53:17.458871][info][27035][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[04/18 09:53:17.549074][info][27035][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[04/18 09:53:17.549613][info][27035][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[04/18 09:53:17.549661][info][27035][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[04/18 09:53:17.630091][info][27035][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[04/18 09:53:17.630408][info][27035][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[04/18 09:53:17.630430][info][27035][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[04/18 09:53:17.631929][info][27035][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[04/18 09:53:17.680305][info][27035][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x36EF4640
+[04/18 09:53:17.681825][info][27035][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 09:53:17.693320][info][27035][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 09:53:17.693358][info][27035][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 09:53:17.693672][info][27035][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 09:53:17.709686][info][27035][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 09:53:17.709739][info][27035][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 09:53:18.680875][warning][27410][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**2 logs in 2841ms, last: 09:53:17.374345**]
+[04/18 10:22:09.956506][info][36863][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[04/18 10:22:09.956700][info][36863][DeviceManager.cpp:25] Current found device(s): (1)
+[04/18 10:22:09.956720][info][36863][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 10:22:09.956738][info][36863][DeviceManager.cpp:339] Enable net device enumeration: true
+[04/18 10:22:11.968354][info][36863][DeviceManager.cpp:25] Current device(s) list: (1)
+[04/18 10:22:11.968487][info][36863][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 10:22:11.982147][info][36863][DeviceBase.cpp:651] key: AppSlot,value:2
+[04/18 10:22:11.982207][info][36863][DeviceBase.cpp:651] key: HwType,value:G3
+[04/18 10:22:11.982211][info][36863][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[04/18 10:22:11.982214][info][36863][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[04/18 10:22:11.982217][info][36863][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[04/18 10:22:11.982219][info][36863][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[04/18 10:22:12.197885][info][36863][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[04/18 10:22:12.198075][info][36863][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x14CD11D0
+[04/18 10:22:12.298360][info][36863][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[04/18 10:22:12.299860][info][36863][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[04/18 10:22:12.299895][info][36863][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 10:22:12.299920][info][36863][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[04/18 10:22:12.299961][info][36863][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 10:22:12.303729][info][36863][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[04/18 10:22:12.303770][info][36863][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[04/18 10:22:12.303789][info][36863][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[04/18 10:22:12.310791][info][36863][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[04/18 10:22:12.310815][info][36863][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[04/18 10:22:12.870038][info][36956][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[04/18 10:22:12.932468][info][36957][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[04/18 10:22:15.405081][warning][36958][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset!
+[04/18 10:22:17.874354][info][36956][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=15.184814fps
+[04/18 10:22:17.874552][info][36958][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=15.187849fps
+[04/18 10:22:17.929680][info][36957][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=15.193923fps
+[04/18 10:22:18.001423][info][36959][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=15.220399fps
+[04/18 10:22:18.674952][warning][36958][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**12 logs in 3269ms**]
+[04/18 10:22:21.342558][info][36863][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[04/18 10:22:21.342640][info][36863][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[04/18 10:22:21.342697][info][36863][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[04/18 10:22:21.433307][info][36863][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[04/18 10:22:21.433477][info][36863][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[04/18 10:22:21.433498][info][36863][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[04/18 10:22:21.513600][info][36863][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[04/18 10:22:21.513967][info][36863][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[04/18 10:22:21.513985][info][36863][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[04/18 10:22:21.515437][info][36863][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[04/18 10:22:21.523104][info][36863][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x14CD11D0
+[04/18 10:22:21.524762][info][36863][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 10:22:21.537392][info][36863][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 10:22:21.537444][info][36863][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 10:22:21.537771][info][36863][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 10:22:21.552819][info][36863][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 10:22:21.552878][info][36863][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 10:22:21.559675][warning][37037][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**10 logs in 2884ms, last: 10:22:20.877209**]
+[04/18 10:39:04.028795][info][42469][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[04/18 10:39:04.028991][info][42469][DeviceManager.cpp:25] Current found device(s): (1)
+[04/18 10:39:04.029010][info][42469][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 10:39:04.029028][info][42469][DeviceManager.cpp:339] Enable net device enumeration: true
+[04/18 10:39:06.039840][info][42469][DeviceManager.cpp:25] Current device(s) list: (1)
+[04/18 10:39:06.040014][info][42469][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/18 10:39:06.051722][info][42469][DeviceBase.cpp:651] key: AppSlot,value:2
+[04/18 10:39:06.051767][info][42469][DeviceBase.cpp:651] key: HwType,value:G3
+[04/18 10:39:06.051772][info][42469][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[04/18 10:39:06.051776][info][42469][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[04/18 10:39:06.051779][info][42469][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[04/18 10:39:06.051782][info][42469][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[04/18 10:39:06.266370][info][42469][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[04/18 10:39:06.266541][info][42469][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x167827E0
+[04/18 10:39:06.371159][info][42469][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[04/18 10:39:06.372684][info][42469][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[04/18 10:39:06.372718][info][42469][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 10:39:06.372741][info][42469][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[04/18 10:39:06.372757][info][42469][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/18 10:39:06.376422][info][42469][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[04/18 10:39:06.376450][info][42469][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[04/18 10:39:06.376466][info][42469][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[04/18 10:39:06.383451][info][42469][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[04/18 10:39:06.383488][info][42469][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[04/18 10:39:06.941969][info][42559][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[04/18 10:39:07.004090][info][42560][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[04/18 10:39:09.210653][warning][42561][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset!
+[04/18 10:39:11.958310][info][42559][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=15.148495fps
+[04/18 10:39:11.958553][info][42561][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=15.151516fps
+[04/18 10:39:12.002292][info][42560][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=15.190886fps
+[04/18 10:39:12.073556][info][42562][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=15.214385fps
+[04/18 10:39:12.280411][warning][42561][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**3 logs in 3069ms**]
+[04/18 10:39:13.139047][info][42469][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[04/18 10:39:13.139125][info][42469][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[04/18 10:39:13.139173][info][42469][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[04/18 10:39:13.229225][info][42469][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[04/18 10:39:13.229352][info][42469][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[04/18 10:39:13.229380][info][42469][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[04/18 10:39:13.308603][info][42469][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[04/18 10:39:13.308754][info][42469][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[04/18 10:39:13.308769][info][42469][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[04/18 10:39:13.311740][info][42469][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[04/18 10:39:13.321009][info][42469][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x167827E0
+[04/18 10:39:13.324585][info][42469][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 10:39:13.338313][info][42469][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 10:39:13.338420][info][42469][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 10:39:13.338757][info][42469][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/18 10:39:13.355211][info][42469][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/18 10:39:13.355264][info][42469][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/18 10:39:13.362626][warning][42635][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**2 logs in 1082ms, last: 10:39:13.149276**]
+[06/18 05:07:05.590590][info][18012][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[06/18 05:07:05.590873][info][18012][DeviceManager.cpp:25] Current found device(s): (1)
+[06/18 05:07:05.590883][info][18012][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[06/18 05:07:05.590892][info][18012][DeviceManager.cpp:339] Enable net device enumeration: true
+[06/18 05:07:07.600375][info][18012][DeviceManager.cpp:25] Current device(s) list: (1)
+[06/18 05:07:07.600508][info][18012][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[06/18 05:07:07.613673][info][18012][DeviceBase.cpp:651] key: AppSlot,value:2
+[06/18 05:07:07.613723][info][18012][DeviceBase.cpp:651] key: HwType,value:G3
+[06/18 05:07:07.613728][info][18012][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[06/18 05:07:07.613731][info][18012][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[06/18 05:07:07.613735][info][18012][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[06/18 05:07:07.613739][info][18012][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[06/18 05:07:07.828745][info][18012][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[06/18 05:07:07.828873][info][18012][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x19976490
+[06/18 05:07:07.940507][info][18012][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[06/18 05:07:07.941957][info][18012][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[06/18 05:07:07.941978][info][18012][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[06/18 05:07:07.942001][info][18012][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[06/18 05:07:07.942013][info][18012][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[06/18 05:07:07.945648][info][18012][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[06/18 05:07:07.945674][info][18012][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[06/18 05:07:07.945688][info][18012][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[06/18 05:07:07.962183][info][18012][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[06/18 05:07:07.962233][info][18012][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[06/18 05:07:08.511742][info][18134][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[06/18 05:07:08.573909][info][18135][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[06/18 05:07:11.781492][warning][18138][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset!
+[06/18 05:07:13.516438][info][18134][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=15.184814fps
+[06/18 05:07:13.516629][info][18138][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=15.187849fps
+[06/18 05:07:13.572234][info][18135][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=15.190886fps
+[06/18 05:07:13.644083][info][18139][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=15.211379fps
+[06/18 05:07:14.784881][warning][18138][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**9 logs in 3003ms**]
+[06/18 05:07:15.812385][info][18012][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[06/18 05:07:15.812461][info][18012][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[06/18 05:07:15.812510][info][18012][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[06/18 05:07:15.901871][info][18012][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[06/18 05:07:15.902080][info][18012][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[06/18 05:07:15.902117][info][18012][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[06/18 05:07:15.982377][info][18012][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[06/18 05:07:15.982599][info][18012][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[06/18 05:07:15.982617][info][18012][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[06/18 05:07:15.984162][info][18012][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[06/18 05:07:16.001457][info][18012][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x19976490
+[06/18 05:07:16.002840][info][18012][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[06/18 05:07:16.016694][info][18012][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[06/18 05:07:16.016776][info][18012][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[06/18 05:07:16.017274][info][18012][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[06/18 05:07:16.032486][info][18012][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[06/18 05:07:16.032533][info][18012][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[06/18 05:07:16.656883][warning][18213][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**4 logs in 1871ms, last: 05:07:15.652057**]
+[06/18 05:14:36.853458][info][20370][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[06/18 05:14:36.853515][info][20370][DeviceManager.cpp:25] Current found device(s): (1)
+[06/18 05:14:36.853522][info][20370][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[06/18 05:14:36.853529][info][20370][DeviceManager.cpp:339] Enable net device enumeration: true
+[06/18 05:14:38.863323][info][20370][DeviceManager.cpp:25] Current device(s) list: (1)
+[06/18 05:14:38.863460][info][20370][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[06/18 05:14:38.878772][info][20370][DeviceBase.cpp:651] key: AppSlot,value:2
+[06/18 05:14:38.878797][info][20370][DeviceBase.cpp:651] key: HwType,value:G3
+[06/18 05:14:38.878801][info][20370][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[06/18 05:14:38.878804][info][20370][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[06/18 05:14:38.878807][info][20370][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[06/18 05:14:38.878809][info][20370][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[06/18 05:14:39.094278][info][20370][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[06/18 05:14:39.094428][info][20370][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0xA1E0540
+[06/18 05:14:39.195585][info][20370][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[06/18 05:14:39.197094][info][20370][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[06/18 05:14:39.197119][info][20370][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[06/18 05:14:39.197145][info][20370][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[06/18 05:14:39.197198][info][20370][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[06/18 05:14:39.200896][info][20370][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[06/18 05:14:39.200924][info][20370][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[06/18 05:14:39.200942][info][20370][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[06/18 05:14:39.208291][info][20370][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[06/18 05:14:39.208330][info][20370][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[06/18 05:14:39.767288][info][20461][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[06/18 05:14:39.828522][info][20462][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[06/18 05:14:42.169303][warning][20463][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset!
+[06/18 05:14:44.161012][info][20370][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[06/18 05:14:44.161083][info][20370][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[06/18 05:14:44.161128][info][20370][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[06/18 05:14:44.253519][info][20370][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[06/18 05:14:44.253663][info][20370][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[06/18 05:14:44.253688][info][20370][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[06/18 05:14:44.333532][info][20370][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[06/18 05:14:44.333751][info][20370][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[06/18 05:14:44.333769][info][20370][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[06/18 05:14:44.335281][info][20370][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[06/18 05:14:44.342359][info][20370][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0xA1E0540
+[06/18 05:14:44.343281][info][20370][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[06/18 05:14:44.354812][info][20370][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[06/18 05:14:44.354860][info][20370][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[06/18 05:14:44.355130][info][20370][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[06/18 05:14:44.369968][info][20370][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[06/18 05:14:44.370019][info][20370][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[06/18 05:14:44.372966][warning][20499][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**8 logs in 2203ms, last: 05:14:44.173536**]
+[06/18 05:22:06.987801][info][22909][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[06/18 05:22:06.987993][info][22909][DeviceManager.cpp:25] Current found device(s): (1)
+[06/18 05:22:06.988013][info][22909][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[06/18 05:22:06.988032][info][22909][DeviceManager.cpp:339] Enable net device enumeration: true
+[06/18 05:22:09.000972][info][22909][DeviceManager.cpp:25] Current device(s) list: (1)
+[06/18 05:22:09.001087][info][22909][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[06/18 05:22:09.013672][info][22909][DeviceBase.cpp:651] key: AppSlot,value:2
+[06/18 05:22:09.013724][info][22909][DeviceBase.cpp:651] key: HwType,value:G3
+[06/18 05:22:09.013729][info][22909][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[06/18 05:22:09.013732][info][22909][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[06/18 05:22:09.013735][info][22909][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[06/18 05:22:09.013738][info][22909][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[06/18 05:22:09.227740][info][22909][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[06/18 05:22:09.227838][info][22909][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x314E4F50
+[06/18 05:22:09.323283][info][22909][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[06/18 05:22:09.324862][info][22909][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[06/18 05:22:09.324921][info][22909][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[06/18 05:22:09.324949][info][22909][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[06/18 05:22:09.324963][info][22909][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[06/18 05:22:09.328651][info][22909][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[06/18 05:22:09.328686][info][22909][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[06/18 05:22:09.328704][info][22909][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[06/18 05:22:09.335670][info][22909][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[06/18 05:22:09.335717][info][22909][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[06/18 05:22:09.895104][info][22996][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[06/18 05:22:09.956381][info][22997][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[06/18 05:22:12.697452][warning][23005][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset!
+[06/18 05:22:14.899555][info][22996][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=15.187849fps
+[06/18 05:22:14.899744][info][23005][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=15.187849fps
+[06/18 05:22:14.955241][info][22997][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=15.187849fps
+[06/18 05:22:15.026907][info][23006][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=15.226418fps
+[06/18 05:22:15.623382][info][22909][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[06/18 05:22:15.623468][info][22909][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[06/18 05:22:15.623519][info][22909][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[06/18 05:22:15.713678][info][22909][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[06/18 05:22:15.713809][info][22909][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[06/18 05:22:15.713836][info][22909][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[06/18 05:22:15.794203][info][22909][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[06/18 05:22:15.794394][info][22909][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[06/18 05:22:15.794413][info][22909][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[06/18 05:22:15.795908][info][22909][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[06/18 05:22:15.803157][info][22909][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x314E4F50
+[06/18 05:22:15.804203][info][22909][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[06/18 05:22:15.816346][info][22909][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[06/18 05:22:15.816418][info][22909][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[06/18 05:22:15.816882][info][22909][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[06/18 05:22:15.833706][info][22909][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[06/18 05:22:15.833762][info][22909][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[06/18 05:22:16.063484][warning][23054][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**8 logs in 3365ms, last: 05:22:15.633553**]
+[06/18 05:35:00.387708][info][27033][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[06/18 05:35:00.387887][info][27033][DeviceManager.cpp:25] Current found device(s): (1)
+[06/18 05:35:00.387908][info][27033][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[06/18 05:35:00.387924][info][27033][DeviceManager.cpp:339] Enable net device enumeration: true
+[06/18 05:35:02.399042][info][27033][DeviceManager.cpp:25] Current device(s) list: (1)
+[06/18 05:35:02.399142][info][27033][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[06/18 05:35:02.413033][info][27033][DeviceBase.cpp:651] key: AppSlot,value:2
+[06/18 05:35:02.413078][info][27033][DeviceBase.cpp:651] key: HwType,value:G3
+[06/18 05:35:02.413083][info][27033][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[06/18 05:35:02.413086][info][27033][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[06/18 05:35:02.413089][info][27033][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[06/18 05:35:02.413092][info][27033][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[06/18 05:35:02.627662][info][27033][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[06/18 05:35:02.627754][info][27033][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x6695580
+[06/18 05:35:02.721278][info][27033][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[06/18 05:35:02.722743][info][27033][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[06/18 05:35:02.722764][info][27033][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[06/18 05:35:02.722786][info][27033][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[06/18 05:35:02.722801][info][27033][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[06/18 05:35:02.726441][info][27033][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[06/18 05:35:02.726464][info][27033][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[06/18 05:35:02.726478][info][27033][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[06/18 05:35:02.733340][info][27033][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[06/18 05:35:02.733352][info][27033][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[06/18 05:35:03.292722][info][27126][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[06/18 05:35:03.354553][info][27127][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[06/18 05:35:07.296635][warning][27128][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset!
+[06/18 05:35:07.835363][info][27033][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[06/18 05:35:07.835420][info][27033][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[06/18 05:35:07.835471][info][27033][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[06/18 05:35:07.925943][info][27033][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[06/18 05:35:07.926099][info][27033][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[06/18 05:35:07.926123][info][27033][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[06/18 05:35:08.007364][info][27033][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[06/18 05:35:08.007803][info][27033][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[06/18 05:35:08.007824][info][27033][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[06/18 05:35:08.009306][info][27033][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[06/18 05:35:08.025740][info][27033][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x6695580
+[06/18 05:35:08.027515][info][27033][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[06/18 05:35:08.039342][info][27033][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[06/18 05:35:08.039415][info][27033][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[06/18 05:35:08.040069][info][27033][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[06/18 05:35:08.055140][info][27033][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[06/18 05:35:08.055194][info][27033][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[06/18 05:35:08.058894][warning][27183][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**3 logs in 762ms, last: 05:35:07.830291**]
+[06/18 05:45:14.302408][info][30009][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[06/18 05:45:14.302532][info][30009][DeviceManager.cpp:25] Current found device(s): (1)
+[06/18 05:45:14.302550][info][30009][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[06/18 05:45:14.302566][info][30009][DeviceManager.cpp:339] Enable net device enumeration: true
+[06/18 05:45:16.314840][info][30009][DeviceManager.cpp:25] Current device(s) list: (1)
+[06/18 05:45:16.314947][info][30009][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[06/18 05:45:16.326593][info][30009][DeviceBase.cpp:651] key: AppSlot,value:2
+[06/18 05:45:16.326682][info][30009][DeviceBase.cpp:651] key: HwType,value:G3
+[06/18 05:45:16.326689][info][30009][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[06/18 05:45:16.326693][info][30009][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[06/18 05:45:16.326696][info][30009][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[06/18 05:45:16.326699][info][30009][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[06/18 05:45:16.541831][info][30009][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[06/18 05:45:16.541958][info][30009][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x343BF970
+[06/18 05:45:16.656295][info][30009][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[06/18 05:45:16.658108][info][30009][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[06/18 05:45:16.658148][info][30009][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[06/18 05:45:16.658173][info][30009][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[06/18 05:45:16.658186][info][30009][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[06/18 05:45:16.661937][info][30009][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[06/18 05:45:16.661966][info][30009][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[06/18 05:45:16.661982][info][30009][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[06/18 05:45:16.668957][info][30009][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[06/18 05:45:16.668992][info][30009][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[06/18 05:45:17.227740][info][30089][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[06/18 05:45:17.289726][info][30091][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[06/18 05:45:21.631897][warning][30099][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset!
+[06/18 05:45:22.232307][info][30089][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=15.184814fps
+[06/18 05:45:22.232543][info][30099][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=15.187849fps
+[06/18 05:45:22.288233][info][30091][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=15.190886fps
+[06/18 05:45:22.360341][info][30100][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=15.211379fps
+[06/18 05:45:24.635010][warning][30099][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**11 logs in 3003ms**]
+[06/18 05:45:27.237525][info][30089][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[06/18 05:45:27.237721][info][30099][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[06/18 05:45:27.293173][info][30091][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[06/18 05:45:27.364463][info][30100][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.988009fps
+[06/18 05:45:30.843040][warning][30188][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**16 logs in 6207ms, last: 05:45:30.173955**]
+[06/18 05:45:32.242709][info][30089][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[06/18 05:45:32.242885][info][30099][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[06/18 05:45:32.298390][info][30091][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[06/18 05:45:32.370383][info][30100][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.982021fps
+[06/18 05:45:34.749851][info][30009][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[06/18 05:45:34.749932][info][30009][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[06/18 05:45:34.749982][info][30009][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[06/18 05:45:34.838289][info][30009][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[06/18 05:45:34.838416][info][30009][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[06/18 05:45:34.838441][info][30009][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[06/18 05:45:34.920267][info][30009][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[06/18 05:45:34.920520][info][30009][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[06/18 05:45:34.920542][info][30009][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[06/18 05:45:34.922205][info][30009][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[06/18 05:45:34.938365][info][30009][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x343BF970
+[06/18 05:45:34.940315][info][30009][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[06/18 05:45:34.952156][info][30009][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[06/18 05:45:34.952222][info][30009][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[06/18 05:45:34.952719][info][30009][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[06/18 05:45:34.968211][info][30009][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[06/18 05:45:34.968258][info][30009][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[06/18 05:45:35.438007][warning][30265][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**8 logs in 4595ms, last: 05:45:34.444987**]
+[06/18 05:59:29.387786][info][34474][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[06/18 05:59:29.387934][info][34474][DeviceManager.cpp:25] Current found device(s): (1)
+[06/18 05:59:29.387953][info][34474][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[06/18 05:59:29.387967][info][34474][DeviceManager.cpp:339] Enable net device enumeration: true
+[06/18 05:59:31.399079][info][34474][DeviceManager.cpp:25] Current device(s) list: (1)
+[06/18 05:59:31.399231][info][34474][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[06/18 05:59:31.411460][info][34474][DeviceBase.cpp:651] key: AppSlot,value:2
+[06/18 05:59:31.411510][info][34474][DeviceBase.cpp:651] key: HwType,value:G3
+[06/18 05:59:31.411515][info][34474][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[06/18 05:59:31.411547][info][34474][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[06/18 05:59:31.411551][info][34474][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[06/18 05:59:31.411554][info][34474][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[06/18 05:59:31.627305][info][34474][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[06/18 05:59:31.627442][info][34474][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x2DBCD9C0
+[06/18 05:59:31.754972][info][34474][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[06/18 05:59:31.756449][info][34474][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[06/18 05:59:31.756480][info][34474][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[06/18 05:59:31.756504][info][34474][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[06/18 05:59:31.756524][info][34474][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[06/18 05:59:31.760264][info][34474][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[06/18 05:59:31.760297][info][34474][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[06/18 05:59:31.760312][info][34474][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[06/18 05:59:31.767754][info][34474][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[06/18 05:59:31.767801][info][34474][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[06/18 05:59:32.326556][info][34557][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[06/18 05:59:32.388319][info][34558][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[06/18 05:59:35.996417][warning][34567][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset!
+[06/18 05:59:37.330987][info][34557][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=15.187849fps
+[06/18 05:59:37.331162][info][34567][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=15.187849fps
+[06/18 05:59:37.386631][info][34558][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=15.190886fps
+[06/18 05:59:37.458474][info][34568][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=15.211379fps
+[06/18 05:59:37.555511][info][34474][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[06/18 05:59:37.556367][info][34474][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[06/18 05:59:37.556426][info][34474][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[06/18 05:59:37.648469][info][34474][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[06/18 05:59:37.648596][info][34474][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[06/18 05:59:37.648620][info][34474][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[06/18 05:59:37.729507][info][34474][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[06/18 05:59:37.729708][info][34474][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[06/18 05:59:37.729734][info][34474][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[06/18 05:59:37.732727][info][34474][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[06/18 05:59:37.744934][info][34474][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x2DBCD9C0
+[06/18 05:59:37.746877][info][34474][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[06/18 05:59:37.759629][info][34474][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[06/18 05:59:37.759685][info][34474][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[06/18 05:59:37.760158][info][34474][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[06/18 05:59:37.776929][info][34474][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[06/18 05:59:37.800677][info][34474][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[06/18 05:59:38.455097][warning][34623][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**6 logs in 2458ms, last: 05:59:37.397766**]
+[04/19 13:50:26.093905][info][150955][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[04/19 13:50:26.094128][info][150955][DeviceManager.cpp:25] Current found device(s): (1)
+[04/19 13:50:26.094150][info][150955][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/19 13:50:26.094167][info][150955][DeviceManager.cpp:339] Enable net device enumeration: true
+[04/19 13:50:28.107447][info][150955][DeviceManager.cpp:25] Current device(s) list: (1)
+[04/19 13:50:28.107551][info][150955][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/19 13:50:28.122120][info][150955][DeviceBase.cpp:651] key: AppSlot,value:2
+[04/19 13:50:28.122169][info][150955][DeviceBase.cpp:651] key: HwType,value:G3
+[04/19 13:50:28.122174][info][150955][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[04/19 13:50:28.122177][info][150955][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[04/19 13:50:28.122181][info][150955][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[04/19 13:50:28.122184][info][150955][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[04/19 13:50:28.335700][info][150955][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[04/19 13:50:28.335785][info][150955][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x251771E0
+[04/19 13:50:28.430478][info][150955][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[04/19 13:50:28.431957][info][150955][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[04/19 13:50:28.432014][info][150955][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/19 13:50:28.432043][info][150955][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[04/19 13:50:28.432057][info][150955][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/19 13:50:28.435863][info][150955][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[04/19 13:50:28.435922][info][150955][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[04/19 13:50:28.435943][info][150955][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[04/19 13:50:28.443280][info][150955][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[04/19 13:50:28.443320][info][150955][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[04/19 13:50:29.001480][info][151063][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[04/19 13:50:29.063619][info][151064][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[04/19 13:50:31.337271][warning][151065][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset!
+[04/19 13:50:34.006189][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=15.184814fps
+[04/19 13:50:34.006451][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=15.184814fps
+[04/19 13:50:34.061804][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=15.193923fps
+[04/19 13:50:34.132465][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=15.211379fps
+[04/19 13:50:34.406505][warning][151065][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**19 logs in 3069ms**]
+[04/19 13:50:39.012047][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.982021fps
+[04/19 13:50:39.012439][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.982021fps
+[04/19 13:50:39.066940][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:50:39.138318][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.982021fps
+[04/19 13:50:40.412893][warning][151065][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**41 logs in 6006ms**]
+[04/19 13:50:44.016489][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.988009fps
+[04/19 13:50:44.016682][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.988009fps
+[04/19 13:50:44.072079][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.982021fps
+[04/19 13:50:44.143064][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:50:49.021734][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:50:49.021928][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:50:49.077397][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:50:49.148044][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:50:52.617674][warning][151317][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**61 logs in 12204ms, last: 13:50:52.224939**]
+[04/19 13:50:54.026903][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:50:54.027103][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.982021fps
+[04/19 13:50:54.082458][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:50:54.153831][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:50:59.032020][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:50:59.032213][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:50:59.087663][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:50:59.158832][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:51:04.037204][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.982021fps
+[04/19 13:51:04.037386][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:51:04.092897][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:51:04.164279][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.982021fps
+[04/19 13:51:09.042342][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:51:09.042549][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:51:09.098024][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:51:09.169257][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:51:14.047537][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:51:14.047840][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:51:14.103181][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.982021fps
+[04/19 13:51:14.174306][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:51:16.632043][warning][151533][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**63 logs in 24014ms, last: 13:51:16.450087**]
+[04/19 13:51:19.052702][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:51:19.052887][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:51:19.108302][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:51:19.179613][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:51:24.057891][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:51:24.058081][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.982021fps
+[04/19 13:51:24.113509][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:51:24.185685][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.982021fps
+[04/19 13:51:29.063226][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.982021fps
+[04/19 13:51:29.063429][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:51:29.118684][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:51:29.191326][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.982021fps
+[04/19 13:51:34.068344][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:51:34.068565][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:51:34.123798][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:51:34.195237][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.988009fps
+[04/19 13:51:39.073485][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:51:39.073724][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:51:39.129042][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.982021fps
+[04/19 13:51:39.201056][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.982021fps
+[04/19 13:51:44.078609][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:51:44.078810][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:51:44.134245][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:51:44.206745][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:51:49.083717][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:51:49.083900][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:51:49.139337][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:51:49.210967][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.988009fps
+[04/19 13:51:54.088976][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:51:54.089184][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.982021fps
+[04/19 13:51:54.144563][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:51:54.216137][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.982021fps
+[04/19 13:51:59.094070][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.982021fps
+[04/19 13:51:59.094239][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:51:59.149706][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:51:59.221743][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:52:04.099283][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:52:04.099504][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:52:04.154832][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:52:04.226240][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:52:04.857506][warning][151745][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**120 logs in 48225ms, last: 13:52:04.499712**]
+[04/19 13:52:09.104454][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:52:09.104657][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:52:09.160074][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.982021fps
+[04/19 13:52:09.231625][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:52:14.109543][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:52:14.109719][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:52:14.165205][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:52:14.236861][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:52:19.114761][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:52:19.114935][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:52:19.170461][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:52:19.241727][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:52:24.119911][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:52:24.120127][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.982021fps
+[04/19 13:52:24.175620][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:52:24.247650][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.982021fps
+[04/19 13:52:29.125146][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.982021fps
+[04/19 13:52:29.125355][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:52:29.180696][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:52:29.252671][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:52:34.130220][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:52:34.130426][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:52:34.185933][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:52:34.257625][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:52:39.135429][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:52:39.135657][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:52:39.191204][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.982021fps
+[04/19 13:52:39.262493][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:52:44.140604][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:52:44.140788][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:52:44.196199][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:52:44.267267][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:52:49.145881][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:52:49.146095][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.982021fps
+[04/19 13:52:49.201387][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:52:49.272064][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.985015fps
+[04/19 13:52:54.150911][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:52:54.151122][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:52:54.206644][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:52:54.278505][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.982021fps
+[04/19 13:52:59.156189][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.982021fps
+[04/19 13:52:59.156378][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:52:59.211752][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:52:59.282989][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.988009fps
+[04/19 13:53:04.161266][info][151063][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=14.985015fps
+[04/19 13:53:04.161456][info][151065][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=14.985015fps
+[04/19 13:53:04.216916][info][151064][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=14.985015fps
+[04/19 13:53:04.288782][info][151066][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=14.982021fps
+[04/19 13:53:04.895429][warning][151065][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**148 logs in 60037ms**]
+[04/19 13:53:05.939327][info][150955][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[04/19 13:53:05.939448][info][150955][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[04/19 13:53:05.939504][info][150955][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[04/19 13:53:06.029753][info][150955][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[04/19 13:53:06.029876][info][150955][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[04/19 13:53:06.029899][info][150955][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[04/19 13:53:06.109150][info][150955][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[04/19 13:53:06.109308][info][150955][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[04/19 13:53:06.109316][info][150955][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[04/19 13:53:06.110742][info][150955][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[04/19 13:53:06.115942][info][150955][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x251771E0
+[04/19 13:53:06.117994][info][150955][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/19 13:53:06.129734][info][150955][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/19 13:53:06.129802][info][150955][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/19 13:53:06.130250][info][150955][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/19 13:53:06.146672][info][150955][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/19 13:53:06.146723][info][150955][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/19 13:53:06.198668][warning][152749][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**6 logs in 1303ms, last: 13:53:05.829815**]
+[04/20 10:11:47.751448][info][29452][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[04/20 10:11:47.751694][info][29452][DeviceManager.cpp:25] Current found device(s): (1)
+[04/20 10:11:47.751703][info][29452][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/20 10:11:47.751710][info][29452][DeviceManager.cpp:339] Enable net device enumeration: true
+[04/20 10:11:49.762169][info][29452][DeviceManager.cpp:25] Current device(s) list: (1)
+[04/20 10:11:49.762258][info][29452][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/20 10:11:49.778429][info][29452][DeviceBase.cpp:651] key: AppSlot,value:2
+[04/20 10:11:49.778476][info][29452][DeviceBase.cpp:651] key: HwType,value:G3
+[04/20 10:11:49.778480][info][29452][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[04/20 10:11:49.778483][info][29452][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[04/20 10:11:49.778486][info][29452][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[04/20 10:11:49.778489][info][29452][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[04/20 10:11:49.992141][info][29452][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[04/20 10:11:49.992247][info][29452][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x34247BA0
+[04/20 10:11:50.080499][info][29452][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[04/20 10:11:50.081985][info][29452][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[04/20 10:11:50.082026][info][29452][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/20 10:11:50.082053][info][29452][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[04/20 10:11:50.082069][info][29452][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/20 10:11:50.085861][info][29452][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[04/20 10:11:50.085901][info][29452][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[04/20 10:11:50.085920][info][29452][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[04/20 10:11:50.102563][info][29452][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[04/20 10:11:50.102615][info][29452][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[04/20 10:11:50.651630][info][29835][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[04/20 10:11:50.712655][info][29836][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[04/20 10:11:51.719315][warning][29846][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset!
+[04/20 10:11:54.722315][warning][29846][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**24 logs in 3002ms**]
+[04/20 10:11:55.656521][info][29835][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=15.184814fps
+[04/20 10:11:55.656705][info][29846][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=15.184814fps
+[04/20 10:11:55.712114][info][29836][VideoSensor.cpp:153] [CPBDB530009L] Depth backend frame callback, frameRate=15.187849fps
+[04/20 10:11:55.783626][info][29855][SensorBase.cpp:370] [CPBDB530009L] Depth Streaming... frameRate=15.208374fps
+[04/20 10:11:59.113039][info][29452][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[04/20 10:11:59.113120][info][29452][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[04/20 10:11:59.113174][info][29452][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[04/20 10:11:59.204408][info][29452][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[04/20 10:11:59.204542][info][29452][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[04/20 10:11:59.204564][info][29452][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[04/20 10:11:59.283456][info][29452][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[04/20 10:11:59.283724][info][29452][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[04/20 10:11:59.283739][info][29452][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[04/20 10:11:59.285195][info][29452][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[04/20 10:11:59.298835][info][29452][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x34247BA0
+[04/20 10:11:59.301585][info][29452][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/20 10:11:59.317047][info][29452][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/20 10:11:59.317151][info][29452][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/20 10:11:59.317777][info][29452][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/20 10:11:59.336239][info][29452][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/20 10:11:59.336294][info][29452][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/20 10:11:59.346581][warning][29951][Pipeline.cpp:295] [CPBDB530009L] Output frameset queue is full, drop oldest frameset! [**35 logs in 4624ms, last: 10:11:58.993387**]
+[04/20 10:27:09.955928][info][35658][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[04/20 10:27:09.956121][info][35658][DeviceManager.cpp:25] Current found device(s): (1)
+[04/20 10:27:09.956142][info][35658][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/20 10:27:09.956159][info][35658][DeviceManager.cpp:339] Enable net device enumeration: true
+[04/20 10:27:11.968020][info][35658][DeviceManager.cpp:25] Current device(s) list: (1)
+[04/20 10:27:11.968163][info][35658][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/20 10:27:11.979905][info][35658][DeviceBase.cpp:651] key: AppSlot,value:2
+[04/20 10:27:11.979959][info][35658][DeviceBase.cpp:651] key: HwType,value:G3
+[04/20 10:27:11.979964][info][35658][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[04/20 10:27:11.979968][info][35658][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[04/20 10:27:11.979972][info][35658][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[04/20 10:27:11.979975][info][35658][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[04/20 10:27:12.195454][info][35658][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[04/20 10:27:12.195626][info][35658][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x22E49E10
+[04/20 10:27:12.314786][info][35658][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[04/20 10:27:12.316235][info][35658][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[04/20 10:27:12.316264][info][35658][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/20 10:27:12.316289][info][35658][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[04/20 10:27:12.316303][info][35658][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/20 10:27:12.320076][info][35658][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[04/20 10:27:12.320113][info][35658][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[04/20 10:27:12.320127][info][35658][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[04/20 10:27:12.327267][info][35658][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[04/20 10:27:12.327299][info][35658][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[04/20 10:27:12.886543][info][35748][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[04/20 10:27:12.948291][info][35749][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[04/20 10:27:13.292259][info][35658][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[04/20 10:27:13.292335][info][35658][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[04/20 10:27:13.292387][info][35658][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[04/20 10:27:13.381265][info][35658][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[04/20 10:27:13.381383][info][35658][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[04/20 10:27:13.381406][info][35658][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[04/20 10:27:13.461144][info][35658][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[04/20 10:27:13.461243][info][35658][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[04/20 10:27:13.461251][info][35658][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[04/20 10:27:13.462732][info][35658][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[04/20 10:27:13.465787][info][35658][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x22E49E10
+[04/20 10:27:13.466626][info][35658][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/20 10:27:13.478292][info][35658][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/20 10:27:13.478328][info][35658][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/20 10:27:13.478648][info][35658][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/20 10:27:13.505098][info][35658][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/20 10:27:13.505154][info][35658][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/20 10:47:02.691924][info][43061][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[04/20 10:47:02.692119][info][43061][DeviceManager.cpp:25] Current found device(s): (1)
+[04/20 10:47:02.692138][info][43061][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/20 10:47:02.692155][info][43061][DeviceManager.cpp:339] Enable net device enumeration: true
+[04/20 10:47:04.703501][info][43061][DeviceManager.cpp:25] Current device(s) list: (1)
+[04/20 10:47:04.703644][info][43061][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/20 10:47:04.714791][info][43061][DeviceBase.cpp:651] key: AppSlot,value:2
+[04/20 10:47:04.714940][info][43061][DeviceBase.cpp:651] key: HwType,value:G3
+[04/20 10:47:04.714946][info][43061][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[04/20 10:47:04.714951][info][43061][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[04/20 10:47:04.714955][info][43061][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[04/20 10:47:04.714958][info][43061][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[04/20 10:47:04.929443][info][43061][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[04/20 10:47:04.929579][info][43061][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0x29B3AB0
+[04/20 10:47:05.055434][info][43061][Pipeline.cpp:216] [CPBDB530009L] Check and set config done!
+[04/20 10:47:05.056947][info][43061][Pipeline.cpp:254] [CPBDB530009L] Try to start streams!
+[04/20 10:47:05.057017][info][43061][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/20 10:47:05.057052][info][43061][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[04/20 10:47:05.057068][info][43061][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/20 10:47:05.060987][info][43061][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[04/20 10:47:05.061014][info][43061][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Depth
+[04/20 10:47:05.061032][info][43061][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Depth, format: Z16, width: 1280, height: 800, fps: 15}
+[04/20 10:47:05.068395][info][43061][Pipeline.cpp:270] [CPBDB530009L] Start streams done!
+[04/20 10:47:05.068433][info][43061][Pipeline.cpp:238] [CPBDB530009L] Pipeline start done!
+[04/20 10:47:05.626674][info][43143][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[04/20 10:47:05.688507][info][43144][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Depth
+[04/20 10:47:06.042843][info][43061][Pipeline.cpp:336] [CPBDB530009L] Try to stop pipeline!
+[04/20 10:47:06.042888][info][43061][Pipeline.cpp:312] [CPBDB530009L] Try to stop streams!
+[04/20 10:47:06.042942][info][43061][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Depth
+[04/20 10:47:06.131378][info][43061][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Depth
+[04/20 10:47:06.131519][info][43061][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Depth
+[04/20 10:47:06.131545][info][43061][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[04/20 10:47:06.212097][info][43061][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[04/20 10:47:06.212228][info][43061][Pipeline.cpp:326] [CPBDB530009L] Sensor stream stopped, sensorType=Color
+[04/20 10:47:06.212249][info][43061][Pipeline.cpp:332] [CPBDB530009L] Stop streams done!
+[04/20 10:47:06.213694][info][43061][Pipeline.cpp:356] [CPBDB530009L] Stop pipeline done!
+[04/20 10:47:06.216698][info][43061][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0x29B3AB0
+[04/20 10:47:06.218356][info][43061][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/20 10:47:06.229828][info][43061][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/20 10:47:06.229884][info][43061][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/20 10:47:06.230233][info][43061][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/20 10:47:06.253182][info][43061][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/20 10:47:06.253256][info][43061][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/01 12:58:30.950107][info][104041][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[05/01 12:58:30.950271][info][104041][DeviceManager.cpp:25] Current found device(s): (1)
+[05/01 12:58:30.950284][info][104041][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530006K, Connection: USB3.2
+[05/01 12:58:30.950296][info][104041][DeviceManager.cpp:339] Enable net device enumeration: true
+[05/01 12:58:32.961308][info][104041][DeviceManager.cpp:25] Current device(s) list: (1)
+[05/01 12:58:32.961408][info][104041][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530006K, Connection: USB3.2
+[05/01 12:58:32.974126][info][104041][DeviceBase.cpp:651] key: AppSlot,value:2
+[05/01 12:58:32.974178][info][104041][DeviceBase.cpp:651] key: HwType,value:G3
+[05/01 12:58:32.974182][info][104041][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[05/01 12:58:32.974185][info][104041][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[05/01 12:58:32.974188][info][104041][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[05/01 12:58:32.974191][info][104041][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[05/01 12:58:33.194126][info][104041][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530006K FW: 1.6.00
+[05/01 12:58:33.194293][info][104041][Pipeline.cpp:42] [CPBDB530006K] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530006K}, @0x346D6450
+[05/01 12:58:33.223239][info][104041][Pipeline.cpp:216] [CPBDB530006K] Check and set config done!
+[05/01 12:58:33.224920][info][104041][Pipeline.cpp:254] [CPBDB530006K] Try to start streams!
+[05/01 12:58:33.224963][info][104041][VideoSensor.cpp:58] [CPBDB530006K] Try to start stream: {type: Color, format: RGB, width: 640, height: 480, fps: 30}
+[05/01 12:58:33.224988][info][104041][SensorBase.cpp:213] [CPBDB530006K] Stream state changed to STARTING@Color
+[05/01 12:58:33.225006][info][104041][VideoSensor.cpp:127] [CPBDB530006K] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[05/01 12:58:33.228958][info][104041][Pipeline.cpp:270] [CPBDB530006K] Start streams done!
+[05/01 12:58:33.228980][info][104041][Pipeline.cpp:238] [CPBDB530006K] Pipeline start done!
+[05/01 12:58:33.762360][info][104098][SensorBase.cpp:213] [CPBDB530006K] Stream state changed to STREAMING@Color
+[05/01 12:58:38.767008][info][104098][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=30.175858fps
+[05/01 12:58:38.768184][info][104108][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=30.187925fps
+[05/01 12:58:43.772966][info][104098][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 12:58:43.773580][info][104108][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.970030fps
+[05/01 12:58:44.169663][info][104041][Pipeline.cpp:336] [CPBDB530006K] Try to stop pipeline!
+[05/01 12:58:44.169786][info][104041][Pipeline.cpp:312] [CPBDB530006K] Try to stop streams!
+[05/01 12:58:44.169878][info][104041][SensorBase.cpp:213] [CPBDB530006K] Stream state changed to STOPPING@Color
+[05/01 12:58:44.217380][info][104041][SensorBase.cpp:213] [CPBDB530006K] Stream state changed to STOPPED@Color
+[05/01 12:58:44.217680][info][104041][Pipeline.cpp:326] [CPBDB530006K] Sensor stream stopped, sensorType=Color
+[05/01 12:58:44.217700][info][104041][Pipeline.cpp:332] [CPBDB530006K] Stop streams done!
+[05/01 12:58:44.219097][info][104041][Pipeline.cpp:356] [CPBDB530006K] Stop pipeline done!
+[05/01 12:58:44.219158][info][104041][Pipeline.cpp:53] [CPBDB530006K] Pipeline destroyed! @0x346D6450
+[05/01 12:58:44.219456][info][104041][SensorBase.cpp:47] [CPBDB530006K] SensorBase is destroyed
+[05/01 12:58:44.230926][info][104041][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/01 12:58:44.230969][info][104041][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/01 12:58:44.252102][info][104041][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/01 12:58:44.252153][info][104041][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/01 12:59:52.661366][info][104730][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[05/01 12:59:52.661482][info][104730][DeviceManager.cpp:25] Current found device(s): (1)
+[05/01 12:59:52.661497][info][104730][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530006K, Connection: USB3.2
+[05/01 12:59:52.661509][info][104730][DeviceManager.cpp:339] Enable net device enumeration: true
+[05/01 12:59:54.672272][info][104730][DeviceManager.cpp:25] Current device(s) list: (1)
+[05/01 12:59:54.672354][info][104730][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530006K, Connection: USB3.2
+[05/01 12:59:54.685920][info][104730][DeviceBase.cpp:651] key: AppSlot,value:2
+[05/01 12:59:54.685968][info][104730][DeviceBase.cpp:651] key: HwType,value:G3
+[05/01 12:59:54.685972][info][104730][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[05/01 12:59:54.685976][info][104730][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[05/01 12:59:54.685979][info][104730][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[05/01 12:59:54.685982][info][104730][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[05/01 12:59:54.900455][info][104730][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530006K FW: 1.6.00
+[05/01 12:59:54.900595][info][104730][Pipeline.cpp:42] [CPBDB530006K] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530006K}, @0x19DEB710
+[05/01 12:59:54.943121][info][104730][Pipeline.cpp:216] [CPBDB530006K] Check and set config done!
+[05/01 12:59:54.945155][info][104730][Pipeline.cpp:254] [CPBDB530006K] Try to start streams!
+[05/01 12:59:54.945254][info][104730][VideoSensor.cpp:58] [CPBDB530006K] Try to start stream: {type: Color, format: RGB, width: 640, height: 480, fps: 30}
+[05/01 12:59:54.945287][info][104730][SensorBase.cpp:213] [CPBDB530006K] Stream state changed to STARTING@Color
+[05/01 12:59:54.945309][info][104730][VideoSensor.cpp:127] [CPBDB530006K] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[05/01 12:59:54.950500][info][104730][Pipeline.cpp:270] [CPBDB530006K] Start streams done!
+[05/01 12:59:54.950554][info][104730][Pipeline.cpp:238] [CPBDB530006K] Pipeline start done!
+[05/01 12:59:55.482883][info][104798][SensorBase.cpp:213] [CPBDB530006K] Stream state changed to STREAMING@Color
+[05/01 13:00:00.488159][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=30.163803fps
+[05/01 13:00:00.488941][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=30.175858fps
+[05/01 13:00:05.494121][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:00:05.494861][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:00:10.500040][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.970030fps
+[05/01 13:00:10.500822][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:00:15.505859][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:00:15.506937][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:00:20.511921][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:00:20.512947][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:00:25.517910][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:00:25.519537][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.958059fps
+[05/01 13:00:30.523577][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:00:30.524234][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.970030fps
+[05/01 13:00:35.529467][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:00:35.530125][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:00:40.535657][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:00:40.537507][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.958059fps
+[05/01 13:00:45.541601][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:00:45.543136][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:00:50.547266][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:00:50.548152][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.970030fps
+[05/01 13:00:55.553187][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:00:55.553833][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.970030fps
+[05/01 13:01:00.559111][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:01:00.560072][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.958059fps
+[05/01 13:01:05.565172][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:01:05.566524][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:01:10.571077][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:01:10.572581][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:01:15.577088][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:01:15.578690][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:01:20.582891][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.970030fps
+[05/01 13:01:20.583751][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.970030fps
+[05/01 13:01:25.588705][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:01:25.589366][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:01:30.594614][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:01:30.595291][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:01:35.600610][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:01:35.601311][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:01:40.606529][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:01:40.607520][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:01:45.612860][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:01:45.614400][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.958059fps
+[05/01 13:01:50.618429][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:01:50.619493][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.970030fps
+[05/01 13:01:55.624335][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:01:55.625226][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:02:00.630209][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:02:00.631174][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:02:05.636070][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:02:05.636836][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.970030fps
+[05/01 13:02:10.641963][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.970030fps
+[05/01 13:02:10.642584][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:02:15.647888][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:02:15.648582][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:02:20.653792][info][104798][VideoSensor.cpp:153] [CPBDB530006K] Color backend frame callback, frameRate=29.964043fps
+[05/01 13:02:20.654385][info][104800][SensorBase.cpp:370] [CPBDB530006K] Color Streaming... frameRate=29.964043fps
+[05/01 13:02:21.925548][info][104730][Pipeline.cpp:336] [CPBDB530006K] Try to stop pipeline!
+[05/01 13:02:21.925636][info][104730][Pipeline.cpp:312] [CPBDB530006K] Try to stop streams!
+[05/01 13:02:21.925690][info][104730][SensorBase.cpp:213] [CPBDB530006K] Stream state changed to STOPPING@Color
+[05/01 13:02:21.974153][info][104730][SensorBase.cpp:213] [CPBDB530006K] Stream state changed to STOPPED@Color
+[05/01 13:02:21.974428][info][104730][Pipeline.cpp:326] [CPBDB530006K] Sensor stream stopped, sensorType=Color
+[05/01 13:02:21.974441][info][104730][Pipeline.cpp:332] [CPBDB530006K] Stop streams done!
+[05/01 13:02:21.975872][info][104730][Pipeline.cpp:356] [CPBDB530006K] Stop pipeline done!
+[05/01 13:02:21.975935][info][104730][Pipeline.cpp:53] [CPBDB530006K] Pipeline destroyed! @0x19DEB710
+[05/01 13:02:21.976277][info][104730][SensorBase.cpp:47] [CPBDB530006K] SensorBase is destroyed
+[05/01 13:02:21.988233][info][104730][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/01 13:02:21.988282][info][104730][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/01 13:02:22.009472][info][104730][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/01 13:02:22.009536][info][104730][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done

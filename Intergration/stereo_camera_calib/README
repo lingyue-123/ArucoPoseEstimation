@@ -1,0 +1,9 @@
+# 运行环境：conda activate fisheye_env
+# 1.双目手眼标定
+# 输入图像(yrq/ex_417)和世界坐标系坐标(写在代码里end_pose变量)，输出手眼标定外参
+cd /home/nvidia/Downloads/Intergration/stereo_camera_calib/yrq
+python extrinsic_v2.py
+
+# 2.双目估计车辆口盖位姿(双目相机拉流 + 位姿估计)
+# 相机拉流，手眼标定的外参放在pose_estimation/pix_2_base_new.py里，输出口盖位姿估计结果
+python pose_estimation/pose_estimation.py

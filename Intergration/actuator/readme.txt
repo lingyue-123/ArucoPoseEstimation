@@ -1,0 +1,2 @@
+cover_action_main.py为主程序，执行三次运动
+actuator.py和keba_control_interface.py均为接口文件

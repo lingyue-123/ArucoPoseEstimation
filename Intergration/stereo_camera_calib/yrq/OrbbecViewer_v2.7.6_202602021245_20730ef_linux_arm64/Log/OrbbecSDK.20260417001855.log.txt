@@ -1,0 +1,1475 @@
+[04/17 00:18:55.695688][debug][177694][FrameMemoryPool.cpp:29] FrameMemoryPool created!
+[04/17 00:18:55.697395][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: G2XLDecompress
+[04/17 00:18:55.697454][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: FrameUnpacker
+[04/17 00:18:55.697463][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: G2PixelOffsetFix
+[04/17 00:18:55.697470][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: ConfidenceEstimator
+[04/17 00:18:55.697476][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: G330FrameUnpacker
+[04/17 00:18:55.698807][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: DisparityTransform
+[04/17 00:18:55.698975][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: HoleFillingFilter
+[04/17 00:18:55.698985][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: NoiseRemovalFilter
+[04/17 00:18:55.698992][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: SpatialAdvancedFilter
+[04/17 00:18:55.698998][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: TemporalFilter
+[04/17 00:18:55.699016][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: DepthResize
+[04/17 00:18:55.699024][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: EdgeNoiseRemovalFilter
+[04/17 00:18:55.699030][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: HardwareD2DCorrectionFilter
+[04/17 00:18:55.699036][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: OpenNIDisparityTransform
+[04/17 00:18:55.699042][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: SpatialFastFilter
+[04/17 00:18:55.699048][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: SpatialModerateFilter
+[04/17 00:18:55.699054][debug][177694][PrivFilterLoader.cpp:168] Private filter creator created: FalsePositiveFilter
+[04/17 00:18:55.699158][debug][177694][FilterFactory.cpp:32] Registered 33 filter creators
+[04/17 00:18:55.699176][debug][177694][FilterFactory.cpp:34]  - Align
+[04/17 00:18:55.699185][debug][177694][FilterFactory.cpp:34]  - ConfidenceEstimator
+[04/17 00:18:55.699191][debug][177694][FilterFactory.cpp:34]  - DecimationFilter
+[04/17 00:18:55.699197][debug][177694][FilterFactory.cpp:34]  - DepthResize
+[04/17 00:18:55.699203][debug][177694][FilterFactory.cpp:34]  - DisparityTransform
+[04/17 00:18:55.699208][debug][177694][FilterFactory.cpp:34]  - EdgeNoiseRemovalFilter
+[04/17 00:18:55.699213][debug][177694][FilterFactory.cpp:34]  - FalsePositiveFilter
+[04/17 00:18:55.699219][debug][177694][FilterFactory.cpp:34]  - FormatConverter
+[04/17 00:18:55.699224][debug][177694][FilterFactory.cpp:34]  - FrameFlip
+[04/17 00:18:55.699231][debug][177694][FilterFactory.cpp:34]  - FrameMirror
+[04/17 00:18:55.699236][debug][177694][FilterFactory.cpp:34]  - FrameRotate
+[04/17 00:18:55.699242][debug][177694][FilterFactory.cpp:34]  - FrameUnpacker
+[04/17 00:18:55.699247][debug][177694][FilterFactory.cpp:34]  - G2PixelOffsetFix
+[04/17 00:18:55.699253][debug][177694][FilterFactory.cpp:34]  - G2XLDecompress
+[04/17 00:18:55.699257][debug][177694][FilterFactory.cpp:34]  - G330FrameUnpacker
+[04/17 00:18:55.699263][debug][177694][FilterFactory.cpp:34]  - HDRMerge
+[04/17 00:18:55.699268][debug][177694][FilterFactory.cpp:34]  - HardwareD2DCorrectionFilter
+[04/17 00:18:55.699274][debug][177694][FilterFactory.cpp:34]  - HoleFillingFilter
+[04/17 00:18:55.699279][debug][177694][FilterFactory.cpp:34]  - IMUCorrector
+[04/17 00:18:55.699285][debug][177694][FilterFactory.cpp:34]  - IMUFrameReversion
+[04/17 00:18:55.699290][debug][177694][FilterFactory.cpp:34]  - LiDARFormatConverter
+[04/17 00:18:55.699295][debug][177694][FilterFactory.cpp:34]  - LiDARPointFilter
+[04/17 00:18:55.699300][debug][177694][FilterFactory.cpp:34]  - NoiseRemovalFilter
+[04/17 00:18:55.699306][debug][177694][FilterFactory.cpp:34]  - OpenNIDisparityTransform
+[04/17 00:18:55.699310][debug][177694][FilterFactory.cpp:34]  - PixelValueOffset
+[04/17 00:18:55.699347][debug][177694][FilterFactory.cpp:34]  - PixelValueScaler
+[04/17 00:18:55.699354][debug][177694][FilterFactory.cpp:34]  - PointCloudFilter
+[04/17 00:18:55.699359][debug][177694][FilterFactory.cpp:34]  - SequenceIdFilter
+[04/17 00:18:55.699365][debug][177694][FilterFactory.cpp:34]  - SpatialAdvancedFilter
+[04/17 00:18:55.699370][debug][177694][FilterFactory.cpp:34]  - SpatialFastFilter
+[04/17 00:18:55.699375][debug][177694][FilterFactory.cpp:34]  - SpatialModerateFilter
+[04/17 00:18:55.699380][debug][177694][FilterFactory.cpp:34]  - TemporalFilter
+[04/17 00:18:55.699386][debug][177694][FilterFactory.cpp:34]  - ThresholdFilter
+[04/17 00:18:55.700504][debug][177694][UsbEnumeratorLibusb.cpp:471] UsbEnumeratorLibusb::startEventHandler()
+[04/17 00:18:55.700628][debug][177694][UsbEnumeratorLibusb.cpp:341] UsbEnumeratorLibusb created
+[04/17 00:18:55.700669][debug][177694][LinuxUsbPal.cpp:406] Uvc backend have been set to 0
+[04/17 00:18:55.701109][debug][177694][DeviceSeriesInfo.cpp:84] Ignore error: External config file doesn't exist: /home/nvidia/Downloads/OrbbecViewer_v2.7.6_202602021245_20730ef_linux_arm64/DeviceInfoConfigOEM.xml
+[04/17 00:18:55.701174][debug][177694][DynamicLibraryManager.cpp:31] Current working directory: /home/nvidia/Downloads/OrbbecViewer_v2.7.6_202602021245_20730ef_linux_arm64
+[04/17 00:18:55.703789][debug][177694][Context.cpp:48] Context created! Library version: v2.7.6
+[04/17 00:18:55.703883][debug][177694][Context.cpp:100] Current working directory: /home/nvidia/Downloads/OrbbecViewer_v2.7.6_202602021245_20730ef_linux_arm64
+[04/17 00:18:55.703913][debug][177694][Context.cpp:110]  - Successfully retrieved commit hash for library 'firmwareupdater' (commit: b6df232)
+[04/17 00:18:55.703936][debug][177694][Context.cpp:110]  - Successfully retrieved commit hash for library 'privfilter' (commit: 968f706)
+[04/17 00:18:55.703953][debug][177694][Context.cpp:110]  - Successfully retrieved commit hash for library 'filterprocessor' (commit: f54b8d3)
+[04/17 00:18:55.703965][debug][177694][Context.cpp:110]  - Successfully retrieved commit hash for library 'frameprocessor' (commit: a4e10e8)
+[04/17 00:18:55.704019][debug][177694][DeviceManager.cpp:52] DeviceManager init ...
+[04/17 00:18:55.704277][debug][177694][DeviceManager.cpp:58] Enable USB Device Enumerator ...
+[04/17 00:18:55.781454][debug][177694][UsbEnumeratorLibusb.cpp:447] queryUsbInterfaces done!
+[04/17 00:18:55.782910][debug][177694][ObV4lGmslDevicePort.cpp:125] ioctl failed on getGmslDeviceInfoFromFW-pid-vid from videox strerror:Invalid argument
+[04/17 00:18:55.782993][debug][177694][ObV4lGmslDevicePort.cpp:1961] getGmslDeviceInfoFromFW failed! devName:/dev/video0
+[04/17 00:18:55.783038][debug][177694][ObV4lGmslDevicePort.cpp:125] ioctl failed on getGmslDeviceInfoFromFW-pid-vid from videox strerror:Invalid argument
+[04/17 00:18:55.783051][debug][177694][ObV4lGmslDevicePort.cpp:1961] getGmslDeviceInfoFromFW failed! devName:/dev/video1
+[04/17 00:18:55.783078][debug][177694][ObV4lGmslDevicePort.cpp:125] ioctl failed on getGmslDeviceInfoFromFW-pid-vid from videox strerror:Invalid argument
+[04/17 00:18:55.783088][debug][177694][ObV4lGmslDevicePort.cpp:1961] getGmslDeviceInfoFromFW failed! devName:/dev/video2
+[04/17 00:18:55.783122][debug][177694][ObV4lGmslDevicePort.cpp:125] ioctl failed on getGmslDeviceInfoFromFW-pid-vid from videox strerror:Invalid argument
+[04/17 00:18:55.783134][debug][177694][ObV4lGmslDevicePort.cpp:1961] getGmslDeviceInfoFromFW failed! devName:/dev/video3
+[04/17 00:18:55.783159][debug][177694][ObV4lGmslDevicePort.cpp:125] ioctl failed on getGmslDeviceInfoFromFW-pid-vid from videox strerror:Invalid argument
+[04/17 00:18:55.783170][debug][177694][ObV4lGmslDevicePort.cpp:1961] getGmslDeviceInfoFromFW failed! devName:/dev/video4
+[04/17 00:18:55.783196][debug][177694][ObV4lGmslDevicePort.cpp:125] ioctl failed on getGmslDeviceInfoFromFW-pid-vid from videox strerror:Invalid argument
+[04/17 00:18:55.783206][debug][177694][ObV4lGmslDevicePort.cpp:1961] getGmslDeviceInfoFromFW failed! devName:/dev/video5
+[04/17 00:18:55.783256][debug][177694][ObV4lGmslDevicePort.cpp:125] ioctl failed on getGmslDeviceInfoFromFW-pid-vid from videox strerror:Invalid argument
+[04/17 00:18:55.783267][debug][177694][ObV4lGmslDevicePort.cpp:1961] getGmslDeviceInfoFromFW failed! devName:/dev/video6
+[04/17 00:18:55.783292][debug][177694][ObV4lGmslDevicePort.cpp:125] ioctl failed on getGmslDeviceInfoFromFW-pid-vid from videox strerror:Invalid argument
+[04/17 00:18:55.783301][debug][177694][ObV4lGmslDevicePort.cpp:1961] getGmslDeviceInfoFromFW failed! devName:/dev/video7
+[04/17 00:18:55.783319][debug][177694][ObV4lGmslDevicePort.cpp:2009] video queryDevicesInfo devInfoList.size():0
+[04/17 00:18:55.783325][debug][177694][ObV4lGmslDevicePort.cpp:2010] queryDevicesInfo done!
+[04/17 00:18:55.783334][debug][177694][UsbDeviceEnumerator.cpp:151] Current usb device port list:
+[04/17 00:18:55.783342][debug][177694][UsbDeviceEnumerator.cpp:154]  - 2-2.1-4.0 | Orbbec Gemini 335Lg Depth Camera
+[04/17 00:18:55.783348][debug][177694][UsbDeviceEnumerator.cpp:154]  - 2-2.1-4.4 | Orbbec Gemini 335Lg RGB Camera
+[04/17 00:18:55.783353][debug][177694][UsbDeviceEnumerator.cpp:154]  - 2-2.1-4.6 | Orbbec Gemini 335Lg Imu
+[04/17 00:18:55.783488][info][177694][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[04/17 00:18:55.783507][debug][177694][UsbDeviceEnumerator.cpp:48] Found 1 device(s):
+[04/17 00:18:55.783520][debug][177694][UsbDeviceEnumerator.cpp:51]   - Name: Gemini 335Lg, PID: 0x080B, SN/ID: CPBDB530009L, connection: USB3.2
+[04/17 00:18:55.783533][info][177694][DeviceManager.cpp:25] Current found device(s): (1)
+[04/17 00:18:55.783543][info][177694][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/17 00:18:55.783550][debug][177694][DeviceManager.cpp:78] DeviceManager construct done!
+[04/17 00:18:55.783559][info][177694][DeviceManager.cpp:339] Enable net device enumeration: true
+[04/17 00:18:55.784002][debug][177694][GVCPClient.cpp:421] bind 192.168.0.101:0
+[04/17 00:18:55.784115][debug][177694][GVCPClient.cpp:302] getnameinfo-name: eth5
+[04/17 00:18:55.784326][debug][177694][GVCPClient.cpp:335] local mac address: 3c:6d:66:18:80:27,local ip address:192.168.0.101, interfaceName:eth5
+[04/17 00:18:55.784381][debug][177694][GVCPClient.cpp:302] getnameinfo-name: eth5
+[04/17 00:18:55.784453][debug][177694][GVCPClient.cpp:335] local mac address: 3c:6d:66:18:80:27,local ip address:169.254.136.112, interfaceName:eth5
+[04/17 00:18:55.784488][debug][177694][GVCPClient.cpp:302] getnameinfo-name: eth0
+[04/17 00:18:55.784548][debug][177694][GVCPClient.cpp:335] local mac address: 00:54:5a:51:0d:0a,local ip address:192.168.1.132, interfaceName:eth0
+[04/17 00:18:55.784581][debug][177694][GVCPClient.cpp:302] getnameinfo-name: eth1
+[04/17 00:18:55.784636][debug][177694][GVCPClient.cpp:335] local mac address: 00:54:5a:51:0d:0b,local ip address:192.168.1.100, interfaceName:eth1
+[04/17 00:18:55.784667][debug][177694][GVCPClient.cpp:302] getnameinfo-name: eth4
+[04/17 00:18:55.784719][debug][177694][GVCPClient.cpp:335] local mac address: 00:54:5a:51:0d:0d,local ip address:192.168.1.100, interfaceName:eth4
+[04/17 00:18:55.784751][debug][177694][GVCPClient.cpp:302] getnameinfo-name: eth4
+[04/17 00:18:55.784803][debug][177694][GVCPClient.cpp:335] local mac address: 00:54:5a:51:0d:0d,local ip address:169.254.128.110, interfaceName:eth4
+[04/17 00:18:55.784836][debug][177694][GVCPClient.cpp:302] getnameinfo-name: wlan0
+[04/17 00:18:55.784901][debug][177694][GVCPClient.cpp:335] local mac address: 54:ef:33:9b:e5:0b,local ip address:192.168.161.1, interfaceName:wlan0
+[04/17 00:18:55.784938][debug][177694][GVCPClient.cpp:302] getnameinfo-name: wlan0
+[04/17 00:18:55.784987][debug][177694][GVCPClient.cpp:335] local mac address: 54:ef:33:9b:e5:0b,local ip address:192.168.161.2, interfaceName:wlan0
+[04/17 00:18:55.785020][debug][177694][GVCPClient.cpp:302] getnameinfo-name: docker0
+[04/17 00:18:55.785072][debug][177694][GVCPClient.cpp:335] local mac address: 02:42:c9:5d:7b:8c,local ip address:172.17.0.1, interfaceName:docker0
+[04/17 00:18:57.793223][debug][177694][NetDeviceEnumerator.cpp:52] No net source port found!
+[04/17 00:18:57.793421][debug][177694][NetDeviceEnumerator.cpp:37] No net device found!
+[04/17 00:18:57.793703][info][177694][DeviceManager.cpp:25] Current device(s) list: (1)
+[04/17 00:18:57.793764][info][177694][DeviceManager.cpp:34] 	- Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L, Connection: USB3.2
+[04/17 00:18:57.793796][info][177694][DeviceManager.cpp:339] Enable net device enumeration: true
+[04/17 00:18:57.793835][debug][177694][DeviceManager.cpp:248] Add device changed callback, callback id = 1
+[04/17 00:18:57.793982][debug][177694][DeviceManager.cpp:136] DeviceManager createDevice with access mode: default access(4)...
+[04/17 00:18:57.794021][debug][177694][DeviceBase.cpp:556] Convert access mode from default access to control access
+[04/17 00:18:57.794329][debug][177694][FilterDecorator.cpp:15] Filter IMUCorrector created with frame queue capacity 10
+[04/17 00:18:57.799062][debug][177694][ObLibuvcDevicePort.cpp:75] uvc_open success
+[04/17 00:18:57.799146][debug][177694][LinuxUsbPal.cpp:321] UVC device have been create with LibUVC backend! dev: 2-2.1-4, inf: 2-2.1-4.0
+[04/17 00:18:57.800675][debug][177694][PropertyServer.cpp:316] [CPBDB530009L] [delta: 6278us] Property 1000 get structure data successfully, size 164
+[04/17 00:18:57.808534][debug][177694][PropertyServer.cpp:345] [CPBDB530009L] [delta: 7671us] Property 4041 get raw data successfully
+[04/17 00:18:57.808641][info][177694][DeviceBase.cpp:651] key: AppSlot,value:2
+[04/17 00:18:57.808656][info][177694][DeviceBase.cpp:651] key: HwType,value:G3
+[04/17 00:18:57.808675][info][177694][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[04/17 00:18:57.808682][info][177694][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[04/17 00:18:57.808688][info][177694][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[04/17 00:18:57.808695][info][177694][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[04/17 00:18:57.810536][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1509us] Property 1037 get structure data successfully, size 16
+[04/17 00:18:57.810687][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356337809848, dev=1776356337809, rtt=1670
+[04/17 00:18:57.862278][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1470us] Property 1037 get structure data successfully, size 16
+[04/17 00:18:57.862333][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356337861562, dev=1776356337860, rtt=1536
+[04/17 00:18:57.913938][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1443us] Property 1037 get structure data successfully, size 16
+[04/17 00:18:57.914024][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356337913242, dev=1776356337912, rtt=1560
+[04/17 00:18:57.965593][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1461us] Property 1037 get structure data successfully, size 16
+[04/17 00:18:57.965677][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356337964894, dev=1776356337964, rtt=1558
+[04/17 00:18:57.965724][debug][177748][GlobalTimestampFitter.cpp:189] [CPBDB530009L] LinearParam update! QueueSize: 4, coefficientA: 999.6243476308947, constantB: 667292467838.6587, checkDataX: 1776356337964, checkDataY: 1776356337964894
+[04/17 00:18:57.965835][debug][177694][GlobalTimestampFitter.cpp:134] [CPBDB530009L] GlobalTimestampFitter@187650625375376 enable state changed: true
+[04/17 00:18:57.965950][debug][177694][GlobalTimestampFitter.cpp:56] [CPBDB530009L] GlobalTimestampFitter created: maxQueueSize_=100, refreshIntervalMsec_=1000
+[04/17 00:18:57.970450][debug][177694][PropertyServer.cpp:453] [CPBDB530009L] [delta: 4425us] Property 4026 get structure data list successfully over proto v1.1, size 28
+[04/17 00:18:57.979451][debug][177694][PropertyServer.cpp:453] [CPBDB530009L] [delta: 8936us] Property 4027 get structure data list successfully over proto v1.1, size 2584
+[04/17 00:18:57.984035][debug][177694][PropertyServer.cpp:453] [CPBDB530009L] [delta: 4451us] Property 4024 get structure data list successfully over proto v1.1, size 704
+[04/17 00:18:57.984142][debug][177694][G330AlgParamManager.cpp:135] Read origin D2C profile list success,size:32!
+[04/17 00:18:57.990164][debug][177694][PropertyServer.cpp:345] [CPBDB530009L] [delta: 5980us] Property 4036 get raw data successfully
+[04/17 00:18:57.990206][debug][177694][G330AlgParamManager.cpp:167] Get imu calibration params success!
+[04/17 00:18:57.995051][debug][177694][PropertyServer.cpp:453] [CPBDB530009L] [delta: 4427us] Property 4034 get structure data list successfully over proto v1.1, size 312
+[04/17 00:18:57.996572][debug][177694][PropertyServer.cpp:398] [CPBDB530009L] [delta: 1435us] Property 1043 get structure data successfully over proto v1.1, size 52
+[04/17 00:18:57.996658][debug][177694][G330DepthWorkModeManager.cpp:52] switchDepthWorkMode done with same mode: Default
+[04/17 00:18:57.998197][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1479us] Property 182 get as 1|1e-45
+[04/17 00:18:57.999727][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1487us] Property 99 get as 4|6e-45
+[04/17 00:18:58.001196][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1416us] Property 2016 get as 1|1e-45
+[04/17 00:18:58.001267][debug][177694][PropertyServer.cpp:221] [CPBDB530009L] Property 2017 alias to 2026
+[04/17 00:18:58.002679][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1385us] Property 2017 get as 3000|4.204e-42
+[04/17 00:18:58.002713][debug][177694][PropertyServer.cpp:221] [CPBDB530009L] Property 2018 alias to 2027
+[04/17 00:18:58.003556][debug][177694][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:18:58.003595][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 859us] Property 2018 get as 16|2.2e-44
+[04/17 00:18:58.005049][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1426us] Property 184 get as 60|8.4e-44
+[04/17 00:18:58.009461][debug][177694][ObLibuvcDevicePort.cpp:75] uvc_open success
+[04/17 00:18:58.009526][debug][177694][LinuxUsbPal.cpp:321] UVC device have been create with LibUVC backend! dev: 2-2.1-4, inf: 2-2.1-4.4
+[04/17 00:18:58.010373][debug][177694][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2000, value=2
+[04/17 00:18:58.011189][debug][177694][ObLibuvcDevicePort.cpp:378] UVC_GET_CUR:getAERes:15.
+[04/17 00:18:58.011231][debug][177694][ObLibuvcDevicePort.cpp:381] UVC_AE_MODE_D0_MANUAL:translated_value:1,value:2.
+[04/17 00:18:58.011254][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 6164us] Property 2000 get as 1|1e-45
+[04/17 00:18:58.012766][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1449us] Property 2001 get as 156|2.19e-43
+[04/17 00:18:58.013521][debug][177694][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2003, value=1
+[04/17 00:18:58.013536][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 749us] Property 2003 get as 1|1e-45
+[04/17 00:18:58.014266][debug][177694][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2004, value=4600
+[04/17 00:18:58.014279][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 732us] Property 2004 get as 4600|6.446e-42
+[04/17 00:18:58.015016][debug][177694][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:18:58.015030][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 741us] Property 2002 get as 16|2.2e-44
+[04/17 00:18:58.015767][debug][177694][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2009, value=50
+[04/17 00:18:58.015778][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 737us] Property 2009 get as 50|7e-44
+[04/17 00:18:58.016524][debug][177694][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2008, value=64
+[04/17 00:18:58.016548][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 760us] Property 2008 get as 64|9e-44
+[04/17 00:18:58.017269][debug][177694][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2006, value=50
+[04/17 00:18:58.017282][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 682us] Property 2006 get as 50|7e-44
+[04/17 00:18:58.018017][debug][177694][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2005, value=0
+[04/17 00:18:58.018028][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 735us] Property 2005 get as 0|0
+[04/17 00:18:58.018765][debug][177694][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2014, value=0
+[04/17 00:18:58.018775][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 738us] Property 2014 get as 0|0
+[04/17 00:18:58.019513][debug][177694][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2010, value=300
+[04/17 00:18:58.019527][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 742us] Property 2010 get as 300|4.2e-43
+[04/17 00:18:58.020266][debug][177694][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2013, value=3
+[04/17 00:18:58.020303][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 765us] Property 2013 get as 3|4e-45
+[04/17 00:18:58.021053][debug][177694][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2015, value=3
+[04/17 00:18:58.021084][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 769us] Property 2015 get as 3|4e-45
+[04/17 00:18:58.022679][debug][177694][PropertyServer.cpp:398] [CPBDB530009L] [delta: 1480us] Property 5524 get structure data successfully over proto v1.1, size 8
+[04/17 00:18:58.022768][debug][177694][DeviceManager.cpp:168] Access control is not supported on this device. Access mode 'control access(2)' was ignored
+[04/17 00:18:58.022961][debug][177694][FilterDecorator.cpp:15] Filter FrameProcessor created with frame queue capacity 10
+[04/17 00:18:58.023035][debug][177694][FilterDecorator.cpp:15] Filter FrameMirror created with frame queue capacity 10
+[04/17 00:18:58.023090][debug][177694][FilterDecorator.cpp:15] Filter FrameFlip created with frame queue capacity 10
+[04/17 00:18:58.023126][debug][177694][FilterDecorator.cpp:15] Filter FrameRotate created with frame queue capacity 10
+[04/17 00:18:58.023223][debug][177694][FilterDecorator.cpp:15] Filter FrameProcessor created with frame queue capacity 10
+[04/17 00:18:58.023348][debug][177694][FilterDecorator.cpp:15] Filter G330FrameUnpacker created with frame queue capacity 10
+[04/17 00:18:58.023409][debug][177694][FilterDecorator.cpp:15] Filter NoiseRemovalFilter created with frame queue capacity 10
+[04/17 00:18:58.023550][debug][177694][FilterDecorator.cpp:15] Filter DisparityTransform created with frame queue capacity 10
+[04/17 00:18:58.023688][debug][177694][FilterDecorator.cpp:15] Filter DepthResize created with frame queue capacity 10
+[04/17 00:18:58.023811][debug][177694][FilterDecorator.cpp:15] Filter HardwareD2DCorrectionFilter created with frame queue capacity 10
+[04/17 00:18:58.023858][debug][177694][FilterDecorator.cpp:15] Filter FrameMirror created with frame queue capacity 10
+[04/17 00:18:58.023891][debug][177694][FilterDecorator.cpp:15] Filter FrameFlip created with frame queue capacity 10
+[04/17 00:18:58.023922][debug][177694][FilterDecorator.cpp:15] Filter FrameRotate created with frame queue capacity 10
+[04/17 00:18:58.023983][debug][177694][FilterDecorator.cpp:15] Filter FrameProcessor created with frame queue capacity 10
+[04/17 00:18:58.024021][debug][177694][FilterDecorator.cpp:15] Filter FrameUnpacker created with frame queue capacity 10
+[04/17 00:18:58.024076][debug][177694][FilterDecorator.cpp:15] Filter FrameMirror created with frame queue capacity 10
+[04/17 00:18:58.024110][debug][177694][FilterDecorator.cpp:15] Filter FrameFlip created with frame queue capacity 10
+[04/17 00:18:58.024165][debug][177694][FilterDecorator.cpp:15] Filter FrameRotate created with frame queue capacity 10
+[04/17 00:18:58.024227][debug][177694][FilterDecorator.cpp:15] Filter FrameProcessor created with frame queue capacity 10
+[04/17 00:18:58.024263][debug][177694][FilterDecorator.cpp:15] Filter FrameUnpacker created with frame queue capacity 10
+[04/17 00:18:58.024296][debug][177694][FilterDecorator.cpp:15] Filter FrameMirror created with frame queue capacity 10
+[04/17 00:18:58.024329][debug][177694][FilterDecorator.cpp:15] Filter FrameFlip created with frame queue capacity 10
+[04/17 00:18:58.024359][debug][177694][FilterDecorator.cpp:15] Filter FrameRotate created with frame queue capacity 10
+[04/17 00:18:58.026049][debug][177694][PropertyServer.cpp:206] [CPBDB530009L] [delta: 1551us] Property 211 set to 0|0
+[04/17 00:18:58.026269][debug][177694][PropertyServer.cpp:206] [CPBDB530009L] [delta: 156us] Property 24 set to 1|1e-45
+[04/17 00:18:58.026315][info][177694][DeviceManager.cpp:194] Device created successfully! Name: Gemini 335Lg, PID: 0x080b, SN/ID: CPBDB530009L FW: 1.6.00
+[04/17 00:18:58.027826][debug][177694][PropertyServer.cpp:398] [CPBDB530009L] [delta: 1442us] Property 1038 get structure data successfully over proto v1.1, size 26
+[04/17 00:18:58.028426][debug][177694][FilterDecorator.cpp:15] Filter DecimationFilter created with frame queue capacity 10
+[04/17 00:18:58.028665][debug][177694][FilterDecorator.cpp:15] Filter DecimationFilter created with frame queue capacity 10
+[04/17 00:18:58.028742][debug][177694][FilterDecorator.cpp:15] Filter ThresholdFilter created with frame queue capacity 10
+[04/17 00:18:58.028787][debug][177694][FilterDecorator.cpp:15] Filter HDRMerge created with frame queue capacity 10
+[04/17 00:18:58.028825][debug][177694][FilterDecorator.cpp:15] Filter SequenceIdFilter created with frame queue capacity 10
+[04/17 00:18:58.028876][debug][177694][FilterDecorator.cpp:15] Filter SpatialFastFilter created with frame queue capacity 10
+[04/17 00:18:58.028939][debug][177694][FilterDecorator.cpp:15] Filter SpatialModerateFilter created with frame queue capacity 10
+[04/17 00:18:58.029026][debug][177694][FilterDecorator.cpp:15] Filter SpatialAdvancedFilter created with frame queue capacity 10
+[04/17 00:18:58.029140][debug][177694][FilterDecorator.cpp:15] Filter TemporalFilter created with frame queue capacity 10
+[04/17 00:18:58.029208][debug][177694][FilterDecorator.cpp:15] Filter HoleFillingFilter created with frame queue capacity 10
+[04/17 00:18:58.029265][debug][177694][FilterDecorator.cpp:15] Filter DisparityTransform created with frame queue capacity 10
+[04/17 00:18:58.029867][debug][177694][FilterDecorator.cpp:183] Filter SequenceIdFilter: config item sequenceid value set to 1
+[04/17 00:18:58.029917][debug][177694][FilterDecorator.cpp:15] Filter SequenceIdFilter created with frame queue capacity 10
+[04/17 00:18:58.030011][debug][177694][FilterDecorator.cpp:183] Filter SequenceIdFilter: config item sequenceid value set to 1
+[04/17 00:18:58.030039][debug][177694][FilterDecorator.cpp:15] Filter SequenceIdFilter created with frame queue capacity 10
+[04/17 00:18:58.030137][debug][177694][FilterDecorator.cpp:183] Filter SequenceIdFilter: config item sequenceid value set to 1
+[04/17 00:18:58.030274][debug][177694][SensorBase.cpp:254] [CPBDB530009L]  Recovery config found for sensor: Color
+[04/17 00:18:58.030318][debug][177694][SensorBase.cpp:255] [CPBDB530009L]  StreamFailedRetry: 1, MaxStartStreamDelayMs: 3000, MaxFrameIntervalMs: 3000
+[04/17 00:18:58.031957][debug][177694][PropertyServer.cpp:206] [CPBDB530009L] [delta: 1477us] Property 77 set to 1|1e-45
+[04/17 00:18:58.039276][debug][177694][VideoSensor.cpp:42] [CPBDB530009L] VideoSensor created @Color
+[04/17 00:18:58.039347][debug][177694][FilterDecorator.cpp:15] Filter FormatConverter created with frame queue capacity 10
+[04/17 00:18:58.053111][debug][177694][G330Device.cpp:268] loadDefaultStreamProfile: deviceConnectionType:=USB3.2
+[04/17 00:18:58.053188][debug][177694][SensorBase.cpp:101] [CPBDB530009L] Set default stream profile to: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[04/17 00:18:58.064480][debug][177694][G330Device.cpp:366] Sensor Color created! Found 346 stream profiles.
+[04/17 00:18:58.064528][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[04/17 00:18:58.064539][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 1280, height: 800, fps: 60}
+[04/17 00:18:58.064549][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 1280, height: 800, fps: 30}
+[04/17 00:18:58.064556][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 1280, height: 800, fps: 30}
+[04/17 00:18:58.064564][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 1280, height: 800, fps: 30}
+[04/17 00:18:58.064571][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 1280, height: 800, fps: 30}
+[04/17 00:18:58.064578][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 1280, height: 800, fps: 30}
+[04/17 00:18:58.064586][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 1280, height: 800, fps: 30}
+[04/17 00:18:58.064593][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 1280, height: 800, fps: 30}
+[04/17 00:18:58.064600][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 1280, height: 800, fps: 30}
+[04/17 00:18:58.064607][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.064614][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.064621][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.064627][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.064634][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.064641][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.064648][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.064654][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.064661][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 1280, height: 800, fps: 10}
+[04/17 00:18:58.064668][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 1280, height: 800, fps: 10}
+[04/17 00:18:58.064673][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 1280, height: 800, fps: 10}
+[04/17 00:18:58.064680][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 1280, height: 800, fps: 10}
+[04/17 00:18:58.064686][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 1280, height: 800, fps: 10}
+[04/17 00:18:58.064693][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 1280, height: 800, fps: 10}
+[04/17 00:18:58.064699][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 1280, height: 800, fps: 10}
+[04/17 00:18:58.064706][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 1280, height: 800, fps: 10}
+[04/17 00:18:58.064713][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 1280, height: 800, fps: 5}
+[04/17 00:18:58.064720][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 1280, height: 800, fps: 5}
+[04/17 00:18:58.064727][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 1280, height: 800, fps: 5}
+[04/17 00:18:58.064739][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 1280, height: 800, fps: 5}
+[04/17 00:18:58.064747][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 1280, height: 800, fps: 5}
+[04/17 00:18:58.064753][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 1280, height: 800, fps: 5}
+[04/17 00:18:58.064780][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 1280, height: 800, fps: 5}
+[04/17 00:18:58.064788][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 1280, height: 800, fps: 5}
+[04/17 00:18:58.064795][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 1280, height: 720, fps: 60}
+[04/17 00:18:58.064802][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 1280, height: 720, fps: 30}
+[04/17 00:18:58.064808][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 1280, height: 720, fps: 30}
+[04/17 00:18:58.064815][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 1280, height: 720, fps: 30}
+[04/17 00:18:58.064822][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 1280, height: 720, fps: 30}
+[04/17 00:18:58.064828][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 1280, height: 720, fps: 30}
+[04/17 00:18:58.064835][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 1280, height: 720, fps: 30}
+[04/17 00:18:58.064841][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 1280, height: 720, fps: 30}
+[04/17 00:18:58.064848][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 1280, height: 720, fps: 15}
+[04/17 00:18:58.064855][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 1280, height: 720, fps: 15}
+[04/17 00:18:58.064862][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 1280, height: 720, fps: 15}
+[04/17 00:18:58.064868][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 1280, height: 720, fps: 15}
+[04/17 00:18:58.064876][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 1280, height: 720, fps: 15}
+[04/17 00:18:58.064882][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 1280, height: 720, fps: 15}
+[04/17 00:18:58.064889][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 1280, height: 720, fps: 15}
+[04/17 00:18:58.064896][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 1280, height: 720, fps: 15}
+[04/17 00:18:58.064903][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 1280, height: 720, fps: 10}
+[04/17 00:18:58.064909][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 1280, height: 720, fps: 10}
+[04/17 00:18:58.064916][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 1280, height: 720, fps: 10}
+[04/17 00:18:58.064923][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 1280, height: 720, fps: 10}
+[04/17 00:18:58.064930][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 1280, height: 720, fps: 10}
+[04/17 00:18:58.064937][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 1280, height: 720, fps: 10}
+[04/17 00:18:58.064943][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 1280, height: 720, fps: 10}
+[04/17 00:18:58.064949][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 1280, height: 720, fps: 10}
+[04/17 00:18:58.064956][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 1280, height: 720, fps: 5}
+[04/17 00:18:58.064963][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 1280, height: 720, fps: 5}
+[04/17 00:18:58.064969][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 1280, height: 720, fps: 5}
+[04/17 00:18:58.064976][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 1280, height: 720, fps: 5}
+[04/17 00:18:58.064983][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 1280, height: 720, fps: 5}
+[04/17 00:18:58.064990][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 1280, height: 720, fps: 5}
+[04/17 00:18:58.065001][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 1280, height: 720, fps: 5}
+[04/17 00:18:58.065013][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 1280, height: 720, fps: 5}
+[04/17 00:18:58.065021][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 848, height: 480, fps: 60}
+[04/17 00:18:58.065028][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 848, height: 480, fps: 60}
+[04/17 00:18:58.065035][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 848, height: 480, fps: 60}
+[04/17 00:18:58.065042][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 848, height: 480, fps: 60}
+[04/17 00:18:58.065048][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 848, height: 480, fps: 60}
+[04/17 00:18:58.065055][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 848, height: 480, fps: 60}
+[04/17 00:18:58.065062][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 848, height: 480, fps: 60}
+[04/17 00:18:58.065069][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 848, height: 480, fps: 60}
+[04/17 00:18:58.065075][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.065082][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.065089][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.065096][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.065102][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.065109][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.065116][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.065122][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.065129][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 848, height: 480, fps: 15}
+[04/17 00:18:58.065136][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 848, height: 480, fps: 15}
+[04/17 00:18:58.065143][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 848, height: 480, fps: 15}
+[04/17 00:18:58.065149][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 848, height: 480, fps: 15}
+[04/17 00:18:58.065156][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 848, height: 480, fps: 15}
+[04/17 00:18:58.065164][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 848, height: 480, fps: 15}
+[04/17 00:18:58.065170][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 848, height: 480, fps: 15}
+[04/17 00:18:58.065176][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 848, height: 480, fps: 15}
+[04/17 00:18:58.065183][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 848, height: 480, fps: 10}
+[04/17 00:18:58.065190][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 848, height: 480, fps: 10}
+[04/17 00:18:58.065197][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 848, height: 480, fps: 10}
+[04/17 00:18:58.065204][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 848, height: 480, fps: 10}
+[04/17 00:18:58.065210][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 848, height: 480, fps: 10}
+[04/17 00:18:58.065217][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 848, height: 480, fps: 10}
+[04/17 00:18:58.065224][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 848, height: 480, fps: 10}
+[04/17 00:18:58.065231][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 848, height: 480, fps: 10}
+[04/17 00:18:58.065243][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 848, height: 480, fps: 5}
+[04/17 00:18:58.065255][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 848, height: 480, fps: 5}
+[04/17 00:18:58.065262][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 848, height: 480, fps: 5}
+[04/17 00:18:58.065269][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 848, height: 480, fps: 5}
+[04/17 00:18:58.065276][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 848, height: 480, fps: 5}
+[04/17 00:18:58.065282][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 848, height: 480, fps: 5}
+[04/17 00:18:58.065289][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 848, height: 480, fps: 5}
+[04/17 00:18:58.065296][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 848, height: 480, fps: 5}
+[04/17 00:18:58.065303][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 480, fps: 90}
+[04/17 00:18:58.065310][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 480, fps: 90}
+[04/17 00:18:58.065316][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 480, fps: 90}
+[04/17 00:18:58.065323][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 480, fps: 90}
+[04/17 00:18:58.065330][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 480, fps: 90}
+[04/17 00:18:58.065337][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 480, fps: 90}
+[04/17 00:18:58.065343][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 480, fps: 90}
+[04/17 00:18:58.065350][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 480, fps: 90}
+[04/17 00:18:58.065357][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 480, fps: 60}
+[04/17 00:18:58.065363][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 480, fps: 60}
+[04/17 00:18:58.065370][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 480, fps: 60}
+[04/17 00:18:58.065376][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 480, fps: 60}
+[04/17 00:18:58.065383][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 480, fps: 60}
+[04/17 00:18:58.065390][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 480, fps: 60}
+[04/17 00:18:58.065397][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 480, fps: 60}
+[04/17 00:18:58.065403][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 480, fps: 60}
+[04/17 00:18:58.065410][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 480, fps: 30}
+[04/17 00:18:58.065417][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 480, fps: 30}
+[04/17 00:18:58.065424][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 480, fps: 30}
+[04/17 00:18:58.065430][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[04/17 00:18:58.065437][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 480, fps: 30}
+[04/17 00:18:58.065444][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 480, fps: 30}
+[04/17 00:18:58.065450][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 480, fps: 30}
+[04/17 00:18:58.065457][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[04/17 00:18:58.065464][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 480, fps: 15}
+[04/17 00:18:58.065478][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 480, fps: 15}
+[04/17 00:18:58.065486][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 480, fps: 15}
+[04/17 00:18:58.065493][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 480, fps: 15}
+[04/17 00:18:58.065499][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 480, fps: 15}
+[04/17 00:18:58.065506][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 480, fps: 15}
+[04/17 00:18:58.065519][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 480, fps: 15}
+[04/17 00:18:58.065525][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 480, fps: 15}
+[04/17 00:18:58.065532][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 480, fps: 10}
+[04/17 00:18:58.065539][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 480, fps: 10}
+[04/17 00:18:58.065546][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 480, fps: 10}
+[04/17 00:18:58.065552][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 480, fps: 10}
+[04/17 00:18:58.065559][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 480, fps: 10}
+[04/17 00:18:58.065566][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 480, fps: 10}
+[04/17 00:18:58.065573][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 480, fps: 10}
+[04/17 00:18:58.065579][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 480, fps: 10}
+[04/17 00:18:58.065586][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 480, fps: 5}
+[04/17 00:18:58.065593][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 480, fps: 5}
+[04/17 00:18:58.065599][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 480, fps: 5}
+[04/17 00:18:58.065606][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 480, fps: 5}
+[04/17 00:18:58.065613][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 480, fps: 5}
+[04/17 00:18:58.065619][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 480, fps: 5}
+[04/17 00:18:58.065626][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 480, fps: 5}
+[04/17 00:18:58.065633][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 480, fps: 5}
+[04/17 00:18:58.065640][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 400, fps: 90}
+[04/17 00:18:58.065646][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 400, fps: 90}
+[04/17 00:18:58.065653][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 400, fps: 90}
+[04/17 00:18:58.065659][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 400, fps: 90}
+[04/17 00:18:58.065666][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 400, fps: 90}
+[04/17 00:18:58.065673][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 400, fps: 90}
+[04/17 00:18:58.065680][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 400, fps: 90}
+[04/17 00:18:58.065686][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 400, fps: 90}
+[04/17 00:18:58.065693][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 400, fps: 60}
+[04/17 00:18:58.065700][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 400, fps: 60}
+[04/17 00:18:58.065706][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 400, fps: 60}
+[04/17 00:18:58.065718][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 400, fps: 60}
+[04/17 00:18:58.065726][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 400, fps: 60}
+[04/17 00:18:58.065733][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 400, fps: 60}
+[04/17 00:18:58.065739][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 400, fps: 60}
+[04/17 00:18:58.065746][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 400, fps: 60}
+[04/17 00:18:58.065753][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 400, fps: 30}
+[04/17 00:18:58.065760][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 400, fps: 30}
+[04/17 00:18:58.065771][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 400, fps: 30}
+[04/17 00:18:58.065778][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 400, fps: 30}
+[04/17 00:18:58.065785][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 400, fps: 30}
+[04/17 00:18:58.065792][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 400, fps: 30}
+[04/17 00:18:58.065798][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 400, fps: 30}
+[04/17 00:18:58.065805][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 400, fps: 30}
+[04/17 00:18:58.065812][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.065818][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.065825][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.065831][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.065838][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.065845][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.065852][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.065859][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.065865][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 400, fps: 10}
+[04/17 00:18:58.065872][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 400, fps: 10}
+[04/17 00:18:58.065879][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 400, fps: 10}
+[04/17 00:18:58.065885][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 400, fps: 10}
+[04/17 00:18:58.065892][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 400, fps: 10}
+[04/17 00:18:58.065899][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 400, fps: 10}
+[04/17 00:18:58.065905][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 400, fps: 10}
+[04/17 00:18:58.065912][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 400, fps: 10}
+[04/17 00:18:58.065919][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 400, fps: 5}
+[04/17 00:18:58.065925][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 400, fps: 5}
+[04/17 00:18:58.065932][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 400, fps: 5}
+[04/17 00:18:58.065938][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 400, fps: 5}
+[04/17 00:18:58.065950][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 400, fps: 5}
+[04/17 00:18:58.065958][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 400, fps: 5}
+[04/17 00:18:58.065964][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 400, fps: 5}
+[04/17 00:18:58.065971][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 400, fps: 5}
+[04/17 00:18:58.065978][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 360, fps: 90}
+[04/17 00:18:58.065985][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 360, fps: 90}
+[04/17 00:18:58.065991][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 360, fps: 90}
+[04/17 00:18:58.065997][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 360, fps: 90}
+[04/17 00:18:58.066004][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 360, fps: 90}
+[04/17 00:18:58.066011][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 360, fps: 90}
+[04/17 00:18:58.066017][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 360, fps: 90}
+[04/17 00:18:58.066024][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 360, fps: 90}
+[04/17 00:18:58.066036][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 360, fps: 60}
+[04/17 00:18:58.066042][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 360, fps: 60}
+[04/17 00:18:58.066049][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 360, fps: 60}
+[04/17 00:18:58.066055][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 360, fps: 60}
+[04/17 00:18:58.066062][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 360, fps: 60}
+[04/17 00:18:58.066069][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 360, fps: 60}
+[04/17 00:18:58.066075][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 360, fps: 60}
+[04/17 00:18:58.066082][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 360, fps: 60}
+[04/17 00:18:58.066088][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 360, fps: 30}
+[04/17 00:18:58.066095][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 360, fps: 30}
+[04/17 00:18:58.066101][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 360, fps: 30}
+[04/17 00:18:58.066108][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 360, fps: 30}
+[04/17 00:18:58.066115][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 360, fps: 30}
+[04/17 00:18:58.066121][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 360, fps: 30}
+[04/17 00:18:58.066128][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 360, fps: 30}
+[04/17 00:18:58.066135][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 360, fps: 30}
+[04/17 00:18:58.066142][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 360, fps: 15}
+[04/17 00:18:58.066148][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 360, fps: 15}
+[04/17 00:18:58.066155][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 360, fps: 15}
+[04/17 00:18:58.066162][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 360, fps: 15}
+[04/17 00:18:58.066168][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 360, fps: 15}
+[04/17 00:18:58.066180][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 360, fps: 15}
+[04/17 00:18:58.066188][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 360, fps: 15}
+[04/17 00:18:58.066195][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 360, fps: 15}
+[04/17 00:18:58.066202][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 360, fps: 10}
+[04/17 00:18:58.066209][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 360, fps: 10}
+[04/17 00:18:58.066215][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 360, fps: 10}
+[04/17 00:18:58.066222][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 360, fps: 10}
+[04/17 00:18:58.066229][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 360, fps: 10}
+[04/17 00:18:58.066235][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 360, fps: 10}
+[04/17 00:18:58.066242][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 360, fps: 10}
+[04/17 00:18:58.066248][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 360, fps: 10}
+[04/17 00:18:58.066255][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 640, height: 360, fps: 5}
+[04/17 00:18:58.066262][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 640, height: 360, fps: 5}
+[04/17 00:18:58.066268][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 640, height: 360, fps: 5}
+[04/17 00:18:58.066275][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 640, height: 360, fps: 5}
+[04/17 00:18:58.066282][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 640, height: 360, fps: 5}
+[04/17 00:18:58.066293][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 640, height: 360, fps: 5}
+[04/17 00:18:58.066300][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 640, height: 360, fps: 5}
+[04/17 00:18:58.066307][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 640, height: 360, fps: 5}
+[04/17 00:18:58.066314][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 480, height: 270, fps: 90}
+[04/17 00:18:58.066320][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 480, height: 270, fps: 90}
+[04/17 00:18:58.066327][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 480, height: 270, fps: 90}
+[04/17 00:18:58.066333][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 480, height: 270, fps: 90}
+[04/17 00:18:58.066340][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 480, height: 270, fps: 90}
+[04/17 00:18:58.066347][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 480, height: 270, fps: 90}
+[04/17 00:18:58.066353][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 480, height: 270, fps: 90}
+[04/17 00:18:58.066360][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 480, height: 270, fps: 90}
+[04/17 00:18:58.066367][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 480, height: 270, fps: 60}
+[04/17 00:18:58.066374][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 480, height: 270, fps: 60}
+[04/17 00:18:58.066380][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 480, height: 270, fps: 60}
+[04/17 00:18:58.066387][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 480, height: 270, fps: 60}
+[04/17 00:18:58.066394][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 480, height: 270, fps: 60}
+[04/17 00:18:58.066400][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 480, height: 270, fps: 60}
+[04/17 00:18:58.066411][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 480, height: 270, fps: 60}
+[04/17 00:18:58.066419][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 480, height: 270, fps: 60}
+[04/17 00:18:58.066426][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 480, height: 270, fps: 30}
+[04/17 00:18:58.066432][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 480, height: 270, fps: 30}
+[04/17 00:18:58.066439][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 480, height: 270, fps: 30}
+[04/17 00:18:58.066445][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 480, height: 270, fps: 30}
+[04/17 00:18:58.066452][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 480, height: 270, fps: 30}
+[04/17 00:18:58.066458][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 480, height: 270, fps: 30}
+[04/17 00:18:58.066465][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 480, height: 270, fps: 30}
+[04/17 00:18:58.066471][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 480, height: 270, fps: 30}
+[04/17 00:18:58.066478][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 480, height: 270, fps: 15}
+[04/17 00:18:58.066484][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 480, height: 270, fps: 15}
+[04/17 00:18:58.066491][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 480, height: 270, fps: 15}
+[04/17 00:18:58.066497][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 480, height: 270, fps: 15}
+[04/17 00:18:58.066504][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 480, height: 270, fps: 15}
+[04/17 00:18:58.066511][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 480, height: 270, fps: 15}
+[04/17 00:18:58.066517][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 480, height: 270, fps: 15}
+[04/17 00:18:58.066524][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 480, height: 270, fps: 15}
+[04/17 00:18:58.066530][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 480, height: 270, fps: 10}
+[04/17 00:18:58.066537][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 480, height: 270, fps: 10}
+[04/17 00:18:58.066548][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 480, height: 270, fps: 10}
+[04/17 00:18:58.066555][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 480, height: 270, fps: 10}
+[04/17 00:18:58.066561][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 480, height: 270, fps: 10}
+[04/17 00:18:58.066568][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 480, height: 270, fps: 10}
+[04/17 00:18:58.066574][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 480, height: 270, fps: 10}
+[04/17 00:18:58.066581][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 480, height: 270, fps: 10}
+[04/17 00:18:58.066588][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 480, height: 270, fps: 5}
+[04/17 00:18:58.066594][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 480, height: 270, fps: 5}
+[04/17 00:18:58.066601][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 480, height: 270, fps: 5}
+[04/17 00:18:58.066606][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 480, height: 270, fps: 5}
+[04/17 00:18:58.066611][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 480, height: 270, fps: 5}
+[04/17 00:18:58.066616][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 480, height: 270, fps: 5}
+[04/17 00:18:58.066621][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 480, height: 270, fps: 5}
+[04/17 00:18:58.066626][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 480, height: 270, fps: 5}
+[04/17 00:18:58.066637][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 424, height: 240, fps: 90}
+[04/17 00:18:58.066643][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 424, height: 240, fps: 90}
+[04/17 00:18:58.066648][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 424, height: 240, fps: 90}
+[04/17 00:18:58.066654][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 424, height: 240, fps: 90}
+[04/17 00:18:58.066659][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 424, height: 240, fps: 90}
+[04/17 00:18:58.066664][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 424, height: 240, fps: 90}
+[04/17 00:18:58.066669][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 424, height: 240, fps: 90}
+[04/17 00:18:58.066674][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 424, height: 240, fps: 90}
+[04/17 00:18:58.066679][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 424, height: 240, fps: 60}
+[04/17 00:18:58.066684][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 424, height: 240, fps: 60}
+[04/17 00:18:58.066689][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 424, height: 240, fps: 60}
+[04/17 00:18:58.066696][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 424, height: 240, fps: 60}
+[04/17 00:18:58.066703][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 424, height: 240, fps: 60}
+[04/17 00:18:58.066709][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 424, height: 240, fps: 60}
+[04/17 00:18:58.066716][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 424, height: 240, fps: 60}
+[04/17 00:18:58.066722][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 424, height: 240, fps: 60}
+[04/17 00:18:58.066729][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 424, height: 240, fps: 30}
+[04/17 00:18:58.066735][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 424, height: 240, fps: 30}
+[04/17 00:18:58.066742][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 424, height: 240, fps: 30}
+[04/17 00:18:58.066748][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 424, height: 240, fps: 30}
+[04/17 00:18:58.066755][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 424, height: 240, fps: 30}
+[04/17 00:18:58.066762][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 424, height: 240, fps: 30}
+[04/17 00:18:58.066768][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 424, height: 240, fps: 30}
+[04/17 00:18:58.066774][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 424, height: 240, fps: 30}
+[04/17 00:18:58.066781][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 424, height: 240, fps: 15}
+[04/17 00:18:58.066788][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 424, height: 240, fps: 15}
+[04/17 00:18:58.066794][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 424, height: 240, fps: 15}
+[04/17 00:18:58.066805][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 424, height: 240, fps: 15}
+[04/17 00:18:58.066812][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 424, height: 240, fps: 15}
+[04/17 00:18:58.066819][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 424, height: 240, fps: 15}
+[04/17 00:18:58.066825][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 424, height: 240, fps: 15}
+[04/17 00:18:58.066832][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 424, height: 240, fps: 15}
+[04/17 00:18:58.066838][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 424, height: 240, fps: 10}
+[04/17 00:18:58.066850][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 424, height: 240, fps: 10}
+[04/17 00:18:58.066858][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 424, height: 240, fps: 10}
+[04/17 00:18:58.066864][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 424, height: 240, fps: 10}
+[04/17 00:18:58.066871][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 424, height: 240, fps: 10}
+[04/17 00:18:58.066878][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 424, height: 240, fps: 10}
+[04/17 00:18:58.066884][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 424, height: 240, fps: 10}
+[04/17 00:18:58.066891][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 424, height: 240, fps: 10}
+[04/17 00:18:58.066897][debug][177694][G330Device.cpp:368]  - {type: Color, format: MJPG, width: 424, height: 240, fps: 5}
+[04/17 00:18:58.066904][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGB, width: 424, height: 240, fps: 5}
+[04/17 00:18:58.066911][debug][177694][G330Device.cpp:368]  - {type: Color, format: RGBA, width: 424, height: 240, fps: 5}
+[04/17 00:18:58.066929][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGR, width: 424, height: 240, fps: 5}
+[04/17 00:18:58.066936][debug][177694][G330Device.cpp:368]  - {type: Color, format: BGRA, width: 424, height: 240, fps: 5}
+[04/17 00:18:58.066941][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y16, width: 424, height: 240, fps: 5}
+[04/17 00:18:58.066949][debug][177694][G330Device.cpp:368]  - {type: Color, format: Y8, width: 424, height: 240, fps: 5}
+[04/17 00:18:58.066955][debug][177694][G330Device.cpp:368]  - {type: Color, format: YUYV, width: 424, height: 240, fps: 5}
+[04/17 00:18:58.106986][debug][177694][SensorBase.cpp:254] [CPBDB530009L]  Recovery config found for sensor: Depth
+[04/17 00:18:58.107023][debug][177694][SensorBase.cpp:255] [CPBDB530009L]  StreamFailedRetry: 1, MaxStartStreamDelayMs: 3000, MaxFrameIntervalMs: 3000
+[04/17 00:18:58.108519][debug][177694][PropertyServer.cpp:206] [CPBDB530009L] [delta: 1420us] Property 38 set to 1|1e-45
+[04/17 00:18:58.135128][debug][177694][VideoSensor.cpp:42] [CPBDB530009L] VideoSensor created @Depth
+[04/17 00:18:58.161888][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 2915us] Property 176 get as 1065353216|1
+[04/17 00:18:58.163383][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1466us] Property 85 get as 1|1e-45
+[04/17 00:18:58.163400][debug][177694][G330Device.cpp:268] loadDefaultStreamProfile: deviceConnectionType:=USB3.2
+[04/17 00:18:58.163445][debug][177694][SensorBase.cpp:101] [CPBDB530009L] Set default stream profile to: {type: Depth, format: Y16, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.168045][debug][177694][G330Device.cpp:366] Sensor Depth created! Found 46 stream profiles.
+[04/17 00:18:58.168067][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.168079][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 1280, height: 800, fps: 30}
+[04/17 00:18:58.168085][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.168091][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 1280, height: 800, fps: 10}
+[04/17 00:18:58.168095][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 1280, height: 800, fps: 5}
+[04/17 00:18:58.168100][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 1280, height: 720, fps: 30}
+[04/17 00:18:58.168106][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 1280, height: 720, fps: 15}
+[04/17 00:18:58.168110][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 1280, height: 720, fps: 10}
+[04/17 00:18:58.168115][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 1280, height: 720, fps: 5}
+[04/17 00:18:58.168143][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 848, height: 480, fps: 60}
+[04/17 00:18:58.168149][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 848, height: 480, fps: 15}
+[04/17 00:18:58.168154][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 848, height: 480, fps: 10}
+[04/17 00:18:58.168159][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 848, height: 480, fps: 5}
+[04/17 00:18:58.168164][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 480, fps: 90}
+[04/17 00:18:58.168169][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 480, fps: 60}
+[04/17 00:18:58.168173][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[04/17 00:18:58.168178][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 480, fps: 15}
+[04/17 00:18:58.168183][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 480, fps: 10}
+[04/17 00:18:58.168189][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 480, fps: 5}
+[04/17 00:18:58.168193][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 400, fps: 30}
+[04/17 00:18:58.168198][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.168203][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 400, fps: 10}
+[04/17 00:18:58.168208][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 400, fps: 5}
+[04/17 00:18:58.168213][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 360, fps: 90}
+[04/17 00:18:58.168218][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 360, fps: 60}
+[04/17 00:18:58.168223][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 360, fps: 30}
+[04/17 00:18:58.168228][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 360, fps: 15}
+[04/17 00:18:58.168236][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 360, fps: 10}
+[04/17 00:18:58.168243][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 640, height: 360, fps: 5}
+[04/17 00:18:58.168249][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 480, height: 270, fps: 90}
+[04/17 00:18:58.168255][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 480, height: 270, fps: 60}
+[04/17 00:18:58.168262][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 480, height: 270, fps: 30}
+[04/17 00:18:58.168268][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 480, height: 270, fps: 15}
+[04/17 00:18:58.168274][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 480, height: 270, fps: 10}
+[04/17 00:18:58.168281][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 480, height: 270, fps: 5}
+[04/17 00:18:58.168287][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 424, height: 266, fps: 30}
+[04/17 00:18:58.168293][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 424, height: 266, fps: 15}
+[04/17 00:18:58.168300][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 424, height: 266, fps: 10}
+[04/17 00:18:58.168306][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 424, height: 266, fps: 5}
+[04/17 00:18:58.168314][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 424, height: 240, fps: 90}
+[04/17 00:18:58.168320][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 424, height: 240, fps: 60}
+[04/17 00:18:58.168331][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 424, height: 240, fps: 30}
+[04/17 00:18:58.168347][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 424, height: 240, fps: 15}
+[04/17 00:18:58.168356][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 424, height: 240, fps: 10}
+[04/17 00:18:58.168362][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 424, height: 240, fps: 5}
+[04/17 00:18:58.168369][debug][177694][G330Device.cpp:368]  - {type: Depth, format: Y16, width: 848, height: 100, fps: 100}
+[04/17 00:18:58.171973][debug][177694][HidDevicePort.cpp:36] HidDevicePort::HidDevicePort done
+[04/17 00:18:58.171996][debug][177694][LinuxUsbPal.cpp:236] HID device have been create with HID backend! dev: 2-2.1-4, inf: 2-2.1-4.6
+[04/17 00:18:58.172014][debug][177694][ImuStreamer.cpp:44] ImuStreamer created
+[04/17 00:18:58.172055][debug][177694][SensorBase.cpp:261] [CPBDB530009L]  No recovery config found for sensor: Accel
+[04/17 00:18:58.173514][debug][177694][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1442us] Property 1032 get structure data successfully, size 68
+[04/17 00:18:58.175014][debug][177694][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1483us] Property 1034 get structure data successfully, size 68
+[04/17 00:18:58.176513][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1473us] Property 2022 get as 0|0
+[04/17 00:18:58.178012][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1485us] Property 2024 get as 2|3e-45
+[04/17 00:18:58.178032][debug][177694][SensorBase.cpp:101] [CPBDB530009L] Set default stream profile to: {type: Accel, format: ACCEL, fullScaleRange: 4g, sampleRate: UNKNOWN}
+[04/17 00:18:58.178044][warning][177694][SensorBase.cpp:147] [CPBDB530009L] Failed to update default stream profile for sensor due to no matching stream profile found
+[04/17 00:18:58.178051][debug][177694][AccelSensor.cpp:52] AccelSensor is created!
+[04/17 00:18:58.178062][debug][177694][G330Device.cpp:268] loadDefaultStreamProfile: deviceConnectionType:=USB3.2
+[04/17 00:18:58.178574][debug][177694][G330Device.cpp:366] Sensor Accel created! Found 5 stream profiles.
+[04/17 00:18:58.178589][debug][177694][G330Device.cpp:368]  - {type: Accel, format: ACCEL, fullScaleRange: 4g, sampleRate: 200_HZ}
+[04/17 00:18:58.178597][debug][177694][G330Device.cpp:368]  - {type: Accel, format: ACCEL, fullScaleRange: 4g, sampleRate: 50_HZ}
+[04/17 00:18:58.178604][debug][177694][G330Device.cpp:368]  - {type: Accel, format: ACCEL, fullScaleRange: 4g, sampleRate: 100_HZ}
+[04/17 00:18:58.178611][debug][177694][G330Device.cpp:368]  - {type: Accel, format: ACCEL, fullScaleRange: 4g, sampleRate: 500_HZ}
+[04/17 00:18:58.178617][debug][177694][G330Device.cpp:368]  - {type: Accel, format: ACCEL, fullScaleRange: 4g, sampleRate: 1_KHZ}
+[04/17 00:18:58.178670][debug][177694][SensorBase.cpp:261] [CPBDB530009L]  No recovery config found for sensor: Gyro
+[04/17 00:18:58.180013][debug][177694][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1324us] Property 1031 get structure data successfully, size 68
+[04/17 00:18:58.181510][debug][177694][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1479us] Property 1033 get structure data successfully, size 68
+[04/17 00:18:58.183096][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1563us] Property 2021 get as 0|0
+[04/17 00:18:58.184517][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1376us] Property 2023 get as 7|1e-44
+[04/17 00:18:58.184565][debug][177694][SensorBase.cpp:101] [CPBDB530009L] Set default stream profile to: {type: Gyro, format: GYRO, fullScaleRange: 1000dps, sampleRate: UNKNOWN}
+[04/17 00:18:58.184583][warning][177694][SensorBase.cpp:147] [CPBDB530009L] Failed to update default stream profile for sensor due to no matching stream profile found
+[04/17 00:18:58.184591][debug][177694][GyroSensor.cpp:52] GyroSensor is created!
+[04/17 00:18:58.184603][debug][177694][G330Device.cpp:268] loadDefaultStreamProfile: deviceConnectionType:=USB3.2
+[04/17 00:18:58.185132][debug][177694][G330Device.cpp:366] Sensor Gyro created! Found 5 stream profiles.
+[04/17 00:18:58.185151][debug][177694][G330Device.cpp:368]  - {type: Gyro, format: GYRO, fullScaleRange: 1000dps, sampleRate: 200_HZ}
+[04/17 00:18:58.185177][debug][177694][G330Device.cpp:368]  - {type: Gyro, format: GYRO, fullScaleRange: 1000dps, sampleRate: 50_HZ}
+[04/17 00:18:58.185186][debug][177694][G330Device.cpp:368]  - {type: Gyro, format: GYRO, fullScaleRange: 1000dps, sampleRate: 100_HZ}
+[04/17 00:18:58.185192][debug][177694][G330Device.cpp:368]  - {type: Gyro, format: GYRO, fullScaleRange: 1000dps, sampleRate: 500_HZ}
+[04/17 00:18:58.185198][debug][177694][G330Device.cpp:368]  - {type: Gyro, format: GYRO, fullScaleRange: 1000dps, sampleRate: 1_KHZ}
+[04/17 00:18:58.185275][debug][177694][SensorBase.cpp:261] [CPBDB530009L]  No recovery config found for sensor: LeftIR
+[04/17 00:18:58.186650][debug][177694][PropertyServer.cpp:206] [CPBDB530009L] [delta: 1354us] Property 39 set to 1|1e-45
+[04/17 00:18:58.230364][debug][177694][VideoSensor.cpp:42] [CPBDB530009L] VideoSensor created @LeftIR
+[04/17 00:18:58.230429][debug][177694][FilterDecorator.cpp:15] Filter FrameUnpacker created with frame queue capacity 10
+[04/17 00:18:58.238765][debug][177694][G330Device.cpp:268] loadDefaultStreamProfile: deviceConnectionType:=USB3.2
+[04/17 00:18:58.238827][debug][177694][SensorBase.cpp:101] [CPBDB530009L] Set default stream profile to: {type: Left IR, format: Y8, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.246328][debug][177694][G330Device.cpp:366] Sensor LeftIR created! Found 54 stream profiles.
+[04/17 00:18:58.246352][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.246362][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 1280, height: 800, fps: 30}
+[04/17 00:18:58.246370][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y12, width: 1280, height: 800, fps: 25}
+[04/17 00:18:58.246377][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y16, width: 1280, height: 800, fps: 25}
+[04/17 00:18:58.246383][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.246390][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y12, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.246396][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y16, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.246403][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 1280, height: 800, fps: 10}
+[04/17 00:18:58.246409][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 1280, height: 800, fps: 5}
+[04/17 00:18:58.246415][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 1280, height: 720, fps: 30}
+[04/17 00:18:58.246421][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 1280, height: 720, fps: 15}
+[04/17 00:18:58.246428][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 1280, height: 720, fps: 10}
+[04/17 00:18:58.246434][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 1280, height: 720, fps: 5}
+[04/17 00:18:58.246440][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 848, height: 480, fps: 60}
+[04/17 00:18:58.246446][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 848, height: 480, fps: 15}
+[04/17 00:18:58.246452][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 848, height: 480, fps: 10}
+[04/17 00:18:58.246459][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 848, height: 480, fps: 5}
+[04/17 00:18:58.246465][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 480, fps: 90}
+[04/17 00:18:58.246477][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 480, fps: 60}
+[04/17 00:18:58.246483][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 480, fps: 30}
+[04/17 00:18:58.246490][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 480, fps: 15}
+[04/17 00:18:58.246511][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 480, fps: 10}
+[04/17 00:18:58.246519][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 480, fps: 5}
+[04/17 00:18:58.246526][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 400, fps: 30}
+[04/17 00:18:58.246532][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y12, width: 640, height: 400, fps: 25}
+[04/17 00:18:58.246539][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y16, width: 640, height: 400, fps: 25}
+[04/17 00:18:58.246545][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.246551][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y12, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.246557][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y16, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.246563][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 400, fps: 10}
+[04/17 00:18:58.246569][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 400, fps: 5}
+[04/17 00:18:58.246576][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 360, fps: 90}
+[04/17 00:18:58.246582][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 360, fps: 60}
+[04/17 00:18:58.246588][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 360, fps: 30}
+[04/17 00:18:58.246594][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 360, fps: 15}
+[04/17 00:18:58.246600][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 360, fps: 10}
+[04/17 00:18:58.246606][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 640, height: 360, fps: 5}
+[04/17 00:18:58.246612][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 480, height: 270, fps: 90}
+[04/17 00:18:58.246618][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 480, height: 270, fps: 60}
+[04/17 00:18:58.246624][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 480, height: 270, fps: 30}
+[04/17 00:18:58.246630][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 480, height: 270, fps: 15}
+[04/17 00:18:58.246636][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 480, height: 270, fps: 10}
+[04/17 00:18:58.246642][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 480, height: 270, fps: 5}
+[04/17 00:18:58.246648][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 424, height: 266, fps: 30}
+[04/17 00:18:58.246654][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 424, height: 266, fps: 15}
+[04/17 00:18:58.246660][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 424, height: 266, fps: 10}
+[04/17 00:18:58.246666][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 424, height: 266, fps: 5}
+[04/17 00:18:58.246672][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 424, height: 240, fps: 90}
+[04/17 00:18:58.246678][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 424, height: 240, fps: 60}
+[04/17 00:18:58.246684][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 424, height: 240, fps: 30}
+[04/17 00:18:58.246690][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 424, height: 240, fps: 15}
+[04/17 00:18:58.246697][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 424, height: 240, fps: 10}
+[04/17 00:18:58.246702][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 424, height: 240, fps: 5}
+[04/17 00:18:58.246709][debug][177694][G330Device.cpp:368]  - {type: Left IR, format: Y8, width: 848, height: 100, fps: 100}
+[04/17 00:18:58.247940][debug][177694][SensorBase.cpp:261] [CPBDB530009L]  No recovery config found for sensor: RightIR
+[04/17 00:18:58.304538][debug][177694][VideoSensor.cpp:42] [CPBDB530009L] VideoSensor created @RightIR
+[04/17 00:18:58.304614][debug][177694][FilterDecorator.cpp:15] Filter FrameUnpacker created with frame queue capacity 10
+[04/17 00:18:58.315308][debug][177694][G330Device.cpp:268] loadDefaultStreamProfile: deviceConnectionType:=USB3.2
+[04/17 00:18:58.315399][debug][177694][SensorBase.cpp:101] [CPBDB530009L] Set default stream profile to: {type: Right IR, format: Y8, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.326107][debug][177694][G330Device.cpp:366] Sensor RightIR created! Found 54 stream profiles.
+[04/17 00:18:58.326129][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 848, height: 480, fps: 30}
+[04/17 00:18:58.326138][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 1280, height: 800, fps: 30}
+[04/17 00:18:58.326145][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y12, width: 1280, height: 800, fps: 25}
+[04/17 00:18:58.326152][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y16, width: 1280, height: 800, fps: 25}
+[04/17 00:18:58.326161][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.326175][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y12, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.326183][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y16, width: 1280, height: 800, fps: 15}
+[04/17 00:18:58.326189][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 1280, height: 800, fps: 10}
+[04/17 00:18:58.326196][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 1280, height: 800, fps: 5}
+[04/17 00:18:58.326203][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 1280, height: 720, fps: 30}
+[04/17 00:18:58.326209][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 1280, height: 720, fps: 15}
+[04/17 00:18:58.326216][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 1280, height: 720, fps: 10}
+[04/17 00:18:58.326222][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 1280, height: 720, fps: 5}
+[04/17 00:18:58.326230][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 848, height: 480, fps: 60}
+[04/17 00:18:58.326236][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 848, height: 480, fps: 15}
+[04/17 00:18:58.326243][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 848, height: 480, fps: 10}
+[04/17 00:18:58.326250][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 848, height: 480, fps: 5}
+[04/17 00:18:58.326256][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 480, fps: 90}
+[04/17 00:18:58.326268][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 480, fps: 60}
+[04/17 00:18:58.326274][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 480, fps: 30}
+[04/17 00:18:58.326282][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 480, fps: 15}
+[04/17 00:18:58.326287][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 480, fps: 10}
+[04/17 00:18:58.326292][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 480, fps: 5}
+[04/17 00:18:58.326300][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 400, fps: 30}
+[04/17 00:18:58.326308][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y12, width: 640, height: 400, fps: 25}
+[04/17 00:18:58.326314][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y16, width: 640, height: 400, fps: 25}
+[04/17 00:18:58.326320][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.326349][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y12, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.326357][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y16, width: 640, height: 400, fps: 15}
+[04/17 00:18:58.326363][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 400, fps: 10}
+[04/17 00:18:58.326370][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 400, fps: 5}
+[04/17 00:18:58.326376][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 360, fps: 90}
+[04/17 00:18:58.326382][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 360, fps: 60}
+[04/17 00:18:58.326388][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 360, fps: 30}
+[04/17 00:18:58.326394][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 360, fps: 15}
+[04/17 00:18:58.326400][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 360, fps: 10}
+[04/17 00:18:58.326407][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 640, height: 360, fps: 5}
+[04/17 00:18:58.326412][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 480, height: 270, fps: 90}
+[04/17 00:18:58.326418][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 480, height: 270, fps: 60}
+[04/17 00:18:58.326428][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 480, height: 270, fps: 30}
+[04/17 00:18:58.326435][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 480, height: 270, fps: 15}
+[04/17 00:18:58.326442][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 480, height: 270, fps: 10}
+[04/17 00:18:58.326448][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 480, height: 270, fps: 5}
+[04/17 00:18:58.326454][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 424, height: 266, fps: 30}
+[04/17 00:18:58.326460][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 424, height: 266, fps: 15}
+[04/17 00:18:58.326466][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 424, height: 266, fps: 10}
+[04/17 00:18:58.326472][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 424, height: 266, fps: 5}
+[04/17 00:18:58.326478][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 424, height: 240, fps: 90}
+[04/17 00:18:58.326484][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 424, height: 240, fps: 60}
+[04/17 00:18:58.326490][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 424, height: 240, fps: 30}
+[04/17 00:18:58.326496][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 424, height: 240, fps: 15}
+[04/17 00:18:58.326502][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 424, height: 240, fps: 10}
+[04/17 00:18:58.326509][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 424, height: 240, fps: 5}
+[04/17 00:18:58.326515][debug][177694][G330Device.cpp:368]  - {type: Right IR, format: Y8, width: 848, height: 100, fps: 100}
+[04/17 00:18:58.327759][debug][177694][Pipeline.cpp:25] [CPBDB530009L] Pipeline init ...
+[04/17 00:18:58.327793][debug][177694][Pipeline.cpp:139] [CPBDB530009L] loadFrameQueueSizeConfig() config queue size: 10
+[04/17 00:18:58.327826][debug][177694][Pipeline.cpp:148] [CPBDB530009L] loadMaxFrameDelayConfig() config max frame delay: 0
+[04/17 00:18:58.327844][info][177694][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0xAAAAD0FBD840
+[04/17 00:18:58.327889][debug][177694][Pipeline.cpp:25] [CPBDB530009L] Pipeline init ...
+[04/17 00:18:58.327903][debug][177694][Pipeline.cpp:139] [CPBDB530009L] loadFrameQueueSizeConfig() config queue size: 10
+[04/17 00:18:58.327928][debug][177694][Pipeline.cpp:148] [CPBDB530009L] loadMaxFrameDelayConfig() config max frame delay: 0
+[04/17 00:18:58.327939][info][177694][Pipeline.cpp:42] [CPBDB530009L] Pipeline created with device: {name: Gemini 335Lg, sn: CPBDB530009L}, @0xAAAAD0FBEFD0
+[04/17 00:18:58.370376][debug][177694][FilterDecorator.cpp:15] Filter PointCloudFilter created with frame queue capacity 10
+[04/17 00:18:58.370476][debug][177694][DeviceManager.cpp:293] Enable multi-device clock sync, repeatInterval=0ms
+[04/17 00:18:58.372017][debug][177766][PropertyServer.cpp:288] [CPBDB530009L] [delta: 1363us] Property 1037 set structure data successfully
+[04/17 00:18:58.423523][debug][177766][PropertyServer.cpp:288] [CPBDB530009L] [delta: 1369us] Property 1037 set structure data successfully
+[04/17 00:18:58.425021][debug][177766][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1423us] Property 1037 get structure data successfully, size 16
+[04/17 00:18:58.426531][debug][177766][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1451us] Property 1037 get structure data successfully, size 16
+[04/17 00:18:58.426554][debug][177766][GlobalTimestampFitter.cpp:218] [CPBDB530009L] sys=1776356338425814, dev=1776356338424, rtt=1474
+[04/17 00:18:58.468164][debug][177766][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1482us] Property 1037 get structure data successfully, size 16
+[04/17 00:18:58.468238][debug][177766][GlobalTimestampFitter.cpp:218] [CPBDB530009L] sys=1776356338467448, dev=1776356338466, rtt=1573
+[04/17 00:18:58.509791][debug][177766][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1459us] Property 1037 get structure data successfully, size 16
+[04/17 00:18:58.509857][debug][177766][GlobalTimestampFitter.cpp:218] [CPBDB530009L] sys=1776356338509086, dev=1776356338508, rtt=1536
+[04/17 00:18:58.551466][debug][177766][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1493us] Property 1037 get structure data successfully, size 16
+[04/17 00:18:58.551555][debug][177766][GlobalTimestampFitter.cpp:218] [CPBDB530009L] sys=1776356338550751, dev=1776356338549, rtt=1598
+[04/17 00:18:58.593198][debug][177766][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1517us] Property 1037 get structure data successfully, size 16
+[04/17 00:18:58.593271][debug][177766][GlobalTimestampFitter.cpp:218] [CPBDB530009L] sys=1776356338592465, dev=1776356338591, rtt=1604
+[04/17 00:18:58.634828][debug][177766][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1433us] Property 1037 get structure data successfully, size 16
+[04/17 00:18:58.634914][debug][177766][GlobalTimestampFitter.cpp:218] [CPBDB530009L] sys=1776356338634140, dev=1776356338633, rtt=1540
+[04/17 00:18:58.675097][debug][177766][GlobalTimestampFitter.cpp:189] [CPBDB530009L] LinearParam update! QueueSize: 6, coefficientA: 998.1721350451736, constantB: 3246939499930.7163, checkDataX: 1776356338633, checkDataY: 1776356338634140
+[04/17 00:18:58.676822][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1472us] Property 1037 get structure data successfully, size 16
+[04/17 00:18:58.676880][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356338676105, dev=1776356338675, rtt=1541
+[04/17 00:18:58.676910][debug][177748][GlobalTimestampFitter.cpp:189] [CPBDB530009L] LinearParam update! QueueSize: 7, coefficientA: 997.9720917049452, constantB: 3602287755318.901, checkDataX: 1776356338675, checkDataY: 1776356338676105
+[04/17 00:18:59.678431][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1405us] Property 1037 get structure data successfully, size 16
+[04/17 00:18:59.678536][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356339677770, dev=1776356339676, rtt=1526
+[04/17 00:18:59.678560][debug][177748][GlobalTimestampFitter.cpp:189] [CPBDB530009L] LinearParam update! QueueSize: 8, coefficientA: 1000.2279752804773, constantB: -404965333093.0324, checkDataX: 1776356339676, checkDataY: 1776356339677770
+[04/17 00:19:00.030060][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1518us] Property 2 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.031571][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1381us] Property 2 get as 0|0
+[04/17 00:19:00.033205][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1421us] Property 8 range as 0-0 step 0 def 0|0-0 step 0 def 0
+[04/17 00:19:00.034697][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1434us] Property 8 get as 1|1e-45
+[04/17 00:19:00.034881][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 36us] Property 14 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.034963][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 4us] Property 14 get as 0|0
+[04/17 00:19:00.035091][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 4us] Property 15 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.035137][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 2us] Property 15 get as 0|0
+[04/17 00:19:00.035295][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 60us] Property 18 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.035332][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 3us] Property 18 get as 0|0
+[04/17 00:19:00.035446][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3us] Property 19 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.035480][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 2us] Property 19 get as 0|0
+[04/17 00:19:00.035579][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 6us] Property 24 range as 0-1 step 1 def 1|0-1e-45 step 1e-45 def 1e-45
+[04/17 00:19:00.035617][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 2us] Property 24 get as 1|1e-45
+[04/17 00:19:00.037206][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1491us] Property 32 range as 793-311 step 0 def 187697|1.111e-42-4.36e-43 step 0 def 2.6302e-40
+[04/17 00:19:00.038697][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1436us] Property 32 get as 393295|5.51124e-40
+[04/17 00:19:00.038840][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 7us] Property 40 range as 1-10000 step 1 def 256|1e-45-1.4013e-41 step 1e-45 def 3.59e-43
+[04/17 00:19:00.038889][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 3us] Property 40 get as 256|3.59e-43
+[04/17 00:19:00.039014][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 4us] Property 41 range as 1-1000 step 1 def 80|1e-45-1.401e-42 step 1e-45 def 1.12e-43
+[04/17 00:19:00.039060][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 12us] Property 41 get as 80|1.12e-43
+[04/17 00:19:00.040572][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1419us] Property 42 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.042043][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1433us] Property 42 get as 0|0
+[04/17 00:19:00.042261][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 48us] Property 81 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.042309][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 3us] Property 81 get as 0|0
+[04/17 00:19:00.042450][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3us] Property 82 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.042493][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 2us] Property 82 get as 0|0
+[04/17 00:19:00.042584][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 2us] Property 85 range as 0-1 step 1 def 1|0-1e-45 step 1e-45 def 1e-45
+[04/17 00:19:00.044205][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1583us] Property 85 get as 1|1e-45
+[04/17 00:19:00.045822][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1398us] Property 88 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.047322][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1452us] Property 88 get as 0|0
+[04/17 00:19:00.047537][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 70us] Property 89 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.047613][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 2us] Property 89 get as 0|0
+[04/17 00:19:00.049197][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1443us] Property 99 range as 0-6 step 1 def 4|0-8e-45 step 1e-45 def 6e-45
+[04/17 00:19:00.050666][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1428us] Property 99 get as 4|6e-45
+[04/17 00:19:00.052194][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1401us] Property 100 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.053697][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1453us] Property 100 get as 0|0
+[04/17 00:19:00.055319][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1479us] Property 105 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.056800][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1426us] Property 105 get as 0|0
+[04/17 00:19:00.058328][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1399us] Property 106 range as 0-10000000 step 1 def 0|0-1.4012985e-38 step 1e-45 def 0
+[04/17 00:19:00.059821][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1446us] Property 106 get as 0|0
+[04/17 00:19:00.060028][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 61us] Property 112 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.060084][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 3us] Property 112 get as 0|0
+[04/17 00:19:00.061546][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1368us] Property 113 range as 1-255 step 1 def 1|1e-45-3.57e-43 step 1e-45 def 1e-45
+[04/17 00:19:00.063072][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1489us] Property 113 get as 1|1e-45
+[04/17 00:19:00.063193][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 5us] Property 114 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.063224][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 2us] Property 114 get as 0|0
+[04/17 00:19:00.063306][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 4us] Property 115 range as 0-270 step 90 def 0|0-3.78e-43 step 1.26e-43 def 0
+[04/17 00:19:00.063335][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 2us] Property 115 get as 0|0
+[04/17 00:19:00.063428][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 4us] Property 116 range as 0-270 step 90 def 0|0-3.78e-43 step 1.26e-43 def 0
+[04/17 00:19:00.063457][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 2us] Property 116 get as 0|0
+[04/17 00:19:00.063533][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 2us] Property 117 range as 0-270 step 90 def 0|0-3.78e-43 step 1.26e-43 def 0
+[04/17 00:19:00.063560][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1us] Property 117 get as 0|0
+[04/17 00:19:00.063638][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 6us] Property 118 range as 0-270 step 90 def 0|0-3.78e-43 step 1.26e-43 def 0
+[04/17 00:19:00.063666][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 2us] Property 118 get as 0|0
+[04/17 00:19:00.065186][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1444us] Property 119 range as 0-6 step 1 def 4|0-8e-45 step 1e-45 def 6e-45
+[04/17 00:19:00.066678][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1454us] Property 119 get as 4|6e-45
+[04/17 00:19:00.068186][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1391us] Property 141 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.069665][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1450us] Property 141 get as 0|0
+[04/17 00:19:00.071172][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1384us] Property 174 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.072671][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1453us] Property 174 get as 0|0
+[04/17 00:19:00.074308][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1481us] Property 175 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.075806][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1454us] Property 175 get as 0|0
+[04/17 00:19:00.075971][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 10us] Property 176 range as 981668463-1092616192 step 981668463 def 1065353216|0.001-10 step 0.001 def 1
+[04/17 00:19:00.078946][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 2933us] Property 176 get as 1065353216|1
+[04/17 00:19:00.080581][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1443us] Property 182 range as 0-2 step 1 def 0|0-3e-45 step 1e-45 def 0
+[04/17 00:19:00.082059][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1433us] Property 182 get as 1|1e-45
+[04/17 00:19:00.083688][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1495us] Property 191 range as 0-2 step 1 def 2|0-3e-45 step 1e-45 def 3e-45
+[04/17 00:19:00.085174][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1438us] Property 191 get as 2|3e-45
+[04/17 00:19:00.086725][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1411us] Property 196 range as 0-127 step 1 def 0|0-1.78e-43 step 1e-45 def 0
+[04/17 00:19:00.088181][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1396us] Property 196 get as 0|0
+[04/17 00:19:00.089810][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1450us] Property 204 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.091286][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1428us] Property 204 get as 0|0
+[04/17 00:19:00.092824][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1404us] Property 205 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.094301][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1429us] Property 205 get as 0|0
+[04/17 00:19:00.095795][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1358us] Property 206 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.097320][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1474us] Property 206 get as 0|0
+[04/17 00:19:00.098957][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1520us] Property 211 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.100429][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1430us] Property 211 get as 0|0
+[04/17 00:19:00.102117][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1543us] Property 212 range as 981668463-1065336439 step 981668463 def 1045220557|0.001-0.999 step 0.001 def 0.2
+[04/17 00:19:00.103542][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1379us] Property 212 get as 1045220557|0.2
+[04/17 00:19:00.105189][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1482us] Property 216 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.106686][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1447us] Property 216 get as 0|0
+[04/17 00:19:00.106888][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 11us] Property 81 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.106980][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 3us] Property 81 get as 0|0
+[04/17 00:19:00.108562][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1426us] Property 217 range as 20-10000 step 1 def 67|2.8e-44-1.4013e-41 step 1e-45 def 9.4e-44
+[04/17 00:19:00.110047][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1463us] Property 217 get as 67|9.4e-44
+[04/17 00:19:00.110131][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 4us] Property 82 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.110167][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1us] Property 82 get as 0|0
+[04/17 00:19:00.110272][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3us] Property 115 range as 0-270 step 90 def 0|0-3.78e-43 step 1.26e-43 def 0
+[04/17 00:19:00.110321][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1us] Property 115 get as 0|0
+[04/17 00:19:00.111807][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1406us] Property 189 range as 1-1999 step 1 def 332|1e-45-2.801e-42 step 1e-45 def 4.65e-43
+[04/17 00:19:00.113339][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1492us] Property 189 get as 332|4.65e-43
+[04/17 00:19:00.114959][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1466us] Property 236 range as 0-2 step 1 def 2|0-3e-45 step 1e-45 def 3e-45
+[04/17 00:19:00.116434][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1419us] Property 236 get as 2|3e-45
+[04/17 00:19:00.117309][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2000, value=2
+[04/17 00:19:00.117343][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=6, propertyId=2000, min=0, max=1, step=1, def=1
+[04/17 00:19:00.118052][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2000, value=2
+[04/17 00:19:00.118802][debug][177753][ObLibuvcDevicePort.cpp:378] UVC_GET_CUR:getAERes:15.
+[04/17 00:19:00.118824][debug][177753][ObLibuvcDevicePort.cpp:381] UVC_AE_MODE_D0_MANUAL:translated_value:1,value:2.
+[04/17 00:19:00.118846][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 2299us] Property 2000 range as 0-1 step 1 def 1|0-1e-45 step 1e-45 def 1e-45
+[04/17 00:19:00.119552][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2000, value=2
+[04/17 00:19:00.120307][debug][177753][ObLibuvcDevicePort.cpp:378] UVC_GET_CUR:getAERes:15.
+[04/17 00:19:00.120329][debug][177753][ObLibuvcDevicePort.cpp:381] UVC_AE_MODE_D0_MANUAL:translated_value:1,value:2.
+[04/17 00:19:00.120349][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1479us] Property 2000 get as 1|1e-45
+[04/17 00:19:00.121980][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1524us] Property 2001 range as 1-1999 step 1 def 156|1e-45-2.801e-42 step 1e-45 def 2.19e-43
+[04/17 00:19:00.123606][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1544us] Property 2001 get as 156|2.19e-43
+[04/17 00:19:00.124489][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2002, value=0
+[04/17 00:19:00.125204][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2002, value=128
+[04/17 00:19:00.125927][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2002, value=1
+[04/17 00:19:00.126676][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2002, value=16
+[04/17 00:19:00.126703][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2002, min=0, max=128, step=1, def=16
+[04/17 00:19:00.127455][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.127491][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3688us] Property 2002 range as 0-128 step 1 def 16|0-1.8e-43 step 1e-45 def 2.2e-44
+[04/17 00:19:00.128217][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.128248][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 727us] Property 2002 get as 16|2.2e-44
+[04/17 00:19:00.129081][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2003, value=1
+[04/17 00:19:00.129113][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2003, min=0, max=1, step=1, def=1
+[04/17 00:19:00.129814][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2003, value=1
+[04/17 00:19:00.129849][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1483us] Property 2003 range as 0-1 step 1 def 1|0-1e-45 step 1e-45 def 1e-45
+[04/17 00:19:00.130555][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2003, value=1
+[04/17 00:19:00.130584][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 683us] Property 2003 get as 1|1e-45
+[04/17 00:19:00.131472][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2004, value=2800
+[04/17 00:19:00.132187][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2004, value=6500
+[04/17 00:19:00.132963][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2004, value=10
+[04/17 00:19:00.133726][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2004, value=4600
+[04/17 00:19:00.133752][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2004, min=2800, max=6500, step=10, def=4600
+[04/17 00:19:00.134578][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2004, value=4600
+[04/17 00:19:00.134611][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3883us] Property 2004 range as 2800-6500 step 10 def 4600|3.924e-42-9.108e-42 step 1.4e-44 def 6.446e-42
+[04/17 00:19:00.135307][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2004, value=4600
+[04/17 00:19:00.135339][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 701us] Property 2004 get as 4600|6.446e-42
+[04/17 00:19:00.136210][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2005, value=-64
+[04/17 00:19:00.136945][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2005, value=64
+[04/17 00:19:00.137719][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2005, value=1
+[04/17 00:19:00.138451][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2005, value=0
+[04/17 00:19:00.138483][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2005, min=-64, max=64, step=1, def=0
+[04/17 00:19:00.139211][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2005, value=0
+[04/17 00:19:00.139248][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3793us] Property 2005 range as -64-64 step 1 def 0|-nan-9e-44 step 1e-45 def 0
+[04/17 00:19:00.139994][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2005, value=0
+[04/17 00:19:00.140022][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 744us] Property 2005 get as 0|0
+[04/17 00:19:00.140830][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2006, value=0
+[04/17 00:19:00.141599][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2006, value=100
+[04/17 00:19:00.142322][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2006, value=1
+[04/17 00:19:00.143046][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2006, value=50
+[04/17 00:19:00.143074][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2006, min=0, max=100, step=1, def=50
+[04/17 00:19:00.143792][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2006, value=50
+[04/17 00:19:00.143823][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3686us] Property 2006 range as 0-100 step 1 def 50|0-1.4e-43 step 1e-45 def 7e-44
+[04/17 00:19:00.144553][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2006, value=50
+[04/17 00:19:00.144584][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 712us] Property 2006 get as 50|7e-44
+[04/17 00:19:00.145432][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2008, value=0
+[04/17 00:19:00.146180][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2008, value=100
+[04/17 00:19:00.146960][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2008, value=1
+[04/17 00:19:00.147732][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2008, value=64
+[04/17 00:19:00.147763][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2008, min=0, max=100, step=1, def=64
+[04/17 00:19:00.148447][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2008, value=64
+[04/17 00:19:00.148480][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3755us] Property 2008 range as 0-100 step 1 def 64|0-1.4e-43 step 1e-45 def 9e-44
+[04/17 00:19:00.149192][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2008, value=64
+[04/17 00:19:00.149221][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 710us] Property 2008 get as 64|9e-44
+[04/17 00:19:00.149354][debug][177749][PropertyServer.cpp:316] [CPBDB530009L] [delta: 5us] Property 1002 get structure data successfully, size 8
+[04/17 00:19:00.150978][debug][177749][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1531us] Property 1003 get structure data successfully, size 44
+[04/17 00:19:00.151820][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2009, value=0
+[04/17 00:19:00.152571][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2009, value=100
+[04/17 00:19:00.153334][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2009, value=1
+[04/17 00:19:00.154077][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2009, value=50
+[04/17 00:19:00.154105][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2009, min=0, max=100, step=1, def=50
+[04/17 00:19:00.154812][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2009, value=50
+[04/17 00:19:00.154840][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3755us] Property 2009 range as 0-100 step 1 def 50|0-1.4e-43 step 1e-45 def 7e-44
+[04/17 00:19:00.155616][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2009, value=50
+[04/17 00:19:00.155644][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 777us] Property 2009 get as 50|7e-44
+[04/17 00:19:00.156454][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2010, value=100
+[04/17 00:19:00.157193][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2010, value=500
+[04/17 00:19:00.157941][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2010, value=1
+[04/17 00:19:00.158689][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2010, value=300
+[04/17 00:19:00.158721][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2010, min=100, max=500, step=1, def=300
+[04/17 00:19:00.159447][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2010, value=300
+[04/17 00:19:00.159485][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3722us] Property 2010 range as 100-500 step 1 def 300|1.4e-43-7e-43 step 1e-45 def 4.2e-43
+[04/17 00:19:00.160177][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2010, value=300
+[04/17 00:19:00.160207][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 654us] Property 2010 get as 300|4.2e-43
+[04/17 00:19:00.160357][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=6, propertyId=2012, min=0, max=1, step=1, def=0
+[04/17 00:19:00.161052][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2012, value=0
+[04/17 00:19:00.161091][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 734us] Property 2012 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.161787][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2012, value=0
+[04/17 00:19:00.161818][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 695us] Property 2012 get as 0|0
+[04/17 00:19:00.162679][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2013, value=0
+[04/17 00:19:00.163437][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2013, value=6
+[04/17 00:19:00.164177][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2013, value=1
+[04/17 00:19:00.164927][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2013, value=3
+[04/17 00:19:00.164953][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2013, min=0, max=6, step=1, def=3
+[04/17 00:19:00.165678][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2013, value=3
+[04/17 00:19:00.165709][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3750us] Property 2013 range as 0-6 step 1 def 3|0-8e-45 step 1e-45 def 4e-45
+[04/17 00:19:00.166425][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2013, value=3
+[04/17 00:19:00.166453][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 716us] Property 2013 get as 3|4e-45
+[04/17 00:19:00.167306][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2014, value=-180
+[04/17 00:19:00.168064][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2014, value=180
+[04/17 00:19:00.168788][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2014, value=1
+[04/17 00:19:00.169531][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2014, value=0
+[04/17 00:19:00.169555][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2014, min=-180, max=180, step=1, def=0
+[04/17 00:19:00.170341][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2014, value=0
+[04/17 00:19:00.170365][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3768us] Property 2014 range as -180-180 step 1 def 0|-nan-2.52e-43 step 1e-45 def 0
+[04/17 00:19:00.171078][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2014, value=0
+[04/17 00:19:00.171095][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 716us] Property 2014 get as 0|0
+[04/17 00:19:00.172572][debug][177749][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1416us] Property 1059 get structure data successfully, size 18
+[04/17 00:19:00.174066][debug][177749][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1406us] Property 1060 get structure data successfully, size 8
+[04/17 00:19:00.175540][debug][177749][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1410us] Property 1061 get structure data successfully, size 8
+[04/17 00:19:00.175652][debug][177755][PropertyServer.cpp:261] [CPBDB530009L] [delta: 15us] Property 14 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.175704][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 3us] Property 14 get as 0|0
+[04/17 00:19:00.176550][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2015, value=0
+[04/17 00:19:00.177291][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2015, value=3
+[04/17 00:19:00.178040][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2015, value=1
+[04/17 00:19:00.178792][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2015, value=3
+[04/17 00:19:00.178805][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2015, min=0, max=3, step=1, def=3
+[04/17 00:19:00.179561][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2015, value=3
+[04/17 00:19:00.179599][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3754us] Property 2015 range as 0-3 step 1 def 3|0-4e-45 step 1e-45 def 4e-45
+[04/17 00:19:00.180309][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2015, value=3
+[04/17 00:19:00.180338][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 707us] Property 2015 get as 3|4e-45
+[04/17 00:19:00.181931][debug][177749][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1456us] Property 1063 get structure data successfully, size 16
+[04/17 00:19:00.183432][debug][177749][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1417us] Property 1064 get structure data successfully, size 4
+[04/17 00:19:00.183508][debug][177755][PropertyServer.cpp:261] [CPBDB530009L] [delta: 4us] Property 15 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.183545][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1us] Property 15 get as 0|0
+[04/17 00:19:00.183613][debug][177755][PropertyServer.cpp:261] [CPBDB530009L] [delta: 2us] Property 118 range as 0-270 step 90 def 0|0-3.78e-43 step 1.26e-43 def 0
+[04/17 00:19:00.183632][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1us] Property 118 get as 0|0
+[04/17 00:19:00.185077][debug][177755][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1396us] Property 184 range as 0-255 step 1 def 60|0-3.57e-43 step 1e-45 def 8.4e-44
+[04/17 00:19:00.186555][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1445us] Property 184 get as 60|8.4e-44
+[04/17 00:19:00.186704][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 10us] Property 3004 range as 0-1 step 1 def 1|0-1e-45 step 1e-45 def 1e-45
+[04/17 00:19:00.186758][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 3us] Property 3004 get as 1|1e-45
+[04/17 00:19:00.188431][debug][177755][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1436us] Property 190 range as 1-199000 step 1 def 32008|1e-45-2.78858e-40 step 1e-45 def 4.4853e-41
+[04/17 00:19:00.189939][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1444us] Property 190 get as 32008|4.4853e-41
+[04/17 00:19:00.191589][debug][177755][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1494us] Property 2016 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.193052][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1403us] Property 2016 get as 1|1e-45
+[04/17 00:19:00.194554][debug][177755][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1368us] Property 2017 range as 1-199000 step 1 def 3000|1e-45-2.78858e-40 step 1e-45 def 4.204e-42
+[04/17 00:19:00.196073][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1475us] Property 2017 get as 3000|4.204e-42
+[04/17 00:19:00.196941][debug][177755][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2002, value=16
+[04/17 00:19:00.197685][debug][177755][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2002, value=248
+[04/17 00:19:00.198442][debug][177755][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2002, value=1
+[04/17 00:19:00.199187][debug][177755][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2002, value=16
+[04/17 00:19:00.199217][debug][177755][ObLibuvcDevicePort.cpp:269] getPuRange unit=2, propertyId=2002, min=16, max=248, step=1, def=16
+[04/17 00:19:00.199938][debug][177755][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.200014][debug][177755][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3783us] Property 2018 range as 16-248 step 1 def 16|2.2e-44-3.48e-43 step 1e-45 def 2.2e-44
+[04/17 00:19:00.200811][debug][177755][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.200852][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 776us] Property 2018 get as 16|2.2e-44
+[04/17 00:19:00.202434][debug][177755][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1443us] Property 2052 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.203958][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1477us] Property 2052 get as 0|0
+[04/17 00:19:00.205561][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1476us] Property 2017 get as 3000|4.204e-42
+[04/17 00:19:00.207192][debug][177755][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1394us] Property 2017 range as 1-199000 step 1 def 3000|1e-45-2.78858e-40 step 1e-45 def 4.204e-42
+[04/17 00:19:00.208666][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1423us] Property 2017 get as 3000|4.204e-42
+[04/17 00:19:00.209416][debug][177755][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.209452][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 672us] Property 2018 get as 16|2.2e-44
+[04/17 00:19:00.210310][debug][177755][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2002, value=16
+[04/17 00:19:00.211083][debug][177755][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2002, value=248
+[04/17 00:19:00.211815][debug][177755][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2002, value=1
+[04/17 00:19:00.212557][debug][177755][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2002, value=16
+[04/17 00:19:00.212584][debug][177755][ObLibuvcDevicePort.cpp:269] getPuRange unit=2, propertyId=2002, min=16, max=248, step=1, def=16
+[04/17 00:19:00.213306][debug][177755][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.213336][debug][177755][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3668us] Property 2018 range as 16-248 step 1 def 16|2.2e-44-3.48e-43 step 1e-45 def 2.2e-44
+[04/17 00:19:00.214059][debug][177755][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.214088][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 720us] Property 2018 get as 16|2.2e-44
+[04/17 00:19:00.215689][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1496us] Property 184 get as 60|8.4e-44
+[04/17 00:19:00.217310][debug][177755][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1375us] Property 184 range as 0-255 step 1 def 60|0-3.57e-43 step 1e-45 def 8.4e-44
+[04/17 00:19:00.218947][debug][177755][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1593us] Property 184 get as 60|8.4e-44
+[04/17 00:19:00.220885][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1684us] Property 5525 range as 0-8 step 1 def 0|0-1.1e-44 step 1e-45 def 0
+[04/17 00:19:00.222442][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1482us] Property 5525 get as 0|0
+[04/17 00:19:00.222608][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3us] Property 3009 range as 0-1 step 1 def 1|0-1e-45 step 1e-45 def 1e-45
+[04/17 00:19:00.222649][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 0us] Property 3009 get as 1|1e-45
+[04/17 00:19:00.224174][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1450us] Property 2001 get as 156|2.19e-43
+[04/17 00:19:00.225796][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1432us] Property 2001 range as 1-1999 step 1 def 156|1e-45-2.801e-42 step 1e-45 def 2.19e-43
+[04/17 00:19:00.227302][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1462us] Property 2001 get as 156|2.19e-43
+[04/17 00:19:00.227402][debug][177749][PropertyServer.cpp:261] [CPBDB530009L] [delta: 2us] Property 3010 range as 0-1 step 1 def 1|0-1e-45 step 1e-45 def 1e-45
+[04/17 00:19:00.227431][debug][177749][PropertyServer.cpp:233] [CPBDB530009L] [delta: 0us] Property 3010 get as 1|1e-45
+[04/17 00:19:00.228206][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2005, value=0
+[04/17 00:19:00.228223][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 733us] Property 2005 get as 0|0
+[04/17 00:19:00.229065][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2005, value=-64
+[04/17 00:19:00.229833][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2005, value=64
+[04/17 00:19:00.230550][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2005, value=1
+[04/17 00:19:00.231295][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2005, value=0
+[04/17 00:19:00.231313][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2005, min=-64, max=64, step=1, def=0
+[04/17 00:19:00.232070][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2005, value=0
+[04/17 00:19:00.232104][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3723us] Property 2005 range as -64-64 step 1 def 0|-nan-9e-44 step 1e-45 def 0
+[04/17 00:19:00.232802][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2005, value=0
+[04/17 00:19:00.232818][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 688us] Property 2005 get as 0|0
+[04/17 00:19:00.233549][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.233576][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 687us] Property 2002 get as 16|2.2e-44
+[04/17 00:19:00.234469][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2002, value=0
+[04/17 00:19:00.235170][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2002, value=128
+[04/17 00:19:00.236101][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2002, value=1
+[04/17 00:19:00.236784][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2002, value=16
+[04/17 00:19:00.236795][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2002, min=0, max=128, step=1, def=16
+[04/17 00:19:00.237531][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.237544][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3800us] Property 2002 range as 0-128 step 1 def 16|0-1.8e-43 step 1e-45 def 2.2e-44
+[04/17 00:19:00.238276][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.238315][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 759us] Property 2002 get as 16|2.2e-44
+[04/17 00:19:00.239057][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2004, value=4600
+[04/17 00:19:00.239091][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 723us] Property 2004 get as 4600|6.446e-42
+[04/17 00:19:00.240091][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2004, value=2800
+[04/17 00:19:00.240799][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2004, value=6500
+[04/17 00:19:00.241563][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2004, value=10
+[04/17 00:19:00.242285][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2004, value=4600
+[04/17 00:19:00.242310][debug][177753][ObLibuvcDevicePort.cpp:269] getPuRange unit=7, propertyId=2004, min=2800, max=6500, step=10, def=4600
+[04/17 00:19:00.243033][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2004, value=4600
+[04/17 00:19:00.243066][debug][177753][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3771us] Property 2004 range as 2800-6500 step 10 def 4600|3.924e-42-9.108e-42 step 1.4e-44 def 6.446e-42
+[04/17 00:19:00.243831][debug][177753][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2004, value=4600
+[04/17 00:19:00.243858][debug][177753][PropertyServer.cpp:233] [CPBDB530009L] [delta: 765us] Property 2004 get as 4600|6.446e-42
+[04/17 00:19:00.248098][debug][177756][PropertyServer.cpp:261] [CPBDB530009L] [delta: 16us] Property 18 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.248195][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 4us] Property 18 get as 0|0
+[04/17 00:19:00.248361][debug][177756][PropertyServer.cpp:261] [CPBDB530009L] [delta: 4us] Property 19 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.248393][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 2us] Property 19 get as 0|0
+[04/17 00:19:00.248477][debug][177756][PropertyServer.cpp:261] [CPBDB530009L] [delta: 2us] Property 116 range as 0-270 step 90 def 0|0-3.78e-43 step 1.26e-43 def 0
+[04/17 00:19:00.248504][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1us] Property 116 get as 0|0
+[04/17 00:19:00.250072][debug][177756][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1471us] Property 184 range as 0-255 step 1 def 60|0-3.57e-43 step 1e-45 def 8.4e-44
+[04/17 00:19:00.251589][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1441us] Property 184 get as 60|8.4e-44
+[04/17 00:19:00.253194][debug][177756][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1412us] Property 190 range as 1-199000 step 1 def 32008|1e-45-2.78858e-40 step 1e-45 def 4.4853e-41
+[04/17 00:19:00.254684][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1417us] Property 190 get as 32008|4.4853e-41
+[04/17 00:19:00.254830][debug][177756][PropertyServer.cpp:253] [CPBDB530009L] Property 2016 alias to 2025
+[04/17 00:19:00.256340][debug][177756][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1468us] Property 2016 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.256437][debug][177756][PropertyServer.cpp:221] [CPBDB530009L] Property 2016 alias to 2025
+[04/17 00:19:00.257897][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1421us] Property 2016 get as 1|1e-45
+[04/17 00:19:00.257992][debug][177756][PropertyServer.cpp:253] [CPBDB530009L] Property 2017 alias to 2026
+[04/17 00:19:00.259456][debug][177756][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1432us] Property 2017 range as 1-199000 step 1 def 3000|1e-45-2.78858e-40 step 1e-45 def 4.204e-42
+[04/17 00:19:00.259544][debug][177756][PropertyServer.cpp:221] [CPBDB530009L] Property 2017 alias to 2026
+[04/17 00:19:00.261049][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1475us] Property 2017 get as 3000|4.204e-42
+[04/17 00:19:00.261228][debug][177756][PropertyServer.cpp:253] [CPBDB530009L] Property 2018 alias to 2027
+[04/17 00:19:00.262015][debug][177756][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2002, value=16
+[04/17 00:19:00.262846][debug][177756][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2002, value=248
+[04/17 00:19:00.263689][debug][177756][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2002, value=1
+[04/17 00:19:00.264447][debug][177756][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2002, value=16
+[04/17 00:19:00.264506][debug][177756][ObLibuvcDevicePort.cpp:269] getPuRange unit=2, propertyId=2002, min=16, max=248, step=1, def=16
+[04/17 00:19:00.265187][debug][177756][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.265252][debug][177756][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3987us] Property 2018 range as 16-248 step 1 def 16|2.2e-44-3.48e-43 step 1e-45 def 2.2e-44
+[04/17 00:19:00.265296][debug][177756][PropertyServer.cpp:221] [CPBDB530009L] Property 2018 alias to 2027
+[04/17 00:19:00.266081][debug][177756][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.266172][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 850us] Property 2018 get as 16|2.2e-44
+[04/17 00:19:00.266326][debug][177756][PropertyServer.cpp:221] [CPBDB530009L] Property 2017 alias to 2026
+[04/17 00:19:00.267821][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1461us] Property 2017 get as 3000|4.204e-42
+[04/17 00:19:00.268089][debug][177756][PropertyServer.cpp:253] [CPBDB530009L] Property 2017 alias to 2026
+[04/17 00:19:00.269561][debug][177756][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1441us] Property 2017 range as 1-199000 step 1 def 3000|1e-45-2.78858e-40 step 1e-45 def 4.204e-42
+[04/17 00:19:00.269598][debug][177756][PropertyServer.cpp:221] [CPBDB530009L] Property 2017 alias to 2026
+[04/17 00:19:00.271055][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1434us] Property 2017 get as 3000|4.204e-42
+[04/17 00:19:00.271141][debug][177756][PropertyServer.cpp:221] [CPBDB530009L] Property 2018 alias to 2027
+[04/17 00:19:00.271787][debug][177756][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.271809][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 650us] Property 2018 get as 16|2.2e-44
+[04/17 00:19:00.271979][debug][177756][PropertyServer.cpp:253] [CPBDB530009L] Property 2018 alias to 2027
+[04/17 00:19:00.272683][debug][177756][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2002, value=16
+[04/17 00:19:00.273400][debug][177756][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2002, value=248
+[04/17 00:19:00.274146][debug][177756][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2002, value=1
+[04/17 00:19:00.274954][debug][177756][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2002, value=16
+[04/17 00:19:00.274980][debug][177756][ObLibuvcDevicePort.cpp:269] getPuRange unit=2, propertyId=2002, min=16, max=248, step=1, def=16
+[04/17 00:19:00.275669][debug][177756][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.275740][debug][177756][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3737us] Property 2018 range as 16-248 step 1 def 16|2.2e-44-3.48e-43 step 1e-45 def 2.2e-44
+[04/17 00:19:00.275758][debug][177756][PropertyServer.cpp:221] [CPBDB530009L] Property 2018 alias to 2027
+[04/17 00:19:00.276413][debug][177756][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.276467][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 691us] Property 2018 get as 16|2.2e-44
+[04/17 00:19:00.277915][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1368us] Property 184 get as 60|8.4e-44
+[04/17 00:19:00.279535][debug][177756][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1419us] Property 184 range as 0-255 step 1 def 60|0-3.57e-43 step 1e-45 def 8.4e-44
+[04/17 00:19:00.281018][debug][177756][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1455us] Property 184 get as 60|8.4e-44
+[04/17 00:19:00.327946][debug][177765][PropertyServer.cpp:261] [CPBDB530009L] [delta: 15us] Property 112 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.328051][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 3us] Property 112 get as 0|0
+[04/17 00:19:00.328209][debug][177765][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3us] Property 114 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.328240][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 2us] Property 114 get as 0|0
+[04/17 00:19:00.328339][debug][177765][PropertyServer.cpp:261] [CPBDB530009L] [delta: 2us] Property 117 range as 0-270 step 90 def 0|0-3.78e-43 step 1.26e-43 def 0
+[04/17 00:19:00.328368][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1us] Property 117 get as 0|0
+[04/17 00:19:00.329930][debug][177765][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1494us] Property 184 range as 0-255 step 1 def 60|0-3.57e-43 step 1e-45 def 8.4e-44
+[04/17 00:19:00.331460][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1507us] Property 184 get as 60|8.4e-44
+[04/17 00:19:00.332941][debug][177765][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1389us] Property 190 range as 1-199000 step 1 def 32008|1e-45-2.78858e-40 step 1e-45 def 4.4853e-41
+[04/17 00:19:00.334435][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1453us] Property 190 get as 32008|4.4853e-41
+[04/17 00:19:00.334538][debug][177765][PropertyServer.cpp:253] [CPBDB530009L] Property 2016 alias to 2025
+[04/17 00:19:00.336054][debug][177765][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1481us] Property 2016 range as 0-1 step 1 def 0|0-1e-45 step 1e-45 def 0
+[04/17 00:19:00.336093][debug][177765][PropertyServer.cpp:221] [CPBDB530009L] Property 2016 alias to 2025
+[04/17 00:19:00.337544][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1428us] Property 2016 get as 1|1e-45
+[04/17 00:19:00.337660][debug][177765][PropertyServer.cpp:253] [CPBDB530009L] Property 2017 alias to 2026
+[04/17 00:19:00.339098][debug][177765][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1407us] Property 2017 range as 1-199000 step 1 def 3000|1e-45-2.78858e-40 step 1e-45 def 4.204e-42
+[04/17 00:19:00.339139][debug][177765][PropertyServer.cpp:221] [CPBDB530009L] Property 2017 alias to 2026
+[04/17 00:19:00.340566][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1403us] Property 2017 get as 3000|4.204e-42
+[04/17 00:19:00.340678][debug][177765][PropertyServer.cpp:253] [CPBDB530009L] Property 2018 alias to 2027
+[04/17 00:19:00.341438][debug][177765][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2002, value=16
+[04/17 00:19:00.342189][debug][177765][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2002, value=248
+[04/17 00:19:00.342940][debug][177765][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2002, value=1
+[04/17 00:19:00.343662][debug][177765][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2002, value=16
+[04/17 00:19:00.343688][debug][177765][ObLibuvcDevicePort.cpp:269] getPuRange unit=2, propertyId=2002, min=16, max=248, step=1, def=16
+[04/17 00:19:00.344406][debug][177765][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.344438][debug][177765][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3728us] Property 2018 range as 16-248 step 1 def 16|2.2e-44-3.48e-43 step 1e-45 def 2.2e-44
+[04/17 00:19:00.344502][debug][177765][PropertyServer.cpp:221] [CPBDB530009L] Property 2018 alias to 2027
+[04/17 00:19:00.345174][debug][177765][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.345199][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 674us] Property 2018 get as 16|2.2e-44
+[04/17 00:19:00.345299][debug][177765][PropertyServer.cpp:221] [CPBDB530009L] Property 2017 alias to 2026
+[04/17 00:19:00.346803][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1472us] Property 2017 get as 3000|4.204e-42
+[04/17 00:19:00.347029][debug][177765][PropertyServer.cpp:253] [CPBDB530009L] Property 2017 alias to 2026
+[04/17 00:19:00.348559][debug][177765][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1492us] Property 2017 range as 1-199000 step 1 def 3000|1e-45-2.78858e-40 step 1e-45 def 4.204e-42
+[04/17 00:19:00.348591][debug][177765][PropertyServer.cpp:221] [CPBDB530009L] Property 2017 alias to 2026
+[04/17 00:19:00.350050][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1439us] Property 2017 get as 3000|4.204e-42
+[04/17 00:19:00.350161][debug][177765][PropertyServer.cpp:221] [CPBDB530009L] Property 2018 alias to 2027
+[04/17 00:19:00.350966][debug][177765][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.351008][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 815us] Property 2018 get as 16|2.2e-44
+[04/17 00:19:00.351227][debug][177765][PropertyServer.cpp:253] [CPBDB530009L] Property 2018 alias to 2027
+[04/17 00:19:00.351970][debug][177765][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=130, action=2002, value=16
+[04/17 00:19:00.352700][debug][177765][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=131, action=2002, value=248
+[04/17 00:19:00.353415][debug][177765][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=132, action=2002, value=1
+[04/17 00:19:00.354162][debug][177765][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=135, action=2002, value=16
+[04/17 00:19:00.354188][debug][177765][ObLibuvcDevicePort.cpp:269] getPuRange unit=2, propertyId=2002, min=16, max=248, step=1, def=16
+[04/17 00:19:00.355006][debug][177765][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.355046][debug][177765][PropertyServer.cpp:261] [CPBDB530009L] [delta: 3785us] Property 2018 range as 16-248 step 1 def 16|2.2e-44-3.48e-43 step 1e-45 def 2.2e-44
+[04/17 00:19:00.355074][debug][177765][PropertyServer.cpp:221] [CPBDB530009L] Property 2018 alias to 2027
+[04/17 00:19:00.355841][debug][177765][ObLibuvcDevicePort.cpp:370] ObLibuvcDevicePort::uvcCtrlValueTranslate propertyId=129, action=2002, value=16
+[04/17 00:19:00.355873][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 778us] Property 2018 get as 16|2.2e-44
+[04/17 00:19:00.357421][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1425us] Property 184 get as 60|8.4e-44
+[04/17 00:19:00.359063][debug][177765][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1413us] Property 184 range as 0-255 step 1 def 60|0-3.57e-43 step 1e-45 def 8.4e-44
+[04/17 00:19:00.360606][debug][177765][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1501us] Property 184 get as 60|8.4e-44
+[04/17 00:19:00.680225][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1545us] Property 1037 get structure data successfully, size 16
+[04/17 00:19:00.680329][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356340679491, dev=1776356340678, rtt=1668
+[04/17 00:19:00.680366][debug][177748][GlobalTimestampFitter.cpp:189] [CPBDB530009L] LinearParam update! QueueSize: 9, coefficientA: 1000.0730801219336, constantB: -129816336392.9989, checkDataX: 1776356340678, checkDataY: 1776356340679491
+[04/17 00:19:01.209290][info][177694][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[04/17 00:19:01.209441][info][177694][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[04/17 00:19:01.210125][info][177694][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[04/17 00:19:01.210147][debug][177694][ObLibuvcDevicePort.cpp:92] ObLibuvcDevicePort::startStream()...
+[04/17 00:19:01.210182][debug][177694][ObLibuvcDevicePort.cpp:110] playProfile: infIndex=4, selected_format.width=1280, height=720, format=MJPG
+[04/17 00:19:01.214481][debug][177694][ObLibuvcDevicePort.cpp:166] ObLibuvcDevicePort::startStream() done
+[04/17 00:19:01.218447][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 3774us] Property 196 get as 0|0
+[04/17 00:19:01.220666][debug][177694][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1870us] Property 1060 get structure data successfully, size 8
+[04/17 00:19:01.222163][debug][177694][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1453us] Property 189 range as 1-1999 step 1 def 332|1e-45-2.801e-42 step 1e-45 def 4.65e-43
+[04/17 00:19:01.223664][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1479us] Property 189 get as 332|4.65e-43
+[04/17 00:19:01.681921][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1396us] Property 1037 get structure data successfully, size 16
+[04/17 00:19:01.682003][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356341681253, dev=1776356341680, rtt=1495
+[04/17 00:19:01.682021][debug][177748][GlobalTimestampFitter.cpp:189] [CPBDB530009L] LinearParam update! QueueSize: 10, coefficientA: 999.9865995334098, constantB: 23804005207.762127, checkDataX: 1776356341680, checkDataY: 1776356341681253
+[04/17 00:19:01.745048][debug][177807][FrameBufferManager.cpp:27] FrameMemoryAllocator created! The max frame memory size has been set to 2048.000MB
+[04/17 00:19:01.745134][debug][177807][FrameBufferManager.hpp:88] FrameBufferManager created! frame type:N11libobsensor10ColorFrameE, obj addr:0xffff300017c0, frame obj total size:1.758MB
+[04/17 00:19:01.745148][debug][177807][FrameMemoryPool.cpp:70] ColorFrame bufferManager created!
+[04/17 00:19:01.745190][debug][177807][FrameBufferManager.cpp:79] New frame buffer allocated=1.758MB, total usage: allocated=1.758MB, max limit=2048.000MB
+[04/17 00:19:01.745309][info][177807][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[04/17 00:19:01.745349][debug][177807][GlobalTimestampFitter.cpp:73] [CPBDB530009L] GetLinearFuncParam: coefficientA: 999.9865995334098, constantB: 23804005207.762127, checkDataX: 1776356341680, checkDataY: 1776356341681253
+[04/17 00:19:01.745415][debug][177807][FilterDecorator.cpp:47] Filter FrameProcessor: start frame queue
+[04/17 00:19:01.746510][debug][177829][FrameBufferManager.hpp:88] FrameBufferManager created! frame type:N11libobsensor10ColorFrameE, obj addr:0xffff74000c30, frame obj total size:2.637MB
+[04/17 00:19:01.746532][debug][177829][FrameMemoryPool.cpp:70] ColorFrame bufferManager created!
+[04/17 00:19:01.746563][debug][177829][FrameBufferManager.cpp:79] New frame buffer allocated=2.637MB, total usage: allocated=4.396MB, max limit=2048.000MB
+[04/17 00:19:01.778352][debug][177807][FrameBufferManager.cpp:79] New frame buffer allocated=1.758MB, total usage: allocated=6.154MB, max limit=2048.000MB
+[04/17 00:19:01.778675][debug][177829][FrameBufferManager.cpp:79] New frame buffer allocated=2.637MB, total usage: allocated=8.791MB, max limit=2048.000MB
+[04/17 00:19:01.950686][debug][177809][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1470us] Property 85 get as 1|1e-45
+[04/17 00:19:01.950997][debug][177809][PropertyServer.cpp:233] [CPBDB530009L] [delta: 8us] Property 3004 get as 1|1e-45
+[04/17 00:19:02.683698][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1551us] Property 1037 get structure data successfully, size 16
+[04/17 00:19:02.683848][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356342682985, dev=1776356342682, rtt=1718
+[04/17 00:19:02.683879][debug][177748][GlobalTimestampFitter.cpp:189] [CPBDB530009L] LinearParam update! QueueSize: 11, coefficientA: 999.9304867881814, constantB: 123480235884.95967, checkDataX: 1776356342682, checkDataY: 1776356342682985
+[04/17 00:19:02.712896][debug][177807][GlobalTimestampFitter.cpp:73] [CPBDB530009L] GetLinearFuncParam: coefficientA: 999.9304867881814, constantB: 123480235884.95967, checkDataX: 1776356342682, checkDataY: 1776356342682985
+[04/17 00:19:02.913103][debug][177807][FrameBufferManager.cpp:79] New frame buffer allocated=1.758MB, total usage: allocated=10.549MB, max limit=2048.000MB
+[04/17 00:19:02.913592][debug][177829][FrameBufferManager.cpp:79] New frame buffer allocated=2.637MB, total usage: allocated=13.187MB, max limit=2048.000MB
+[04/17 00:19:03.685445][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1459us] Property 1037 get structure data successfully, size 16
+[04/17 00:19:03.685558][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356343684761, dev=1776356343683, rtt=1588
+[04/17 00:19:03.685589][debug][177748][GlobalTimestampFitter.cpp:189] [CPBDB530009L] LinearParam update! QueueSize: 12, coefficientA: 999.995824063372, constantB: 7417952926.558543, checkDataX: 1776356343683, checkDataY: 1776356343684761
+[04/17 00:19:03.714026][debug][177807][GlobalTimestampFitter.cpp:73] [CPBDB530009L] GetLinearFuncParam: coefficientA: 999.995824063372, constantB: 7417952926.558543, checkDataX: 1776356343683, checkDataY: 1776356343684761
+[04/17 00:19:04.687197][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1488us] Property 1037 get structure data successfully, size 16
+[04/17 00:19:04.687297][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356344686492, dev=1776356344685, rtt=1606
+[04/17 00:19:04.687315][debug][177748][GlobalTimestampFitter.cpp:189] [CPBDB530009L] LinearParam update! QueueSize: 13, coefficientA: 1000.0024720879154, constantB: -4391307614.425358, checkDataX: 1776356344685, checkDataY: 1776356344686492
+[04/17 00:19:04.715343][debug][177807][GlobalTimestampFitter.cpp:73] [CPBDB530009L] GetLinearFuncParam: coefficientA: 1000.0024720879154, constantB: -4391307614.425358, checkDataX: 1776356344685, checkDataY: 1776356344686492
+[04/17 00:19:05.688856][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1437us] Property 1037 get structure data successfully, size 16
+[04/17 00:19:05.688970][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356345688181, dev=1776356345687, rtt=1569
+[04/17 00:19:05.688997][debug][177748][GlobalTimestampFitter.cpp:189] [CPBDB530009L] LinearParam update! QueueSize: 14, coefficientA: 999.9874571629831, constantB: 22280549474.53014, checkDataX: 1776356345687, checkDataY: 1776356345688181
+[04/17 00:19:05.716450][debug][177807][GlobalTimestampFitter.cpp:73] [CPBDB530009L] GetLinearFuncParam: coefficientA: 999.9874571629831, constantB: 22280549474.53014, checkDataX: 1776356345687, checkDataY: 1776356345688181
+[04/17 00:19:06.690592][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1465us] Property 1037 get structure data successfully, size 16
+[04/17 00:19:06.690769][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356346689932, dev=1776356346689, rtt=1668
+[04/17 00:19:06.690796][debug][177748][GlobalTimestampFitter.cpp:189] [CPBDB530009L] LinearParam update! QueueSize: 15, coefficientA: 999.9688319894253, constantB: 55365494599.639404, checkDataX: 1776356346689, checkDataY: 1776356346689932
+[04/17 00:19:06.717652][debug][177807][GlobalTimestampFitter.cpp:73] [CPBDB530009L] GetLinearFuncParam: coefficientA: 999.9688319894253, constantB: 55365494599.639404, checkDataX: 1776356346689, checkDataY: 1776356346689932
+[04/17 00:19:06.750955][info][177807][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=30.169830fps
+[04/17 00:19:06.751155][debug][177827][SensorBase.cpp:365] [CPBDB530009L] Color frameProcessor_ callback frameRate=30.163803fps
+[04/17 00:19:06.751248][info][177827][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=30.163803fps
+[04/17 00:19:11.756817][info][177807][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=29.964043fps
+[04/17 00:19:11.756980][debug][177827][SensorBase.cpp:365] [CPBDB530009L] Color frameProcessor_ callback frameRate=29.970030fps
+[04/17 00:19:11.757032][info][177827][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=29.964043fps
+[04/17 00:19:12.165278][info][177694][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[04/17 00:19:12.165398][debug][177694][ObLibuvcDevicePort.cpp:171] ObLibuvcDevicePort::stopStream()...
+[04/17 00:19:12.209931][debug][177694][ObLibuvcDevicePort.cpp:196] ObLibuvcDevicePort::stopStream() done
+[04/17 00:19:12.211514][debug][177694][PropertyServer.cpp:206] [CPBDB530009L] [delta: 1442us] Property 77 set to 1|1e-45
+[04/17 00:19:12.211587][info][177694][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[04/17 00:19:12.213574][debug][177694][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1613us] Property 1060 get structure data successfully, size 8
+[04/17 00:19:12.215118][debug][177694][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1478us] Property 189 range as 1-1999 step 1 def 332|1e-45-2.801e-42 step 1e-45 def 4.65e-43
+[04/17 00:19:12.216607][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1434us] Property 189 get as 332|4.65e-43
+[04/17 00:19:14.378422][debug][177694][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1594us] Property 1060 get structure data successfully, size 8
+[04/17 00:19:15.399577][info][177694][VideoSensor.cpp:58] [CPBDB530009L] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 30}
+[04/17 00:19:15.399690][info][177694][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STARTING@Color
+[04/17 00:19:15.399720][info][177694][VideoSensor.cpp:127] [CPBDB530009L] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 800, fps: 30}
+[04/17 00:19:15.399731][debug][177694][ObLibuvcDevicePort.cpp:92] ObLibuvcDevicePort::startStream()...
+[04/17 00:19:15.399759][debug][177694][ObLibuvcDevicePort.cpp:110] playProfile: infIndex=4, selected_format.width=1280, height=800, format=MJPG
+[04/17 00:19:15.403468][debug][177694][ObLibuvcDevicePort.cpp:166] ObLibuvcDevicePort::startStream() done
+[04/17 00:19:15.408652][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 4970us] Property 196 get as 0|0
+[04/17 00:19:15.410357][debug][177694][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1450us] Property 1060 get structure data successfully, size 8
+[04/17 00:19:15.411862][debug][177694][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1460us] Property 189 range as 1-1999 step 1 def 332|1e-45-2.801e-42 step 1e-45 def 4.65e-43
+[04/17 00:19:15.413353][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1461us] Property 189 get as 332|4.65e-43
+[04/17 00:19:15.937486][debug][178079][FrameBufferManager.hpp:88] FrameBufferManager created! frame type:N11libobsensor10ColorFrameE, obj addr:0xffff4c003040, frame obj total size:1.954MB
+[04/17 00:19:15.937605][debug][178079][FrameMemoryPool.cpp:70] ColorFrame bufferManager created!
+[04/17 00:19:15.937650][debug][178079][FrameBufferManager.cpp:79] New frame buffer allocated=1.954MB, total usage: allocated=15.140MB, max limit=2048.000MB
+[04/17 00:19:15.937849][info][178079][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STREAMING@Color
+[04/17 00:19:15.937999][debug][178079][FilterDecorator.cpp:47] Filter FrameProcessor: start frame queue
+[04/17 00:19:15.938442][debug][177829][FrameBufferManager.hpp:88] FrameBufferManager created! frame type:N11libobsensor10ColorFrameE, obj addr:0xffff742126b0, frame obj total size:2.930MB
+[04/17 00:19:15.938465][debug][177829][FrameMemoryPool.cpp:70] ColorFrame bufferManager created!
+[04/17 00:19:15.938501][debug][177829][FrameBufferManager.cpp:79] New frame buffer allocated=2.930MB, total usage: allocated=18.070MB, max limit=2048.000MB
+[04/17 00:19:15.970708][debug][178079][FrameBufferManager.cpp:79] New frame buffer allocated=1.954MB, total usage: allocated=20.024MB, max limit=2048.000MB
+[04/17 00:19:15.971138][debug][177829][FrameBufferManager.cpp:79] New frame buffer allocated=2.930MB, total usage: allocated=22.954MB, max limit=2048.000MB
+[04/17 00:19:16.692393][debug][177748][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1479us] Property 1037 get structure data successfully, size 16
+[04/17 00:19:16.692490][debug][177748][GlobalTimestampFitter.cpp:259] [CPBDB530009L] sys=1776356356691691, dev=1776356356690, rtt=1594
+[04/17 00:19:16.692507][debug][177748][GlobalTimestampFitter.cpp:189] [CPBDB530009L] LinearParam update! QueueSize: 16, coefficientA: 1000.0022156729268, constantB: -3935823257.411659, checkDataX: 1776356356690, checkDataY: 1776356356691691
+[04/17 00:19:16.704791][debug][178079][GlobalTimestampFitter.cpp:73] [CPBDB530009L] GetLinearFuncParam: coefficientA: 1000.0022156729268, constantB: -3935823257.411659, checkDataX: 1776356356690, checkDataY: 1776356356691691
+[04/17 00:19:16.771508][info][178079][VideoSensor.cpp:153] [CPBDB530009L] Color backend frame callback, frameRate=7.577269fps
+[04/17 00:19:16.771653][debug][178101][SensorBase.cpp:365] [CPBDB530009L] Color frameProcessor_ callback frameRate=7.577269fps
+[04/17 00:19:16.771714][info][178101][SensorBase.cpp:370] [CPBDB530009L] Color Streaming... frameRate=7.578780fps
+[04/17 00:19:17.338864][debug][178079][FrameBufferManager.cpp:79] New frame buffer allocated=1.954MB, total usage: allocated=24.908MB, max limit=2048.000MB
+[04/17 00:19:17.339394][debug][177829][FrameBufferManager.cpp:79] New frame buffer allocated=2.930MB, total usage: allocated=27.838MB, max limit=2048.000MB
+[04/17 00:19:19.721854][info][177694][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPING@Color
+[04/17 00:19:19.721957][debug][177694][ObLibuvcDevicePort.cpp:171] ObLibuvcDevicePort::stopStream()...
+[04/17 00:19:19.766495][debug][177694][ObLibuvcDevicePort.cpp:196] ObLibuvcDevicePort::stopStream() done
+[04/17 00:19:19.768023][debug][177694][PropertyServer.cpp:206] [CPBDB530009L] [delta: 1425us] Property 77 set to 1|1e-45
+[04/17 00:19:19.768080][info][177694][SensorBase.cpp:213] [CPBDB530009L] Stream state changed to STOPPED@Color
+[04/17 00:19:19.769757][debug][177694][PropertyServer.cpp:316] [CPBDB530009L] [delta: 1412us] Property 1060 get structure data successfully, size 8
+[04/17 00:19:19.771259][debug][177694][PropertyServer.cpp:261] [CPBDB530009L] [delta: 1455us] Property 189 range as 1-1999 step 1 def 332|1e-45-2.801e-42 step 1e-45 def 4.65e-43
+[04/17 00:19:19.772752][debug][177694][PropertyServer.cpp:233] [CPBDB530009L] [delta: 1464us] Property 189 get as 332|4.65e-43
+[04/17 00:19:20.987956][debug][177694][FilterDecorator.cpp:303] Filter@PointCloudFilter have been reset
+[04/17 00:19:20.988021][debug][177694][FilterDecorator.cpp:284] Filter PointCloudFilter destroyed
+[04/17 00:19:20.988165][debug][177694][Pipeline.cpp:46] [CPBDB530009L] Pipeline deInit start!
+[04/17 00:19:20.988185][info][177694][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0xAAAAD0FBEFD0
+[04/17 00:19:20.988208][debug][177694][Pipeline.cpp:46] [CPBDB530009L] Pipeline deInit start!
+[04/17 00:19:20.988218][info][177694][Pipeline.cpp:53] [CPBDB530009L] Pipeline destroyed! @0xAAAAD0FBD840
+[04/17 00:19:20.988567][debug][177694][FilterDecorator.cpp:303] Filter@SequenceIdFilter have been reset
+[04/17 00:19:20.988580][debug][177694][FilterDecorator.cpp:284] Filter SequenceIdFilter destroyed
+[04/17 00:19:20.988594][debug][177694][FilterDecorator.cpp:303] Filter@SequenceIdFilter have been reset
+[04/17 00:19:20.988601][debug][177694][FilterDecorator.cpp:284] Filter SequenceIdFilter destroyed
+[04/17 00:19:20.988615][debug][177694][FilterDecorator.cpp:303] Filter@DecimationFilter have been reset
+[04/17 00:19:20.988623][debug][177694][FilterDecorator.cpp:284] Filter DecimationFilter destroyed
+[04/17 00:19:20.988633][debug][177694][FilterDecorator.cpp:303] Filter@ThresholdFilter have been reset
+[04/17 00:19:20.988653][debug][177694][FilterDecorator.cpp:284] Filter ThresholdFilter destroyed
+[04/17 00:19:20.988668][debug][177694][FilterDecorator.cpp:303] Filter@HDRMerge have been reset
+[04/17 00:19:20.988674][debug][177694][FilterDecorator.cpp:284] Filter HDRMerge destroyed
+[04/17 00:19:20.988682][debug][177694][FilterDecorator.cpp:303] Filter@SequenceIdFilter have been reset
+[04/17 00:19:20.988688][debug][177694][FilterDecorator.cpp:284] Filter SequenceIdFilter destroyed
+[04/17 00:19:20.988699][debug][177694][FilterDecorator.cpp:303] Filter@SpatialFastFilter have been reset
+[04/17 00:19:20.988705][debug][177694][FilterDecorator.cpp:284] Filter SpatialFastFilter destroyed
+[04/17 00:19:20.988713][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter SpatialFastFilter destroyed
+[04/17 00:19:20.988726][debug][177694][FilterDecorator.cpp:303] Filter@SpatialModerateFilter have been reset
+[04/17 00:19:20.988732][debug][177694][FilterDecorator.cpp:284] Filter SpatialModerateFilter destroyed
+[04/17 00:19:20.988737][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter SpatialModerateFilter destroyed
+[04/17 00:19:20.988748][debug][177694][FilterDecorator.cpp:303] Filter@SpatialAdvancedFilter have been reset
+[04/17 00:19:20.988753][debug][177694][FilterDecorator.cpp:284] Filter SpatialAdvancedFilter destroyed
+[04/17 00:19:20.988758][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter SpatialAdvancedFilter destroyed
+[04/17 00:19:20.988768][debug][177694][FilterDecorator.cpp:303] Filter@TemporalFilter have been reset
+[04/17 00:19:20.988773][debug][177694][FilterDecorator.cpp:284] Filter TemporalFilter destroyed
+[04/17 00:19:20.988778][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter TemporalFilter destroyed
+[04/17 00:19:20.988786][debug][177694][FilterDecorator.cpp:303] Filter@HoleFillingFilter have been reset
+[04/17 00:19:20.988792][debug][177694][FilterDecorator.cpp:284] Filter HoleFillingFilter destroyed
+[04/17 00:19:20.988797][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter HoleFillingFilter destroyed
+[04/17 00:19:20.988805][debug][177694][FilterDecorator.cpp:303] Filter@DisparityTransform have been reset
+[04/17 00:19:20.988811][debug][177694][FilterDecorator.cpp:284] Filter DisparityTransform destroyed
+[04/17 00:19:20.988817][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter DisparityTransform destroyed
+[04/17 00:19:20.988913][debug][177694][FilterDecorator.cpp:303] Filter@DecimationFilter have been reset
+[04/17 00:19:20.988923][debug][177694][FilterDecorator.cpp:284] Filter DecimationFilter destroyed
+[04/17 00:19:20.988999][debug][177694][DeviceMonitor.cpp:174] Heartbeat already disabled!
+[04/17 00:19:20.989192][debug][177694][GyroSensor.cpp:59] GyroSensor is destroyed
+[04/17 00:19:20.989209][info][177694][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/17 00:19:20.989239][debug][177694][AccelSensor.cpp:59] AccelSensor is destroyed
+[04/17 00:19:20.989503][info][177694][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/17 00:19:20.989570][debug][177694][HidDevicePort.cpp:58] HidDevicePort::~HidDevicePort done
+[04/17 00:19:20.989684][debug][177694][VideoSensor.cpp:53] [CPBDB530009L] VideoSensor destroyed @Color
+[04/17 00:19:20.989772][info][177694][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/17 00:19:20.989822][debug][177694][ObLibuvcDevicePort.cpp:80] ~ObLibuvcDevicePort
+[04/17 00:19:21.002021][info][177694][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/17 00:19:21.002107][info][177694][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/17 00:19:21.002164][debug][177694][VideoSensor.cpp:53] [CPBDB530009L] VideoSensor destroyed @RightIR
+[04/17 00:19:21.002237][info][177694][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/17 00:19:21.002263][debug][177694][VideoSensor.cpp:53] [CPBDB530009L] VideoSensor destroyed @LeftIR
+[04/17 00:19:21.002339][info][177694][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/17 00:19:21.002456][debug][177694][VideoSensor.cpp:53] [CPBDB530009L] VideoSensor destroyed @Depth
+[04/17 00:19:21.002583][info][177694][SensorBase.cpp:47] [CPBDB530009L] SensorBase is destroyed
+[04/17 00:19:21.002629][debug][177748][GlobalTimestampFitter.cpp:320] [CPBDB530009L] GlobalTimestampFitter fittingLoop exit
+[04/17 00:19:21.002848][debug][177694][ObLibuvcDevicePort.cpp:80] ~ObLibuvcDevicePort
+[04/17 00:19:21.034151][info][177694][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[04/17 00:19:21.034214][info][177694][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[04/17 00:19:21.034304][debug][177694][FilterDecorator.cpp:303] Filter@FrameUnpacker have been reset
+[04/17 00:19:21.034323][debug][177694][FilterDecorator.cpp:284] Filter FrameUnpacker destroyed
+[04/17 00:19:21.034333][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter FrameUnpacker destroyed
+[04/17 00:19:21.034350][debug][177694][FilterDecorator.cpp:303] Filter@FrameMirror have been reset
+[04/17 00:19:21.034357][debug][177694][FilterDecorator.cpp:284] Filter FrameMirror destroyed
+[04/17 00:19:21.034365][debug][177694][FilterDecorator.cpp:303] Filter@FrameFlip have been reset
+[04/17 00:19:21.034371][debug][177694][FilterDecorator.cpp:284] Filter FrameFlip destroyed
+[04/17 00:19:21.034379][debug][177694][FilterDecorator.cpp:303] Filter@FrameRotate have been reset
+[04/17 00:19:21.034384][debug][177694][FilterDecorator.cpp:284] Filter FrameRotate destroyed
+[04/17 00:19:21.034402][debug][177694][FilterDecorator.cpp:303] Filter@FrameUnpacker have been reset
+[04/17 00:19:21.034408][debug][177694][FilterDecorator.cpp:284] Filter FrameUnpacker destroyed
+[04/17 00:19:21.034415][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter FrameUnpacker destroyed
+[04/17 00:19:21.034423][debug][177694][FilterDecorator.cpp:303] Filter@FrameMirror have been reset
+[04/17 00:19:21.034430][debug][177694][FilterDecorator.cpp:284] Filter FrameMirror destroyed
+[04/17 00:19:21.034437][debug][177694][FilterDecorator.cpp:303] Filter@FrameFlip have been reset
+[04/17 00:19:21.034444][debug][177694][FilterDecorator.cpp:284] Filter FrameFlip destroyed
+[04/17 00:19:21.034451][debug][177694][FilterDecorator.cpp:303] Filter@FrameRotate have been reset
+[04/17 00:19:21.034456][debug][177694][FilterDecorator.cpp:284] Filter FrameRotate destroyed
+[04/17 00:19:21.034470][debug][177694][FilterDecorator.cpp:303] Filter@G330FrameUnpacker have been reset
+[04/17 00:19:21.034477][debug][177694][FilterDecorator.cpp:284] Filter G330FrameUnpacker destroyed
+[04/17 00:19:21.034482][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter G330FrameUnpacker destroyed
+[04/17 00:19:21.034623][debug][177694][FilterDecorator.cpp:303] Filter@NoiseRemovalFilter have been reset
+[04/17 00:19:21.034638][debug][177694][FilterDecorator.cpp:284] Filter NoiseRemovalFilter destroyed
+[04/17 00:19:21.034645][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter NoiseRemovalFilter destroyed
+[04/17 00:19:21.034662][debug][177694][FilterDecorator.cpp:303] Filter@DisparityTransform have been reset
+[04/17 00:19:21.034669][debug][177694][FilterDecorator.cpp:284] Filter DisparityTransform destroyed
+[04/17 00:19:21.034674][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter DisparityTransform destroyed
+[04/17 00:19:21.034696][debug][177694][FilterDecorator.cpp:303] Filter@HardwareD2DCorrectionFilter have been reset
+[04/17 00:19:21.034702][debug][177694][FilterDecorator.cpp:284] Filter HardwareD2DCorrectionFilter destroyed
+[04/17 00:19:21.034708][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter HardwareD2DCorrectionFilter destroyed
+[04/17 00:19:21.034718][debug][177694][FilterDecorator.cpp:303] Filter@FrameMirror have been reset
+[04/17 00:19:21.034724][debug][177694][FilterDecorator.cpp:284] Filter FrameMirror destroyed
+[04/17 00:19:21.034732][debug][177694][FilterDecorator.cpp:303] Filter@FrameFlip have been reset
+[04/17 00:19:21.034738][debug][177694][FilterDecorator.cpp:284] Filter FrameFlip destroyed
+[04/17 00:19:21.034747][debug][177694][FilterDecorator.cpp:303] Filter@FrameRotate have been reset
+[04/17 00:19:21.034753][debug][177694][FilterDecorator.cpp:284] Filter FrameRotate destroyed
+[04/17 00:19:21.034806][debug][177694][FilterDecorator.cpp:303] Filter@FrameMirror have been reset
+[04/17 00:19:21.034815][debug][177694][FilterDecorator.cpp:284] Filter FrameMirror destroyed
+[04/17 00:19:21.034824][debug][177694][FilterDecorator.cpp:303] Filter@FrameFlip have been reset
+[04/17 00:19:21.034831][debug][177694][FilterDecorator.cpp:284] Filter FrameFlip destroyed
+[04/17 00:19:21.034838][debug][177694][FilterDecorator.cpp:303] Filter@FrameRotate have been reset
+[04/17 00:19:21.034845][debug][177694][FilterDecorator.cpp:284] Filter FrameRotate destroyed
+[04/17 00:19:21.034865][debug][177694][FilterDecorator.cpp:303] Filter@DepthResize have been reset
+[04/17 00:19:21.034872][debug][177694][FilterDecorator.cpp:284] Filter DepthResize destroyed
+[04/17 00:19:21.034877][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter DepthResize destroyed
+[04/17 00:19:21.034905][debug][177694][FilterDecorator.cpp:303] Filter@FrameUnpacker have been reset
+[04/17 00:19:21.034913][debug][177694][FilterDecorator.cpp:284] Filter FrameUnpacker destroyed
+[04/17 00:19:21.034939][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter FrameUnpacker destroyed
+[04/17 00:19:21.034950][debug][177694][FilterDecorator.cpp:303] Filter@FrameUnpacker have been reset
+[04/17 00:19:21.034957][debug][177694][FilterDecorator.cpp:284] Filter FrameUnpacker destroyed
+[04/17 00:19:21.034963][debug][177694][PrivFilterCppWrapper.cpp:25] Private filter FrameUnpacker destroyed
+[04/17 00:19:21.034971][debug][177694][FilterDecorator.cpp:303] Filter@IMUCorrector have been reset
+[04/17 00:19:21.034978][debug][177694][FilterDecorator.cpp:284] Filter IMUCorrector destroyed
+[04/17 00:19:21.034990][debug][177694][FilterDecorator.cpp:303] Filter@FormatConverter have been reset
+[04/17 00:19:21.034996][debug][177694][FilterDecorator.cpp:284] Filter FormatConverter destroyed
+[04/17 00:19:21.035029][debug][177694][FrameBufferManager.hpp:95] FrameBufferManager destroying...! frame type: N11libobsensor10ColorFrameE,  obj addr:0xffff300017c0
+[04/17 00:19:21.035056][debug][177694][FrameBufferManager.cpp:88] Frame buffer released=1.758MB, total usage: allocated=26.080MB, max limit=2048.000MB
+[04/17 00:19:21.035067][debug][177694][FrameBufferManager.cpp:88] Frame buffer released=1.758MB, total usage: allocated=24.321MB, max limit=2048.000MB
+[04/17 00:19:21.035126][debug][177694][FrameBufferManager.cpp:88] Frame buffer released=1.758MB, total usage: allocated=22.563MB, max limit=2048.000MB
+[04/17 00:19:21.035136][debug][177694][FrameBufferManager.cpp:103] FrameBufferManagerBase destroyed! manager type:N11libobsensor22FrameBufferManagerBaseE,  obj addr:0xffff300017c0
+[04/17 00:19:21.035146][debug][177694][FrameBufferManager.hpp:95] FrameBufferManager destroying...! frame type: N11libobsensor10ColorFrameE,  obj addr:0xffff4c003040
+[04/17 00:19:21.035153][debug][177694][FrameBufferManager.cpp:88] Frame buffer released=1.954MB, total usage: allocated=20.609MB, max limit=2048.000MB
+[04/17 00:19:21.035161][debug][177694][FrameBufferManager.cpp:88] Frame buffer released=1.954MB, total usage: allocated=18.656MB, max limit=2048.000MB
+[04/17 00:19:21.035168][debug][177694][FrameBufferManager.cpp:88] Frame buffer released=1.954MB, total usage: allocated=16.702MB, max limit=2048.000MB
+[04/17 00:19:21.035173][debug][177694][FrameBufferManager.cpp:103] FrameBufferManagerBase destroyed! manager type:N11libobsensor22FrameBufferManagerBaseE,  obj addr:0xffff4c003040
+[04/17 00:19:21.035180][debug][177694][FrameBufferManager.hpp:95] FrameBufferManager destroying...! frame type: N11libobsensor10ColorFrameE,  obj addr:0xffff74000c30
+[04/17 00:19:21.035190][debug][177694][FrameBufferManager.cpp:88] Frame buffer released=2.637MB, total usage: allocated=14.065MB, max limit=2048.000MB
+[04/17 00:19:21.035199][debug][177694][FrameBufferManager.cpp:88] Frame buffer released=2.637MB, total usage: allocated=11.428MB, max limit=2048.000MB
+[04/17 00:19:21.035850][debug][177694][FrameBufferManager.cpp:88] Frame buffer released=2.637MB, total usage: allocated=8.791MB, max limit=2048.000MB
+[04/17 00:19:21.035898][debug][177694][FrameBufferManager.cpp:103] FrameBufferManagerBase destroyed! manager type:N11libobsensor22FrameBufferManagerBaseE,  obj addr:0xffff74000c30
+[04/17 00:19:21.035916][debug][177694][FrameBufferManager.hpp:95] FrameBufferManager destroying...! frame type: N11libobsensor10ColorFrameE,  obj addr:0xffff742126b0
+[04/17 00:19:21.035931][debug][177694][FrameBufferManager.cpp:88] Frame buffer released=2.930MB, total usage: allocated=5.860MB, max limit=2048.000MB
+[04/17 00:19:21.035941][debug][177694][FrameBufferManager.cpp:88] Frame buffer released=2.930MB, total usage: allocated=2.930MB, max limit=2048.000MB
+[04/17 00:19:21.035948][debug][177694][FrameBufferManager.cpp:88] Frame buffer released=2.930MB, total usage: allocated=0.000MB, max limit=2048.000MB
+[04/17 00:19:21.035955][debug][177694][FrameBufferManager.cpp:103] FrameBufferManagerBase destroyed! manager type:N11libobsensor22FrameBufferManagerBaseE,  obj addr:0xffff742126b0
+[04/17 00:19:21.035995][debug][177694][DeviceManager.cpp:256] Erase device changed callback, id = 1, erasedSize = 1
+[04/17 00:19:21.036790][debug][177710][GVCPClient.cpp:421] bind 0.0.0.0:41594 [**17 logs in 25252ms, last: 00:18:55.785018**]

@@ -1,0 +1,11 @@
+// 这个是在terminal显示车位占用的代码
+python realtime_detect.py --source "rtsp://admin:@192.168.1.10:554/stream1" --weights ./fisheye_yolo.pt --data ./data/data.yaml --view-img
+python detect.py --source /media/nvidia/3108283a-f81b-438a-a5a2-02b216b0b5e2/HYT/image/20230315_231259 --weights ./fisheye_yolo.pt --data ./data/data.yaml
+
+// 这个是向json文件中写1的代码
+python json_realtime_detect.py --source "rtsp://admin:@192.168.1.10:554/stream1" --weights ./fisheye_yolo.pt --data ./data/data.yaml --view-img
+
+python 0414_realtime_detect.py --source "rtsp://admin:@192.168.1.11:554/stream1" --weights ./fisheye_yolo.pt --data ./data/data.yaml --view-img
+
+// 配置相机ip
+sudo ip route replace 192.168.1.10/32 dev eth2

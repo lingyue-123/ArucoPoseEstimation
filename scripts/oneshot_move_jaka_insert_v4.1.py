@@ -51,6 +51,7 @@ from robovision.visualization.aruco_overlay import (
 from robovision.servo.core import (
     aruco_to_matrix, compute_pose_error, compute_pose_error_in_frame, execute_move,
 )
+from robovision.vision.auto_exposure import AutoExposureController
 
 # --- 第三方驱动 ---
 from crobot_driver_interface import CartesianPose
@@ -65,6 +66,23 @@ def check_oneshot_safety(trans_mm, rot_deg, max_trans, max_rot):
     if rot_deg > max_rot:
         return False, (f"旋转 {rot_deg:.2f} deg 超过阈值 {max_rot:.1f} deg，请手动调整姿态后重试或增大 --max-rot")
     return True, ""
+
+
+def _marker_roi_brightness(frame, target_data):
+    """从 ArUco 检测结果提取 marker ROI 并返回中值亮度。失败返回 None。"""
+    corners = target_data.get('filtered_corners') or target_data.get('raw_corners')
+    if corners is None:
+        return None
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) if frame.ndim == 3 else frame
+    h, w = gray.shape
+    x1 = max(0, int(corners[:, 0].min() - 20))
+    y1 = max(0, int(corners[:, 1].min() - 20))
+    x2 = min(w, int(corners[:, 0].max() + 20))
+    y2 = min(h, int(corners[:, 1].max() + 20))
+    if x2 <= x1 or y2 <= y1:
+        return None
+    return float(np.median(gray[y1:y2, x1:x2]))
+
 
 def ensure_tool_id(robot, tool_id, label=None):
     return True
@@ -211,6 +229,8 @@ def parse_args(argv=None):
     parser.add_argument('--no-temporal-filter', action='store_true',
                         help='关闭 Kalman 角点滤波和位姿时序平滑（仅影响标准检测模式）')
     parser.add_argument('--debug', action='store_true')
+    parser.add_argument('--no-ae', action='store_true',
+                        help='禁用自动曝光控制（即使配置中已启用）')
     parser.add_argument('--takegun-offset-file', type=str, default=_TAKEGUN_OFFSET_FILE,
                         help=f'相对位移保存路径（默认 {_TAKEGUN_OFFSET_FILE}）')
     parser.add_argument('--charging-offset-file', type=str, default=_CHARGING_OFFSET_FILE,
@@ -282,6 +302,26 @@ def main():
         logger.info("Take ref TCP (tool %d) loaded: t=[%.2f, %.2f, %.2f] mm",
                     BASE_TOOL_ID, *tcp_ref_pose_take[:3])
 
+    # 曝光参考路径（插枪/取枪各一个 txt）
+    exp_ref_path_insert = args.aruco_ref.replace('aruco_pose_ref', 'aruco_exp_ref')
+    exp_ref_path_takegun = args.aruco_ref_takegun.replace('aruco_pose_ref_takegun', 'aruco_exp_ref_takegun')
+
+    ref_exp_insert = None
+    if os.path.isfile(exp_ref_path_insert):
+        with open(exp_ref_path_insert, 'r') as f:
+            parts = f.read().strip().split(',')
+            if len(parts) >= 3:
+                ref_exp_insert = (float(parts[0]), float(parts[1]), float(parts[2]))
+                logger.info("Insert exp ref loaded: exp=%.0fus gain=%.1fdB bri=%.0f", *ref_exp_insert)
+
+    ref_exp_takegun = None
+    if os.path.isfile(exp_ref_path_takegun):
+        with open(exp_ref_path_takegun, 'r') as f:
+            parts = f.read().strip().split(',')
+            if len(parts) >= 3:
+                ref_exp_takegun = (float(parts[0]), float(parts[1]), float(parts[2]))
+                logger.info("Take exp ref loaded: exp=%.0fus gain=%.1fdB bri=%.0f", *ref_exp_takegun)
+
     # 加载取枪相对位移偏移量
     loaded_offset = load_offset_from_file(args.takegun_offset_file)
     if loaded_offset is not None:
@@ -311,6 +351,25 @@ def main():
     intrinsics = camera.get_intrinsics()
     K = intrinsics.camera_matrix
     dist = intrinsics.dist_coeffs
+
+    # 自动曝光控制器（仅当相机配置启用 + 相机支持时生效）
+    ae_ctrl = None
+    cam_cfg = cfg.get_camera(args.camera)
+    if cam_cfg.auto_exposure and cam_cfg.auto_exposure.enabled and not args.no_ae:
+        ae_cfg = cam_cfg.auto_exposure
+        try:
+            ae_ctrl = AutoExposureController(
+                camera,
+                target_brightness=ae_cfg.target_brightness,
+                deadband=ae_cfg.deadband,
+                adjust_interval=ae_cfg.adjust_interval,
+                exposure_limit_ms=ae_cfg.exposure_limit_ms,
+                gain_limit_db=ae_cfg.gain_limit_db,
+            )
+            ae_ctrl.setup()
+            logger.info("Auto exposure controller initialized")
+        except Exception:
+            logger.warning("Failed to initialize auto exposure controller", exc_info=True)
 
     use_raw = args.raw
     use_temporal_filter = not args.no_temporal_filter
@@ -352,6 +411,8 @@ def main():
                 time.sleep(0.005)
                 continue
             frm = frm.copy()
+            if ae_ctrl is not None:
+                ae_ctrl.measure_frame(frm)
             if use_raw:
                 gray = cv2.cvtColor(frm, cv2.COLOR_BGR2GRAY) if frm.ndim == 3 else frm
                 result = detect_raw_frame(gray, raw_detector, valid_ids, marker_sizes, K, dist)
@@ -360,6 +421,8 @@ def main():
             with det_lock:
                 latest_det = result
                 latest_det_frame = frm
+            if ae_ctrl is not None:
+                ae_ctrl.adjust_after_detect(detection_ok=bool(result), detected_markers=result)
 
     det_thread = threading.Thread(target=_detection_loop, daemon=True)
     det_thread.start()
@@ -384,6 +447,7 @@ def main():
 
             with det_lock:
                 aruco_result = latest_det
+                det_frame = latest_det_frame
             
             # 检测当前有效的 marker (优先插枪，其次取枪)
             current_marker_id = None
@@ -508,6 +572,24 @@ def main():
                 put_text(vis, "MOVING...", y, (0, 100, 255))
                 y += 30
 
+            if ae_ctrl is not None:
+                bri = ae_ctrl.brightness()
+                bri_str = f"AE: brightness={bri:.0f}" if bri is not None else "AE: initializing"
+                if ae_ctrl.roi_active:
+                    bri_str += " [ROI]"
+                put_text(vis, bri_str, y, (200, 200, 100))
+                y += 30
+
+            try:
+                exp = camera.get_exposure_time()
+                gain_db = camera.get_gain()
+                if exp is not None:
+                    exp_str = f"Exposure: {exp/1000:.2f}ms  Gain: {gain_db:.1f}dB" if gain_db is not None else f"Exposure: {exp/1000:.2f}ms"
+                    put_text(vis, exp_str, y, (180, 180, 180))
+                    y += 30
+            except Exception:
+                pass
+
             robot_str = "Robot:ON" if robot_connected else ("Robot:OFF(dry)" if args.no_robot else "Robot:OFF")
             ref_str = f"Ref:Insert{'SET' if ref_set_insert else 'NONE'} Take{'SET' if ref_set_takegun else 'NONE'}"
             status = (f"ONESHOT+INSERT | {ref_str} | {robot_str} | "
@@ -552,6 +634,22 @@ def main():
                         save_pose_file(tcp_ref_path_insert, np.array([matrix_to_pose(T_g2b_cur)]))
                         logger.info("Insert ref TCP (tool %d) saved: t=[%.2f, %.2f, %.2f] mm",
                                     BASE_TOOL_ID, T_g2b_cur[0, 3], T_g2b_cur[1, 3], T_g2b_cur[2, 3])
+
+                    # 保存曝光参考
+                    if det_frame is not None:
+                        try:
+                            bri = _marker_roi_brightness(det_frame, target_data)
+                            exp_us = camera.get_exposure_time()
+                            gain_db = camera.get_gain()
+                            if bri is not None and exp_us is not None and gain_db is not None:
+                                os.makedirs(os.path.dirname(exp_ref_path_insert) or '.', exist_ok=True)
+                                with open(exp_ref_path_insert, 'w') as f:
+                                    f.write(f"{exp_us:.1f},{gain_db:.2f},{bri:.1f}\n")
+                                ref_exp_insert = (exp_us, gain_db, bri)
+                                logger.info("Insert exp ref saved: exp=%.0fus gain=%.1fdB bri=%.0f",
+                                            exp_us, gain_db, bri)
+                        except Exception:
+                            logger.warning("Failed to save insert exp ref", exc_info=True)
                 else:  # 取枪
                     T_aruco2cam_ref_takegun = aruco_to_matrix(target_data)
                     ref_pose_vec = matrix_to_pose(T_aruco2cam_ref_takegun)
@@ -565,6 +663,22 @@ def main():
                         save_pose_file(tcp_ref_path_takegun, np.array([matrix_to_pose(T_g2b_cur)]))
                         logger.info("Take ref TCP (tool %d) saved: t=[%.2f, %.2f, %.2f] mm",
                                     BASE_TOOL_ID, T_g2b_cur[0, 3], T_g2b_cur[1, 3], T_g2b_cur[2, 3])
+
+                    # 保存曝光参考
+                    if det_frame is not None:
+                        try:
+                            bri = _marker_roi_brightness(det_frame, target_data)
+                            exp_us = camera.get_exposure_time()
+                            gain_db = camera.get_gain()
+                            if bri is not None and exp_us is not None and gain_db is not None:
+                                os.makedirs(os.path.dirname(exp_ref_path_takegun) or '.', exist_ok=True)
+                                with open(exp_ref_path_takegun, 'w') as f:
+                                    f.write(f"{exp_us:.1f},{gain_db:.2f},{bri:.1f}\n")
+                                ref_exp_takegun = (exp_us, gain_db, bri)
+                                logger.info("Take exp ref saved: exp=%.0fus gain=%.1fdB bri=%.0f",
+                                            exp_us, gain_db, bri)
+                        except Exception:
+                            logger.warning("Failed to save take exp ref", exc_info=True)
 
             elif key == ord('m'):
                 # 视觉伺服: 一次运动到参考基准位
@@ -586,6 +700,38 @@ def main():
                 if not safe:
                     logger.warning(reason)
                     continue
+
+                # 曝光收敛：对准前让marker亮度对齐到录制参考时的状态
+                ref_exp = ref_exp_insert if current_marker_type == "插枪" else ref_exp_takegun
+                if ref_exp is not None and not args.no_robot:
+                    ref_exp_us, ref_gain_db, ref_bri = ref_exp
+                    try:
+                        camera.set_exposure_auto(False)
+                        camera.set_exposure_time(ref_exp_us)
+                        camera.set_gain(ref_gain_db)
+                        logger.info("Exp locked to ref: %.0fus %.1fdB target_bri=%.0f",
+                                    ref_exp_us, ref_gain_db, ref_bri)
+                        for i in range(20):
+                            time.sleep(0.03)
+                            with det_lock:
+                                cur_result, cur_frame = latest_det, latest_det_frame
+                            if not cur_result or cur_frame is None:
+                                continue
+                            for mid, d in cur_result.items():
+                                if mid in (insert_marker_id, takegun_marker_id):
+                                    cur_bri = _marker_roi_brightness(cur_frame, d)
+                                    if cur_bri is not None:
+                                        err = cur_bri - ref_bri
+                                        if abs(err) <= 5:
+                                            logger.info("Bri converged: %.0f->%.0f (err=%.1f iters=%d)",
+                                                        ref_bri, cur_bri, err, i + 1)
+                                            break
+                                        new_exp = ref_exp_us * max(0.5, min(2.0, 1.0 - err / 640.0))
+                                        new_exp = max(100, min(50000, new_exp))
+                                        camera.set_exposure_time(new_exp)
+                                    break
+                    except Exception:
+                        logger.warning("Exposure convergence failed", exc_info=True)
 
                 if args.no_robot:
                     logger.info("[DRY RUN] Skip %s baseline move", current_marker_type)
@@ -610,6 +756,14 @@ def main():
                                 logger.info("  ref axes: dX=%.2f dY=%.2f dZ=%.2f mm", *ref_xyz)
                             logger.info("  Actual TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                                         *new_tcp)
+
+                        # 对准完成，恢复硬件AE
+                        try:
+                            camera.set_exposure_auto(True)
+                            camera.set_gain_auto(True)
+                            logger.debug("Hardware AE restored after move")
+                        except Exception:
+                            pass
 
             elif key == ord('b'):
                 # 直接回到按下 'r' 时保存的机械臂 TCP 位置

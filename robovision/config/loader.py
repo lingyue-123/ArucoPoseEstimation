@@ -83,6 +83,30 @@ class CameraConnectionConfig:
 
 
 @dataclass
+class AutoExposureConfig:
+    """自动曝光控制配置。"""
+    enabled: bool = False
+    target_brightness: int = 128
+    deadband: int = 12
+    adjust_interval: int = 15
+    exposure_limit_ms: float = 50.0
+    gain_limit_db: float = 12.0
+
+    @classmethod
+    def from_dict(cls, d: Optional[dict]) -> 'AutoExposureConfig':
+        if d is None:
+            return cls()
+        return cls(
+            enabled=d.get('enabled', False),
+            target_brightness=d.get('target_brightness', 128),
+            deadband=d.get('deadband', 12),
+            adjust_interval=d.get('adjust_interval', 15),
+            exposure_limit_ms=d.get('exposure_limit_ms', 50.0),
+            gain_limit_db=d.get('gain_limit_db', 12.0),
+        )
+
+
+@dataclass
 class CameraConfig:
     """单个相机的完整配置。"""
     name: str
@@ -90,6 +114,7 @@ class CameraConfig:
     intrinsics: CameraIntrinsicsConfig
     connection: Optional[CameraConnectionConfig] = None
     network: Optional[NetworkConfig] = None
+    auto_exposure: Optional[AutoExposureConfig] = None
 
 
 @dataclass
@@ -200,8 +225,10 @@ class Config:
         intrinsics = CameraIntrinsicsConfig.from_dict(d['intrinsics'])
         connection = CameraConnectionConfig.from_dict(d['connection']) if 'connection' in d else None
         network = NetworkConfig.from_dict(d['network']) if 'network' in d else None
+        auto_exposure = AutoExposureConfig.from_dict(d.get('auto_exposure'))
         return CameraConfig(name=name, type=d['type'], intrinsics=intrinsics,
-                            connection=connection, network=network)
+                            connection=connection, network=network,
+                            auto_exposure=auto_exposure)
 
     def list_cameras(self) -> List[str]:
         """列出所有已配置的相机名称。"""

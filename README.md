@@ -55,3 +55,57 @@
 | 关盖 | `k` |
 
 > **说明**：当前操作无力控、无鱼眼、无双目。
+
+## 户外光照鲁棒：自动曝光 + 亮度收敛
+
+### 两层 AE 策略
+
+| 层 | 机制 | 响应 | 作用 |
+|---|------|------|------|
+| L1 硬件AE | 相机 `ExposureAuto=Continuous` + `GainAuto=Continuous` | 逐帧实时 | 处理快速光照变化 |
+| L2 ROI锁定 | 检测到 marker 后锁 AE 曝光区域到 marker bbox；每 15 帧 nudge 曝光上限 | 逐帧/秒级 | 防止背景干扰 + 引导硬件AE |
+
+### 亮度收敛（对应 `r` / `m` 按键流程）
+
+| 操作 | 行为 |
+|------|------|
+| 按 `r` | 录制位姿参考 + 同时保存当前 `(exposure_time, gain, marker_roi_brightness)` 到 `data/aruco/aruco_exp_ref.txt` |
+| 按 `m` | 先锁定曝光参数到录制值 → 亮度收敛循环（≤0.6s, 只调曝光时间不调增益）→ 执行对准 → 恢复硬件AE |
+
+### 曝光参考文件
+
+| 文件 | 用途 |
+|------|------|
+| `data/aruco/aruco_exp_ref.txt` | 插枪 marker 曝光参考 |
+| `data/aruco/aruco_exp_ref_takegun.txt` | 取枪 marker 曝光参考 |
+
+格式：`exposure_time_us,gain_db,marker_roi_brightness`
+
+### 相关参数配置
+
+在 `config/cameras.yaml` 中各相机可配置 `auto_exposure` 节：
+
+```yaml
+auto_exposure:
+  enabled: true
+  target_brightness: 128       # 目标灰度中值(0-255)
+  deadband: 12                 # 亮度死区(±灰度)
+  adjust_interval: 15          # 软件调整间隔(帧)
+  exposure_limit_ms: 50.0      # 最大曝光时间(防运动模糊)
+  gain_limit_db: 12.0          # 最大增益(防噪声)
+```
+
+命令行 `--no-ae` 可禁用所有自动曝光功能。
+
+### 底层 API（仅 Hikvision 实现）
+
+| 方法 | 说明 |
+|------|------|
+| `camera.set_exposure_auto(True/False)` | 开关硬件AE |
+| `camera.set_exposure_time(us)` | 手动曝光时间（微秒） |
+| `camera.get_exposure_time()` | 读取当前曝光 |
+| `camera.set_gain(db)` | 手动增益（dB） |
+| `camera.get_gain()` | 读取当前增益 |
+| `camera.set_gain_auto(True/False)` | 开关自动增益 |
+| `camera.set_ae_roi(x, y, w, h)` | 设置 AE ROI 区域 |
+| `camera.setup_auto_exposure(target, limit_ms, limit_db)` | 一键启用硬件AE+上下限 |

@@ -87,6 +87,36 @@ class CameraInterface(ABC):
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.close()
 
+    # --- 曝光 / 增益控制（可选实现，默认返回 False / None） ---
+
+    def set_exposure_auto(self, enable: bool) -> bool:
+        """开关自动曝光。"""
+        return False
+
+    def set_exposure_time(self, us: float) -> bool:
+        """设置手动曝光时间（微秒）。"""
+        return False
+
+    def get_exposure_time(self) -> Optional[float]:
+        """获取当前曝光时间（微秒）。"""
+        return None
+
+    def set_gain(self, db: float) -> bool:
+        """设置模拟/数字增益（dB）。"""
+        return False
+
+    def get_gain(self) -> Optional[float]:
+        """获取当前增益（dB）。"""
+        return None
+
+    def set_gain_auto(self, enable: bool) -> bool:
+        """开关自动增益。"""
+        return False
+
+    def set_ae_roi(self, x: int, y: int, w: int, h: int) -> bool:
+        """设置自动曝光 ROI 区域（像素坐标）。w/h<=0 表示清除 ROI。"""
+        return False
+
     def __repr__(self) -> str:
         intr = self.get_intrinsics()
         return f"{self.__class__.__name__}(name={intr.name!r}, {intr.width}x{intr.height})"

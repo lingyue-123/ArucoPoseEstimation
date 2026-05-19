@@ -51,7 +51,9 @@ def detect_raw_frame(
     K: np.ndarray,
     dist: np.ndarray,
 ) -> Dict[int, dict]:
-    """最简 ArUco 检测：detectMarkers -> cornerSubPix -> IPPE_SQUARE."""
+    """最简 ArUco 检测：CLAHE预处理 -> detectMarkers -> cornerSubPix -> IPPE_SQUARE."""
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    gray = clahe.apply(gray)
     corners, ids, _ = aruco_detector.detectMarkers(gray)
     if ids is None:
         return {}

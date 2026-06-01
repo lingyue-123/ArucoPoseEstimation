@@ -13,8 +13,8 @@ from gripper_controller import GripperController
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("CoverAction")
 
-with open("/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json", "r", encoding="utf-8") as f:
-    CFG = json.load(f)
+# with open("/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json", "r", encoding="utf-8") as f:
+#     CFG = json.load(f)
 
 class CoverActionFlow:
     _instance = None
@@ -27,9 +27,11 @@ class CoverActionFlow:
 
     def __init__(self, ip=None):
         self.arm = CRobot(ip=ip or '192.168.1.12')
+        # self.arm = bridge_robot
         self._connected = False
         self.gripper = GripperController(port='/dev/ttysWK3', baudrate=115200, slave_id=4)
-
+        with open("/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json", "r", encoding="utf-8") as f:
+            self.CFG = json.load(f)
     def connect(self):
         if self._connected:
             logger.info("Robot already connected, skipping")
@@ -41,6 +43,8 @@ class CoverActionFlow:
         self.gripper.connect()
         self._connected = True
         logger.info("=== 设备已就绪 ===")
+        self.arm.set_speed(30)
+        logger.info("=== 速度设置30% ===")
         return True
 
     def disconnect(self):
@@ -49,6 +53,14 @@ class CoverActionFlow:
             self.gripper.disconnect()
             self._connected = False
             logger.info("Robot disconnected")
+    def update_CFG(self):
+        with open("/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json", "r", encoding="utf-8") as f:
+            self.CFG = json.load(f)
+
+    @staticmethod
+    def _require_motion_ok(ret, action_name):
+        if ret != 1:
+            raise RuntimeError(f"{action_name} failed")
 
     def run_relative_trajectory(
         self,
@@ -79,7 +91,7 @@ class CoverActionFlow:
                 logger.info(f"相对轨迹直线运动 → 点 {idx+1}")
 
             elif motion_type == "joint":
-                joint_ik = CFG["JOINT_IK_DEFAULT"]
+                joint_ik = self.CFG["JOINT_IK_DEFAULT"]
                 target_pose_l = [new_target_pose.x, new_target_pose.y, new_target_pose.z, new_target_pose.rx, new_target_pose.ry, new_target_pose.rz] 
                 joint_target = self.arm.inverse_kinematics(target_pose_l, joint_ik, representation='euler')
                 if joint_target is None:
@@ -124,7 +136,7 @@ class CoverActionFlow:
                 pose_path.append(new_target_pose)
 
             elif motion_type == "joint":
-                joint_ik = CFG["JOINT_IK_DEFAULT"]
+                joint_ik = self.CFG["JOINT_IK_DEFAULT"]
                 target_pose_l = [new_target_pose.x, new_target_pose.y, new_target_pose.z, new_target_pose.rx, new_target_pose.ry, new_target_pose.rz] 
                 joint_target = self.arm.inverse_kinematics(target_pose_l, joint_ik, representation='euler')
                 if joint_target is None:
@@ -134,9 +146,6 @@ class CoverActionFlow:
             return pose_path
         elif motion_type == 'joint':
             return joint_path
-
-
-
         logger.info("相对轨迹执行完成")
 
     # ----------------------------------------------------------------------------------------------
@@ -147,19 +156,23 @@ class CoverActionFlow:
         self.gripper.set_speed(100) 
         self.gripper.set_position(45)
 
-        self.arm.set_speed(100) # 全局速度
-        pose0 = CartesianPose(*CFG["OPEN_START"]).to_list()
-        pose1 = self.arm.relative_tool_pose(dz=100,init_pose=pose0).to_list()
-        pose2 = self.arm.relative_tool_pose(dz=104, init_pose=pose0).to_list()
-        pose3 = self.arm.relative_tool_pose(dz=79, init_pose=pose0).to_list()
+        pose0 = CartesianPose(*self.CFG["POINT_NEW_REF"]).to_list()
+        # pose0 = self.arm.get_tcp_pose()
+        pose1 = self.arm.relative_tool_pose(dz=25,init_pose=pose0).to_list()
+        pose2 = self.arm.relative_tool_pose(dz=29, init_pose=pose0).to_list()
+        pose3 = self.arm.relative_tool_pose(dz=0, init_pose=pose0).to_list()
         poses = [pose0, pose1, pose2, pose3]
         joint_poses = []
-        init_joint = [-185.587, 131.118, 226.71, -162.341, 135.578, -10.694]
+        init_joint = self.arm.get_joint_pose()
+        if init_joint is None:
+            init_joint = self.CFG["JOINT_IK_DEFAULT"]
+            logger.warning("获取当前关节失败，开盖动作回退到 JOINT_IK_DEFAULT 种子")
         for pose in poses:
             pose = self.arm.inverse_kinematics(pose, init_joint)
             joint_poses.append(pose)
-        speeds = [30,30,5,30]
-        self.arm.move_by_joint_list(joints=joint_poses, speeds=speeds)
+        speeds = [30,15,5,30]
+        ret = self.arm.move_by_joint_list(joints=joint_poses, speeds=speeds)
+        self._require_motion_ok(ret, "run_open_cover move_by_joint_list")
 
         logger.info("[动作 1] 开盖完成 ")
 
@@ -168,14 +181,30 @@ class CoverActionFlow:
     # ----------------------------------------------------------------------------------------------
     def run_screw_cover(self):
         logger.info("\n[动作 2] 开始旋盖")
-        base_pose = CartesianPose(*CFG["POINT_TEMPLATE_REF"])
-        ref_pose = CartesianPose(*CFG["POINT_NEW_REF"]) # 拨盖起点，获取当前位姿为参考点
-        pose1 = CartesianPose(*CFG["SCREW_P1"])
-        pose2 = CartesianPose(*CFG["SCREW_P2"])
-        pose3 = CartesianPose(*CFG["SCREW_P3"])
-        joint1 = CartesianPose(*CFG["SCREW_J1"])
-        joint2 = CartesianPose(*CFG["SCREW_J2"])
-        joint3 = CartesianPose(*CFG["SCREW_J3"])
+        # current_pose = self.arm.get_tcp_pose()
+        # pose_dz = [self.arm.relative_tool_pose(dz = -10, init_pose=current_pose).to_list()]
+        # speeds = [100]
+        # self.arm.move_by_pose_list(poses=pose_dz, speeds=speeds)
+
+        # target_pose = self.arm.get_tcp_pose()
+        # with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'r', encoding='utf-8') as f:
+        #                 data = json.load(f)
+        #                 data["POINT_NEW_REF"] = target_pose
+
+        # with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=4)
+        # self.update_CFG()
+        
+        ref_pose = CartesianPose(*self.CFG["POINT_NEW_REF"])
+        base_pose = CartesianPose(*self.CFG["POINT_TEMPLATE_REF"])
+
+        # ref_pose = CartesianPose(*self.CFG["POINT_NEW_REF"]) # 拨盖起点，获取当前位姿为参考点
+        pose1 = CartesianPose(*self.CFG["SCREW_P1"])
+        pose2 = CartesianPose(*self.CFG["SCREW_P2"])
+        pose3 = CartesianPose(*self.CFG["SCREW_P3"])
+        joint1 = CartesianPose(*self.CFG["SCREW_J1"])
+        joint2 = CartesianPose(*self.CFG["SCREW_J2"])
+        joint3 = CartesianPose(*self.CFG["SCREW_J3"])
 
         cartesian_poses = [pose1, pose2, pose3,joint1,joint2,joint3]
         joint_pose = self.relative_pose(
@@ -185,7 +214,23 @@ class CoverActionFlow:
             motion_type="joint"
         )
         speeds = [25,25,25,25,25,25]
-        self.arm.move_by_joint_list(joint_pose,speeds)
+        ret = self.arm.move_by_joint_list(joint_pose,speeds)
+        self._require_motion_ok(ret, "run_screw_cover screw trajectory")
+
+        # 取小盖前的调整位姿
+        insert_adjust_base_pose = CartesianPose(*self.CFG["INSERT_ADJUST_POINT_TEMPLATE_REF"])
+        insert_adjust_poses = [CartesianPose(*self.CFG["INSERT_ADJUST_POINT"])]
+        adjust_joint_pose = self.relative_pose(
+            base_pose=insert_adjust_base_pose,
+            target_poses= insert_adjust_poses,
+            ref_pose = ref_pose,
+            motion_type="joint"
+        )
+        speeds = [30]
+        ret = self.arm.move_by_joint_list(adjust_joint_pose,speeds)
+        self._require_motion_ok(ret, "run_screw_cover insert adjust")
+
+        self.gripper.set_position(25)
 
         logger.info("[动作 2] 旋盖完成 ")
 
@@ -193,31 +238,43 @@ class CoverActionFlow:
     # 动作 3：夹盖
     # ----------------------------------------------------------------------------------------------
     def gripper_action(self):
-        self.gripper.set_speed(100) 
+        self.gripper.set_speed(50) 
 
-        ref_pose = CartesianPose(*CFG["POINT_NEW_REF"])
-        base_pose = CartesianPose(*CFG["POINT_COVER_TEMPLATE_REF"])
+        ref_pose = CartesianPose(*self.CFG["PUSH_POINT2"])
+        base_pose = CartesianPose(*self.CFG["POINT_TEMPLATE_COVER_REF"])
 
 
-        self.gripper.set_position(28)
+        # self.gripper.set_position(22)
 
-        init_poses = self.relative_pose(
-            base_pose=base_pose,
-            target_poses=[CartesianPose(*CFG["PUSH_POINT1"]),
-                           CartesianPose(*CFG["PUSH_POINT2"])],
-            ref_pose=ref_pose,
-            motion_type="joint"
-        )
-        init_speed = [25,5]
-        self.arm.move_by_joint_list(init_poses, init_speed)
+        # init_poses = self.relative_pose(
+        #     base_pose=base_pose,
+        #     target_poses=[CartesianPose(*self.CFG["PUSH_POINT1"]),
+        #                    CartesianPose(*self.CFG["PUSH_POINT2"])],
+        #     ref_pose=ref_pose,
+        #     motion_type="joint"
+        # )
+        # init_speed = [25,5]
+        # self.arm.move_by_joint_list(init_poses, init_speed)
+
         self.gripper.set_force(50)
         self.gripper.set_position(45)
+        timeout_s = 5.0
+        t0 = time.time()
+        while True:
+            status = self.gripper.get_grip_status()
+            if status in (1, 2):
+                logger.info("Gripper open complete (status=%d)", status)
+                break
+            if time.time() - t0 > timeout_s:
+                logger.warning("Gripper open timeout after %.1fs (status=%s)", timeout_s, status)
+                break
+            time.sleep(0.1)
 
         all_targets = [
             # 夹住后撤点1
-            CartesianPose(*CFG["PUSH_POINT3"]), # 移动到放盖点前
-            CartesianPose(*CFG["PUSH_POINT4"]), # 放盖的点
-            CartesianPose(*CFG["PUSH_POINT4_dz"])
+            CartesianPose(*self.CFG["PUSH_POINT3"]), # 移动到放盖点前
+            CartesianPose(*self.CFG["PUSH_POINT4"]), # 放盖的点
+            CartesianPose(*self.CFG["PUSH_POINT4_dz"])
         ]
 
         poses = self.relative_pose(
@@ -230,24 +287,38 @@ class CoverActionFlow:
         self.arm.move_by_joint_list(poses, speeds)
         # self.arm.move_relative_tool(dz=3) # 放盖经常走不到底，这里找补一下，继续前进3mm
 
-        self.gripper.set_position(28)
+        self.gripper.set_position(22)
+        t1 = time.time()
+        while True:
+            status = self.gripper.get_grip_status()
+            if status in (1, 2):
+                logger.info("Gripper open complete (status=%d)", status)
+                break
+            if time.time() - t1 > timeout_s:
+                logger.warning("Gripper open timeout after %.1fs (status=%s)", timeout_s, status)
+                break
+            time.sleep(0.1)
 
-
-        take_gun_poses = self.relative_pose(
-            base_pose=base_pose,
-            target_poses=[CartesianPose(*CFG["PUSH_POINT5"])],
-            ref_pose=ref_pose,
-            motion_type="joint"
-        )
+        current_tcp_pose = self.arm.get_tcp_pose()
+        pose_dz = self.arm.relative_tool_pose(dz = -30, init_pose=current_tcp_pose).to_list()
+        take_gun_poses = self.arm.inverse_kinematics(target_pose=pose_dz, initial_joints=self.arm.get_joint_pose())
+        
+        # innercover_base_pose = CartesianPose(*self.CFG["POINT_TEMPLATE_INNERCOVER_REF"])
+        # take_gun_poses = self.relative_pose(
+        #     base_pose=innercover_base_pose,
+        #     target_poses=[CartesianPose(*self.CFG["PUSH_POINT5"])],
+        #     ref_pose=ref_pose,
+        #     motion_type="joint"
+        # )
         speeds = [25]
-        self.arm.move_by_joint_list(take_gun_poses, speeds)
+        self.arm.move_by_joint_list([take_gun_poses], speeds)
 
         self.gripper.set_position(0)
 
 
         # 移动到取枪对准点
         # TODO:直线运动 -> 关节运动
-        target_pose  = CFG["PUSH_POINT6_TAKEGUN"]
+        target_pose  = self.CFG["PUSH_POINT6_TAKEGUN"]
         self.arm.move_by_joint_list([target_pose],speeds=[25])      
 
     # ----------------------------------------------------------------------------------------------
@@ -256,36 +327,46 @@ class CoverActionFlow:
     def gun_insert_before(self):
         logger.info("\n[动作 4] 移动到插枪对准点")
 
-        self.arm.set_speed(100)
-        ref_pose = CartesianPose(*CFG["POINT_NEW_REF"])
-        base_pose = CartesianPose(*CFG["POINT_NEW_REF"])
-        # self.arm.move_linear(CartesianPose(*CFG["POINT_NEW_REF"]))
-        insert_pose = self.relative_pose(
-            base_pose=base_pose,
-            target_poses=[CartesianPose(*CFG["INSERT_BEFORE_TEMPLATE"])],
-            ref_pose=ref_pose,
-            motion_type="joint"
-        )
+        self.update_CFG()
+        target_poses = self.CFG["INSERT_BEFORE_TEMPLATE"]
+        ik_joint = self.CFG["JOINT_IK_DEFAULT"]
+        joint_pose = [self.arm.inverse_kinematics(target_pose=target_poses, initial_joints=ik_joint)]
         speeds = [25]
-        self.arm.move_by_joint_list(joints=insert_pose, speeds=speeds)
+        self.arm.move_by_joint_list(joint_pose, speeds)
+        print("插枪对准点关节运动完成")
+        # self.arm.move_by_pose_list(target_poses, speeds)
 
-        logger.info("[动作 4] 移动到插枪对准点 ")
+
+        pose0 = self.arm.get_tcp_pose()
+        current_joint = self.arm.get_joint_pose()
+        pose1 = self.arm.relative_tool_pose(dz=100,init_pose=pose0).to_list()
+        target_joint = [self.arm.inverse_kinematics(target_pose=pose1, initial_joints=current_joint)]
+        speeds = [10]
+        self.arm.move_by_joint_list(target_joint, speeds)
+
+        logger.info("[动作 4] 移动到插枪对准点完成 ")
 
     # ----------------------------------------------------------------------------------------------
     # 动作 5：归枪
     # ----------------------------------------------------------------------------------------------
     def gun_home(self):
         logger.info("\n[动作 5] 归枪")
-        ref_pose = CartesianPose(*CFG["POINT_NEW_REF"])
-        base_pose = CartesianPose(*CFG["POINT_TEMPLATE_REF"])
 
-        self.arm.set_speed(100) # 50
+        # cur_pose = self.arm.get_tcp_pose()
+        # pose = self.arm.relative_tool_pose(dz = -150, init_pose=cur_pose)
+        # self.arm.move_linear(pose)
 
-        pose0 = CartesianPose(*CFG["GUN_HOME1"]).to_list()
-        pose1 = CartesianPose(*CFG["GUN_HOME2"]).to_list()
+        ref_pose = CartesianPose(*self.CFG["POINT_NEW_REF"])
+        base_pose = CartesianPose(*self.CFG["POINT_TEMPLATE_REF"])
+
+        pose0 = CartesianPose(*self.CFG["GUN_HOME1"]).to_list()
+        pose1 = CartesianPose(*self.CFG["GUN_HOME2"]).to_list()
         gun_init_poses = [pose0, pose1]
         gun_speeds = [25, 5]
         self.arm.move_by_joint_list(joints=gun_init_poses, speeds=gun_speeds)
+
+        # 微调
+        
        
         gripper = self.gripper
         gripper.set_speed(100)
@@ -303,34 +384,30 @@ class CoverActionFlow:
                 break
             time.sleep(0.1)
 
-        pose_j = self.arm.forward_kinematics(pose1)
+        pose_j = self.arm.get_tcp_pose()
         pose3 = self.arm.relative_tool_pose(dz = -150, init_pose=pose_j).to_list()
         poses = [pose3]
         speeds = [100]
         self.arm.move_by_pose_list(poses=poses, speeds=speeds)
 
-
         gripper.set_speed(100) 
-        gripper.set_position(28)
+        gripper.set_position(22)
 
         logger.info("[动作 5] 归枪")
 
     # ----------------------------------------------------------------------------------------------
     # 动作 6：关内盖
     # ----------------------------------------------------------------------------------------------
-    def inner_cover_close(self):
+    def inner_cover_close_step1(self):
         gripper = self.gripper
-        gripper.set_speed(100) 
-        gripper.set_position(28)
+        gripper.set_speed(50) 
+        gripper.set_position(22)
+        
+        ref_pose = CartesianPose(*self.CFG["PUSH_POINT2"])
+        base_pose = CartesianPose(*self.CFG["POINT_TEMPLATE_INNERCOVER_REF"])
 
-        ref_pose = CartesianPose(*CFG["POINT_NEW_REF"])
-        base_pose = CartesianPose(*CFG["POINT_COVER_TEMPLATE_REF"])
-
-        self.arm.set_speed(100) # 50
         all_targets = [
-            CartesianPose(*CFG["PUSH_POINT5"]),
-            CartesianPose(*CFG["PUSH_POINT4"]),
-            CartesianPose(*CFG["PUSH_POINT4_dz"])
+            CartesianPose(*self.CFG["PUSH_POINT5"])
         ]
 
         init_poses = self.relative_pose(
@@ -339,32 +416,60 @@ class CoverActionFlow:
             ref_pose=ref_pose,
             motion_type="joint"
         )
-        init_speeds = [30, 30, 25]
+        init_speeds = [30]
         self.arm.move_by_joint_list(joints=init_poses, speeds=init_speeds)
-
+    
+    def inner_cover_close_step2(self):
+        gripper = self.gripper
         gripper.set_force(50)
         gripper.set_position(45)
+        timeout_s = 5.0
+        t0 = time.time()
+        while True:
+            status = gripper.get_grip_status()
+            if status in (1, 2):
+                logger.info("Gripper open complete (status=%d)", status)
+                break
+            if time.time() - t0 > timeout_s:
+                logger.warning("Gripper open timeout after %.1fs (status=%s)", timeout_s, status)
+                break
+            time.sleep(0.1)
 
+        ref_pose = CartesianPose(*self.CFG["PUSH_POINT2"])
+        base_pose = CartesianPose(*self.CFG["POINT_TEMPLATE_COVER_REF"])
+
+        current_pose = self.arm.get_tcp_pose()
+        init_pose = self.arm.relative_tool_pose(dz = -30, init_pose = current_pose).to_list()
         all_targets = [
-            CartesianPose(*CFG["PUSH_POINT4"]),
-            CartesianPose(*CFG["PUSH_POINT3"]),
-            CartesianPose(*CFG["PUSH_POINT1"]),
-            CartesianPose(*CFG["PUSH_POINT2"])
+            CartesianPose(*self.CFG["PUSH_POINT3"]),
         ]
-
-
         poses = self.relative_pose(
             base_pose=base_pose,
             target_poses=all_targets,
             ref_pose=ref_pose,
-            motion_type="joint"
+            motion_type="linear"
         )
+        target_poses = [init_pose, poses[0], self.CFG["PUSH_POINT1"], self.CFG["PUSH_POINT2"]]
+        poses = []
+        for pose in target_poses:
+            pose = self.arm.inverse_kinematics(target_pose=pose, initial_joints=self.CFG["JOINT_IK_DEFAULT"])
+            poses.append(pose)
         speeds = [30, 30, 30, 25]
         self.arm.move_by_joint_list(joints=poses, speeds=speeds)
 
-        gripper.set_position(28)
+        gripper.set_position(22)
+        t1 = time.time()
+        while True:
+            status = gripper.get_grip_status()
+            if status in (1, 2):
+                logger.info("Gripper open complete (status=%d)", status)
+                break
+            if time.time() - t1 > timeout_s:
+                logger.warning("Gripper open timeout after %.1fs (status=%s)", timeout_s, status)
+                break
+            time.sleep(0.1)
         
-        target_l = [CartesianPose(*CFG["PUSH_POINT6"])]
+        target_l = [CartesianPose(*self.CFG["PUSH_POINT6"])]
         pose_l = self.relative_pose(
             base_pose=base_pose,
             target_poses=target_l,
@@ -380,15 +485,14 @@ class CoverActionFlow:
     # 动作 7：关外盖
     # ----------------------------------------------------------------------------------------------
     def outer_cover_close(self):
-        self.arm.set_speed(100) # 30
 
-        ref_pose = CartesianPose(*CFG["POINT_NEW_REF"])
-        base_pose = CartesianPose(*CFG["POINT_TEMPLATE_REF"])
+        ref_pose = CartesianPose(*self.CFG["PUSH_POINT2"])
+        base_pose = CartesianPose(*self.CFG["POINT_TEMPLATE_COVER_REF"])
 
         all_targets = [
-            CartesianPose(*CFG["OUTER_CLOSE_1"]),
-            CartesianPose(*CFG["OUTER_CLOSE"]),
-            CartesianPose(*CFG["POINT_TEMPLATE_REF"])
+            CartesianPose(*self.CFG["OUTER_CLOSE_1"]),
+            CartesianPose(*self.CFG["OUTER_CLOSE"]),
+            CartesianPose(*self.CFG["OUTER_CLOSE_0"])
         ]
 
         init_poses = self.relative_pose(
@@ -401,11 +505,11 @@ class CoverActionFlow:
         self.arm.move_by_joint_list(joints=init_poses, speeds=speeds)
 
         current_pose = self.arm.get_tcp_pose()
-        pose1 = self.arm.relative_tool_pose(dz=30, init_pose=current_pose).to_list() # 30
+        pose1 = self.arm.relative_tool_pose(dz=57, init_pose=current_pose).to_list() # 30
         pose2 = self.arm.relative_tool_pose(dz=-170, init_pose=current_pose).to_list()
         poses1 = [pose1, pose2]
         joint_poses = []
-        ref_ik_pose = [-214.826, 125.965, 218.638, -160.772, 182.834, -24.255]
+        ref_ik_pose = self.CFG["JOINT_IK_DEFAULT"]
         for pose in poses1:
             pose = self.arm.inverse_kinematics(pose, ref_ik_pose)
             joint_poses.append(pose)
@@ -414,10 +518,28 @@ class CoverActionFlow:
         
 
     def move(self):
-        self.arm.set_speed(100) # 30 
-        joint_poses =  [CFG["FINALL_POINT"]]
+        joint_poses =  [self.CFG["FINALL_POINT"]]
         speeds = [25]
         self.arm.move_by_joint_list(joints=joint_poses,speeds=speeds)
+
+    # ----------------------------------------------------------------------------------------------
+    # 动作 8：移动取小盖前对准位姿
+    # ----------------------------------------------------------------------------------------------
+    def move_inner_cover_pose(self):
+        ref_pose = CartesianPose(*self.CFG["POINT_NEW_REF"])
+        insert_adjust_base_pose = CartesianPose(*self.CFG["INSERT_ADJUST_POINT_TEMPLATE_REF"])
+        insert_adjust_poses = [CartesianPose(*self.CFG["INSERT_ADJUST_POINT"])]
+        adjust_joint_pose = self.relative_pose(
+            base_pose=insert_adjust_base_pose,
+            target_poses= insert_adjust_poses,
+            ref_pose = ref_pose,
+            motion_type="joint"
+        )
+        speeds = [10]
+        self.arm.move_by_joint_list(adjust_joint_pose, speeds)
+
+
+
     # ----------------------------------------------------------------------------------------------
     # 总入口
     # ----------------------------------------------------------------------------------------------
@@ -426,16 +548,21 @@ class CoverActionFlow:
             if mode == 1:
                 self.run_open_cover()
                 self.run_screw_cover()
-                self.gripper_action()
             elif mode == 2:
-                self.gun_insert_before()
+                self.gripper_action()
             elif mode == 3:
-                self.gun_home()
+                self.gun_insert_before()
             elif mode == 4:
-                self.inner_cover_close()
-                self.outer_cover_close()
+                self.gun_home()
             elif mode == 5:
+                self.inner_cover_close_step1()
+            elif mode == 7:
+                self.inner_cover_close_step2()
+                self.outer_cover_close()
+            elif mode == 6:
                 self.move()
+            elif mode == 8:
+                self.move_inner_cover_pose()
             else:
                 logger.error("模式错误：请输入 1/2/3/4/5")
         except KeyboardInterrupt:

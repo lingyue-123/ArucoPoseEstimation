@@ -109,3 +109,123 @@ auto_exposure:
 | `camera.set_gain_auto(True/False)` | 开关自动增益 |
 | `camera.set_ae_roi(x, y, w, h)` | 设置 AE ROI 区域 |
 | `camera.setup_auto_exposure(target, limit_ms, limit_db)` | 一键启用硬件AE+上下限 |
+
+## ArUco 光照鲁棒性实验 (`aruco_lighting_robustness`)
+
+### 核心目标
+
+测量外部光照变化下 ArUco 位姿估计 (`[M->C]` = Marker→Camera) 的稳定性。仅连接相机，不连接机械臂。
+
+### 运行方式
+
+```bash
+python scripts/aruco_lighting_robustness.py      --camera mecheye
+python scripts/aruco_lighting_robustness_v2.py   --camera mecheye --lighting-robust
+```
+
+### 两个版本对比
+
+| | v1 | v2 |
+|---|----|----|
+| 文件 | `aruco_lighting_robustness.py` | `aruco_lighting_robustness_v2.py` |
+| 光照鲁棒线程 | 只调增益 | **增益优先 → 曝光兜底** |
+| 增益上限 | 12 dB | 12 dB |
+| 曝光调整 | 无 | 乘法步进 5%，范围 0.1ms~100ms |
+| 增益到顶容差 | 无（会卡住不动曝光） | `GAIN_LIMIT_DB - LR_GAIN_STEP`（12 - 0.4 = 11.6） |
+
+### 三个线程
+
+| 线程 | 循环间隔 | 职责 |
+|------|---------|------|
+| `_detection_loop` | 逐帧 | 读帧 → ArUco 检测 → `latest_det` |
+| `_lighting_robust_loop`（可选，`--lighting-robust`） | 0.15 s | 对比 ROI 亮度 vs 参考 → 调增益/曝光 |
+| 主线程 | 逐帧 | 可视化 + 键盘交互 |
+
+### ArUco 检测流水线
+
+两种模式共享同一套底层库：
+
+- **标准模式**（默认）：`ArucoDetector` — CLAHE + 高斯模糊 + 形态学 → 降分辨率粗检测 → 映射回全分辨率角点 → 卡尔曼角点滤波 → subpix 精化 → **多方法 PnP 择优**（`IPPE_SQUARE` / `ITERATIVE`）→ SLERP 旋转平滑 + EMA 平移平滑 → 异常门控（`WARN`/`HOLD`）
+- **RAW 模式**（`--raw`）：`detect_raw_frame` — CLAHE → `detectMarkers` → subpix → 固定 `SOLVEPNP_IPPE_SQUARE`，无时序滤波
+
+### 可视化窗口含义
+
+#### 图像叠加层
+| 元素 | 含义 |
+|------|------|
+| marker 彩色边框 | 青色=正常, 橙色=WARN(`!`), 红色=HOLD(异常锁定) |
+| 四个角点 + 坐标值 | 检测到的亚像素角点像素坐标 |
+| `[M->C] t(mm): X Y Z` | Marker→Camera 平移（mm） |
+| `[M->C] Euler(ZYX): rx ry rz` | Marker→Camera 欧拉角（ZYX 内旋，deg） |
+| `reproj=...px` | 重投影误差，PnP 解算质量指标 |
+
+#### 文本叠加行（从上到下）
+| 行 | 含义 |
+|----|------|
+| `ID{x} [M->C]: t=... Euler=...` | 当前帧 [M->C] 完整位姿 |
+| `Err vs Ref: d=(dx,dy,dz) mm \|trans\|=... rot=...` | **当前 [M->C] vs 按 r 时的参考 [M->C]**，误差在参考 marker 坐标系下分解。相机和 marker 均不动时，任何偏离即光照导致的漂移。颜色分级: 绿<2mm, 黄<10mm, 红≥10mm |
+| `ROI Bri: ID{x}=...` | marker 区域（角点外扩 20px）中值亮度 0-255 |
+| `Bri Ref: ID{x}=ref d=±...` | 参考亮度值 + 当前偏差 |
+| `Exposure/Gain` | 相机当前曝光时间和增益 |
+| 底部状态栏 | 检测模式 + Kalman + ArUco 可见数 + 参考状态 + 光照鲁棒状态(`LR`) + 快捷键 |
+
+### 光照鲁棒线程算法
+
+#### v2 两级调整（`aruco_lighting_robustness_v2.py:286-320`）
+
+```
+每 0.15s:
+  取多 marker 的 ROI 亮度偏差均值 avg_dev
+  if |avg_dev| ≤ LR_DEADBAND (1) → 不调整
+  elif avg_dev < 0（偏暗）:
+      if cur_gain < GAIN_LIMIT_DB - LR_GAIN_STEP (11.6):
+          gain += 0.4 dB
+      else:
+          exp ×= 1.05 (上限 100ms)
+  else（偏亮）:
+      if cur_gain > LR_GAIN_STEP (0.4):
+          gain -= 0.4 dB
+      else:
+          exp ×= 0.95 (下限 0.1ms)
+```
+
+#### v1 单级调整（`aruco_lighting_robustness.py:281-296`）
+
+```
+每 0.3s:
+  avg_dev 超出死区 → gain ±0.4 dB（上限 12 dB，下限 0）
+  不调整曝光时间
+```
+
+### 光照鲁棒超参数
+
+| 常量 | v1 | v2 | 含义 |
+|------|----|----|------|
+| `LR_DEADBAND` | 1 | 1 | 亮度死区（±灰度值） |
+| `LR_GAIN_STEP` | 0.4 | 0.4 | 增益每步调整量（dB） |
+| `GAIN_LIMIT_DB` | 12 | 12 | 增益上限（dB） |
+| `LR_EXP_LIMIT_US` | — | 100,000 | 曝光上限（μs） |
+| `LR_EXP_MIN_US` | — | 100 | 曝光下限（μs） |
+| `LR_EXP_RATIO` | — | 0.05 | 曝光每步比例（5%） |
+| 调整间隔 | 0.3 s | 0.15 s | 循环间隔 |
+
+### 键盘操作
+
+| 按键 | 功能 |
+|------|------|
+| `r` | 保存当前帧所有 marker 的 `[M->C]` 4×4 矩阵 + ROI 亮度为参考，开始显示误差 |
+| `c` | 清除所有参考 |
+| `s` | 记录当前帧 `[M->C]` + reproj + 亮度 + 偏差到终端（限频 `--record-interval` 秒） |
+| `q` / ESC | 退出 |
+
+### 命令行参数
+
+| 参数 | 默认 | 含义 |
+|------|------|------|
+| `--camera` | None | `cameras.yaml` 中的相机名 |
+| `--marker-ids` | `0,1` | 监测的 marker ID 列表 |
+| `--raw` | False | 使用 RAW 检测模式 |
+| `--no-temporal-filter` | False | 关闭卡尔曼 + 时序平滑 |
+| `--lighting-robust` | False | 启用光照鲁棒线程 |
+| `--record-interval` | 1.0 | `s` 键最小记录间隔（秒） |
+| `--debug` | False | 调试日志 |

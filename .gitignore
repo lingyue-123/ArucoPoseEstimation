@@ -2,3 +2,8 @@ __pycache__/
 images/
 
 .vscode/
+
+# large files (exceeds GitHub 100 MB limit)
+Intergration/fisheye/fisheye_yolo.pt
+Intergration/fisheye/torch-*.whl
+Intergration/stereo_camera_calib/yrq/OrbbecViewer_*/libavcodec.so.58.54.100

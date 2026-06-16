@@ -212,9 +212,11 @@ class CoverPoseEstimator:
                         pts_pixel_all = pts_pixel_m + pts_pixel_s
                         pts_pixel_all.append((center_x, center_y))
                         depths = []
+                        pts_pixels = []
                         for i in range(len(pts_pixel_all)):
                             depth = self.get_depth(depth_image, pts_pixel_all[i][0], pts_pixel_all[i][1])
                             if depth > 0 :
+                                pts_pixels.append(pts_pixel_all[i])
                                 depths.append(depth)
                         # print(datetime.now().strftime("%H:%M:%S.%f"), "完成充电口盖位姿估计")
                         # print(f"[深度值]: {depth}mm")
@@ -232,7 +234,7 @@ class CoverPoseEstimator:
                             return
 
                             # try:
-                            #     cover_pose_rpy = get_3D_pose_rpy(pts_pixel_all, depths)
+                            #     cover_pose_rpy = get_3D_pose_rpy(pts_pixels, depths)
                             #     cover_pose[:3] = [cover_pose_t[0][0], cover_pose_t[1][0], cover_pose_t[2][0]]
                             #     cover_pose[3:] = cover_pose_rpy[:]
                             #     cover_pose[-1] = 0

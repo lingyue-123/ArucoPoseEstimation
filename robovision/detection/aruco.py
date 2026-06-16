@@ -69,6 +69,7 @@ def detect_raw_frame(
             continue
 
         corners_subpix = corners[i].reshape(-1, 1, 2).astype(np.float32)
+        # TODO: 亚像素窗口改为9×9，可减弱30~50%漂移？
         cv2.cornerSubPix(gray_blur, corners_subpix, (5, 5), (-1, -1), criteria)
         refined_corners = corners_subpix.reshape(4, 2).astype(np.float64)
 

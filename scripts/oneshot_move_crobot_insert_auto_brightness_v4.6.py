@@ -1,26 +1,45 @@
 #!/usr/bin/env python3
 """
-一次性到位 + 插入/取枪运动 | One-Shot Move with Insert/Extract (v4.5)
+充电枪插入/拔出全流程自动化 | Full Auto Insert/Extract Pipeline (v4.6)
 
-基于 ArUco 视觉检测 + 手眼标定，一键运动到参考基准位，
-并支持在工具坐标系下沿 z 轴执行插入/拔出动作。
+通过后台 Unix Domain Socket 接收外部触发信号 ({"auto_insert_gun": 1})，
+自动按序执行 17 步状态机，完成充电枪插入→拔出→归枪→取小盖→放回小盖的完整流程。
+同时保留手动按键操作作为调试/回退手段。
 
-v4.5 改进: 按 'm' 自动循环对准直到 ArUco 误差 < 阈值或达到最大次数。
+状态机流程 (State Machine Flow):
+    STATE_1  → 机械臂回初始关节位 + 双目粗定位充电口盖 → 粗定位运动
+    STATE_2  → 力控按压开盖
+    STATE_3  → 拨盖运动 (CoverActionFlow)
+    STATE_4  → 自动多次视觉对准 (插枪 ArUco)
+    STATE_5  → 对准后固定偏移运动
+    STATE_6  → 夹住小盖并放小盖 → 运动到取枪初始点
+    STATE_7  → 自动多次视觉对准 (取枪 ArUco)
+    STATE_8  → 固定偏移运动 + 沿法兰z向直线运动 → 触发夹爪和舵机
+    STATE_9  → 沿法兰z向退出 → 取出充电枪并复位舵机
+    STATE_10 → 插枪前运动
+    STATE_11 → 力控插枪
+    STATE_12 → 力控拔枪
+    STATE_13 → 归枪运动
+    STATE_14 → 移动至取小盖前点位
+    STATE_15 → 自动多次视觉对准 (取小盖 ArUco)
+    STATE_16 → 对准后固定偏移运动
+    STATE_17 → 夹住小盖放回充电口 + 关大盖 → 回到初始点
+
+    IDLE → 等待 UDS 触发或手动按键操作
+    任何步骤失败或按 'q'/ESC 中止自动流程 → 回到 IDLE
 
 光照鲁棒: --lighting-robust 启用后台线程，增益优先→曝光兜底，按 ref ROI 亮度自动调节。
   - 按 'r' 保存当前 marker ROI 亮度为参考（同时持久化到文件）
   - 启动时自动从文件加载参考亮度，有值则 LR 线程生效
 
-工作流 (Workflow):
-    1. 按 'r': 记录当前 ArUco 位姿为参考（自动识别插枪/取枪 marker），同步保存法兰坐标系下的参考 TCP
-    2. 按 'm': 自动多次视觉对准直到满足阈值（自动适配插枪/取枪）
-    3. 按 'b': 直接回到按 'r' 时保存的机械臂法兰坐标系位姿
-    4. 按 'i': 切换到工具坐标系，沿工具 z 轴前进（自动适配插枪/取枪距离）
-    5. 按 'q' / ESC: 退出
+手动按键 (Manual Keys, IDLE 状态下):
+    按键 'r': 记录当前 ArUco 位姿为参考（自动识别插枪/取枪 marker），同步保存法兰坐标系下的参考 TCP
+    按键 '3','d','g','m','b','h','a','c','j','e','s','k','l','p': 单独执行对应步骤（调试用）
+    按键 'q' / ESC: 退出
 
 用法 (Usage):
-    python scripts/oneshot_move_crobot_insert_v4.5.py --camera mecheye --insert-cm-insert 7 --insert-cm-take 12
-    python scripts/oneshot_move_crobot_insert_v4.5.py --camera mecheye --no-robot --align-max-attempts 4
+    python scripts/oneshot_move_crobot_insert_auto_brightness_v4.6.py --camera mecheye --insert-cm-insert 7 --insert-cm-take 12
+    python scripts/oneshot_move_crobot_insert_auto_brightness_v4.6.py --camera mecheye --no-robot --align-max-attempts 4
 """
 
 import argparse
@@ -37,6 +56,8 @@ import socket
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
+
+from enum import IntEnum
 
 import cv2
 import numpy as np
@@ -73,32 +94,47 @@ from third_party.force_control_crp import RobotController, BridgeCRobotAdapter
 
 # ── Unix Domain Socket 服务（接收外部进程自动化控制信号） ──
 # 监听 /tmp/auto_gun.sock，外部进程通过 Unix Domain Socket
-# 发送 JSON 报文触发自动化流程（如鱼眼相机检测到插入完成）。
-# 当前仅接收并打印日志，业务逻辑可按需扩展。
+# 发送 JSON 报文 {"auto_insert_gun": 1} 触发自动化流程。
 SOCK = "/tmp/auto_gun.sock"
 
-# ── 业务函数：收到 UDS 信号后的处理逻辑 ──
+# ── 自动化状态机 | Auto State Machine ──
+class AutoState(IntEnum):
+    IDLE = -1
+    STATE_1_INIT_COVER = 1
+    STATE_2_FORCE_OPEN = 2
+    STATE_3_COVER_ACTION = 3
+    STATE_4_ALIGN_INSERT = 4
+    STATE_5_OFFSET_B = 5
+    STATE_6_GRAB_INNER = 6
+    STATE_7_ALIGN_TAKE = 7
+    STATE_8_OFFSET_A = 8
+    STATE_9_RETRACT_C = 9
+    STATE_10_PRE_INSERT = 10
+    STATE_11_FORCE_IN = 11
+    STATE_12_FORCE_OUT = 12
+    STATE_13_RETURN_GUN = 13
+    STATE_14_ALIGN_POINT = 14
+    STATE_15_ALIGN_INNER = 15
+    STATE_16_OFFSET_B2 = 16
+    STATE_17_CLOSE_COVER = 17
+
+# ── UDS 触发事件（线程安全） ──
+auto_trigger_event = threading.Event()
 trigger_count = 0
 
 def trigger_control(auto_gun: int):
-    """收到 auto_gun 信号后的业务处理。
-
-    由 _socket_server 接收到外部进程发来的 JSON 报文后调用，
-    累计计数并记录日志。可扩展为触发主循环中的自动化按键动作。
-    """
+    """收到 auto_gun=1 信号后设置触发事件，主循环检测到后启动自动化流程。"""
     global trigger_count
     trigger_count += 1
     logger.info("[trigger_control] auto_insert_gun=%s (第%d次)", auto_gun, trigger_count)
-    # 如需模拟键盘输入触发主循环按键事件，可取消注释：
-    # import pyautogui
-    # pyautogui.hotkey('0')
+    if auto_gun == 1:
+        auto_trigger_event.set()
 
 def _socket_server():
     """后台 UDS 监听线程：接收外部进程发来的 JSON 控制信号。
 
-    外部进程连接 /tmp/auto_gun.sock 并发送 JSON 行（如
-    {"action": "auto_insert", "value": 1}）。收到信号后记录日志，
-    可在此扩展为调用 trigger_control() 等业务函数。
+    外部进程连接 /tmp/auto_gun.sock 并发送 JSON 行
+    {"auto_insert_gun": 1} 触发自动化流程。
     """
     if os.path.exists(SOCK):
         os.unlink(SOCK)
@@ -116,8 +152,7 @@ def _socket_server():
                         try:
                             payload = json.loads(line)
                             logger.info("[UDS] 收到信号: %s", payload)
-                            # 可在此扩展业务逻辑，取消注释下行启用：
-                            # trigger_control(payload.get("auto_insert_gun", 0))
+                            trigger_control(payload.get("auto_insert_gun", 0))
                         except json.JSONDecodeError:
                             logger.warning("[UDS] 收到无效 JSON: %s", line.strip())
 
@@ -273,7 +308,7 @@ def execute_keba_force_mode(robot, mode, displace_target=0):
 
 
 def parse_args(argv=None):
-    parser = argparse.ArgumentParser(description='一次性到位 + 工具坐标系插入')
+    parser = argparse.ArgumentParser(description='充电枪全流程自动化 v4.6')
     parser.add_argument('--camera', type=str, default=None,
                         help='cameras.yaml 中的相机名称')
     parser.add_argument('--hand-eye', type=str, default='/home/nvidia/Downloads/HD/HD_0323/data/handeye_eye_in_hand/hand_eye_result_mono.txt',
@@ -305,14 +340,8 @@ def parse_args(argv=None):
                         help='取枪时沿工具 z 轴前进距离（cm）')
     parser.add_argument('--out-mm', type=float, default=35,
                         help='拔枪时沿工具 z 轴后退距离（注意：内部会乘以 10 转换为实际移动量）')
-    parser.add_argument('--return-gun-up', type=float, default=0.3,
-                        help='归枪抬升距离（cm，内部乘以 10 转换为 mm）')
-    parser.add_argument('--return-gun-left', type=float, default=0.2,
-                        help='归枪左移距离（cm，内部乘以 10 转换为 mm）')
     parser.add_argument('--move-timeout', type=float, default=MOVE_TIMEOUT,
                         help=f'普通运动等待超时秒数（默认 {MOVE_TIMEOUT}）')
-    parser.add_argument('--force-retract-target', type=int, default=70,
-                        help='按 o 执行 KEBA mode_3 力控拔枪的目标位移（默认 70）')
     parser.add_argument('--raw', action='store_true',
                         help='使用 RAW 检测模式（固定 IPPE_SQUARE，且不使用时序滤波）')
     parser.add_argument('--no-temporal-filter', action='store_true',
@@ -483,8 +512,6 @@ def main():
         force_ctrl.attach_crp_robot(robot.bridge_robot)
     logger.info("Force controller loaded")
 
-    # force_ctrl.run_power_on_ppmode()
-
     # --- 初始化相机和检测器 | Camera & detector init ---
     camera = build_camera(args.camera, cfg)
     camera.open()
@@ -548,7 +575,7 @@ def main():
 
     det_thread = threading.Thread(target=_detection_loop, daemon=True)
     det_thread.start()
-    logger.info("Ready: r=SetRef m=AutoAlign b=Back2Ref i=Insert f=ForceIn o=ForceOut v=Gripper q=Quit (detection thread started)")
+    logger.info("Ready: UDS trigger or manual keys r=Ref q=Quit (detection thread started)")
 
     # --- 光照鲁棒线程（增益优先 → 曝光兜底） ---
     if args.lighting_robust:
@@ -684,17 +711,480 @@ def main():
     # 双目相机及检测模型初始化 | Stereo cover pose estimator
     cover_pose_estimator = CoverPoseEstimator()
 
-    # # 力控控制类
-    # force_controller = RobotController()
+    # ── 自动化步骤函数 (Auto Step Functions) ──
 
-    # # 加载库
-    # if not force_controller.load():
-    #     sys.exit(1)
-    # # 启动状态监控子线程
-    # force_controller.start_state_monitor()
+    def _check_abort():
+        """检查是否有用户中止按键 (q/ESC)，有则返回 True。"""
+        key = cv2.waitKey(1) & 0xFF
+        if key in (ord('q'), 27):
+            logger.info("Auto flow aborted by user")
+            return True
+        return False
+
+    def _execute_auto_align(marker_label):
+        """执行一次完整的 ArUco 自动对准循环。返回 True 表示对准成功。"""
+        nonlocal moving
+        with det_lock:
+            result = latest_det
+        # 自动检测当前可见的 marker 类型
+        if insert_marker_id in result:
+            detected_type = "插枪"
+            ref = T_aruco2cam_ref_insert
+        elif takegun_marker_id in result:
+            detected_type = "取枪"
+            ref = T_aruco2cam_ref_takegun
+        else:
+            logger.warning("Auto-align: no marker detected")
+            return False
+
+        if ref is None:
+            logger.warning("Auto-align: reference not set for %s", detected_type)
+            return False
+
+        moving = True
+        align_success = False
+        logger.info("=== 自动对准 %s (max=%d, success<%.1fmm, min=%d) ===",
+                    detected_type, args.align_max_attempts,
+                    args.align_success_mm, args.align_min_attempts)
+
+        for attempt in range(1, args.align_max_attempts + 1):
+            if _check_abort():
+                moving = False
+                return False
+            ctx = _wait_alignment_context(detected_type)
+            if ctx is None:
+                logger.warning("对准 #%d: 未检测到 marker 或无法稳定", attempt)
+                break
+            logger.info("对准 #%d/%d: ArUco误差=%.2f mm %.2f deg | 运动误差=%.2f mm %.2f deg",
+                        attempt, args.align_max_attempts,
+                        ctx["aruco_norm"], ctx["aruco_rot"],
+                        ctx["trans_err"], ctx["rot_err"])
+            if should_finish_alignment(attempt, ctx["aruco_norm"],
+                                       args.align_success_mm, args.align_min_attempts):
+                logger.info("对准成功: 误差 %.2f mm <= %.2f mm (完成 %d 次)",
+                            ctx["aruco_norm"], args.align_success_mm, attempt)
+                align_success = True
+                break
+            safe, reason = check_oneshot_safety(ctx["trans_err"], ctx["rot_err"],
+                                                args.max_trans, args.max_rot)
+            if not safe:
+                logger.warning("对准 #%d 安全检查失败: %s", attempt, reason)
+                break
+            if args.no_robot:
+                logger.info("[DRY RUN] 跳过对准运动 #%d", attempt)
+                align_success = True
+                break
+            ok = execute_move(robot, ctx["target_pose"], timeout=args.move_timeout)
+            if not ok:
+                logger.warning("对准 #%d 运动失败", attempt)
+                break
+            new_tcp = get_robot_tcp_pose_mm(robot, robot_cfg)
+            if new_tcp is not None:
+                logger.info("  对准 #%d 运动后 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                            attempt, *new_tcp)
+
+        if not align_success:
+            ctx = _wait_alignment_context(detected_type)
+            if ctx is not None and ctx["aruco_norm"] <= args.align_success_mm:
+                logger.info("最终检查通过: 误差 %.2f mm <= %.2f mm",
+                            ctx["aruco_norm"], args.align_success_mm)
+                align_success = True
+
+        moving = False
+        logger.info("=== 自动对准结束: %s ===", "成功" if align_success else "未达标")
+
+        if robot_connected:
+            new_tcp = get_robot_tcp_pose_mm(robot, robot_cfg)
+            if new_tcp is not None:
+                T_g2b_after = pose_to_matrix(new_tcp)
+                ref_for_log = T_g2b_ref_insert if detected_type == "插枪" else T_g2b_ref_takegun
+                if ref_for_log is not None:
+                    ref_xyz, ref_res_t, ref_res_r = compute_pose_error_in_frame(T_g2b_after, ref_for_log)
+                    logger.info("%s residual (vs ref): trans=%.2f mm, rot=%.2f deg",
+                                detected_type, ref_res_t, ref_res_r)
+                    logger.info("  ref axes: dX=%.2f dY=%.2f dZ=%.2f mm", *ref_xyz)
+                logger.info("  Actual TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f", *new_tcp)
+
+        return align_success
+
+    def _step_1_init_cover():
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_1: 初始关节运动 + 双目粗定位 ===")
+        if robot_connected:
+            robot.move_joint([112.196, 99.884, -56.131, 128.446, -5.912, -17.849], speed=40)
+            flow.gripper.set_position(45)
+            cover_3D_pose = cover_pose_estimator.pose_estimation()
+            if cover_3D_pose is not None:
+                logger.info("Cover 3D pose: %s", cover_3D_pose)
+                cover_3D_matrix = pose_to_matrix(cover_3D_pose)
+                current_tool_pose = get_tcp_pose_in_tool_mm(
+                    robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
+                if current_tool_pose is None:
+                    logger.error("STATE_1 失败: 无法读取 TCP")
+                    return AutoState.IDLE
+                cur_tcp_matrix = pose_to_matrix(current_tool_pose)
+                cover_offset_pose = [0, 0, 0, 0, 0, 0]
+                cover_offset_matrix = pose_to_matrix(cover_offset_pose)
+                target_matrix = cur_tcp_matrix @ (cover_3D_matrix @ cover_offset_matrix)
+                target_pose = matrix_to_pose(target_matrix)
+                logger.info("  Target TCP for coarse alignment: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                            *target_pose)
+                cur_joint = robot.get_joint_pose()
+                target_joint = robot.inverse_kinematics(target_pose=target_pose, initial_joints=cur_joint)
+                robot.move_by_joint_list(joints=[target_joint], speeds=[40])
+                robot.move_linear(CartesianPose(*target_pose))
+            else:
+                logger.error("STATE_1 失败: 双目姿态估计返回 None")
+                return AutoState.IDLE
+        else:
+            logger.info("[DRY RUN] STATE_1 skipped")
+        logger.info("=== STATE_1 完成 ===")
+        return AutoState.STATE_2_FORCE_OPEN
+
+    def _step_2_force_open():
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_2: 力控按压开盖 ===")
+        if robot_connected:
+            force_ctrl.run_ForceControl_OpenCover()
+        logger.info("=== STATE_2 完成 ===")
+        return AutoState.STATE_3_COVER_ACTION
+
+    def _step_3_cover_action():
+        nonlocal outer_cover_is_opened
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_3: 拨盖运动 ===")
+        if not outer_cover_is_opened:
+            flow.run(1)
+        else:
+            flow.run(8)
+        logger.info("=== STATE_3 完成 ===")
+        return AutoState.STATE_4_ALIGN_INSERT
+
+    def _step_4_align_insert():
+        nonlocal already_return_gun
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_4: 自动对准插枪 ArUco ===")
+        if robot_connected:
+            success = _execute_auto_align("插枪")
+            if not success:
+                logger.error("STATE_4 失败: 自动对准未达标")
+                return AutoState.IDLE
+            if not already_return_gun:
+                current_tcp = robot.get_tcp_pose()
+                current_matrix = pose_to_matrix(current_tcp)
+                offset_pose = [-4.203, -204.682, -35.227, -4.467, 4.029, -1.981]
+                offset_matrix = pose_to_matrix(offset_pose)
+                target_matrix = current_matrix @ offset_matrix
+                target_pose = matrix_to_pose(target_matrix)
+                with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    data["INSERT_BEFORE_TEMPLATE"] = target_pose
+                with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'w', encoding='utf-8') as f:
+                    json.dump(data, f, ensure_ascii=False, indent=4)
+                flow.update_CFG()
+        logger.info("=== STATE_4 完成 ===")
+        return AutoState.STATE_5_OFFSET_B
+
+    def _step_5_offset_b():
+        nonlocal already_take_inner_cover
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_5: 对准后固定偏移运动 ===")
+        if robot_connected:
+            current_pose = robot.get_tcp_pose()
+            current_matrix = pose_to_matrix(current_pose)
+            offset_pose_cover = [-2.515, -153.797, 267.396, -2.225, 7.054, -3.599]
+            offset_matrix = pose_to_matrix(offset_pose_cover)
+            target_matrix = current_matrix @ offset_matrix
+            target_pose = matrix_to_pose(target_matrix)
+            take_cover_pose = robot.relative_tool_pose(dz=50, init_pose=target_pose).to_list()
+            current_joint = robot.get_joint_pose()
+            target_joint = robot.inverse_kinematics(target_pose=target_pose, initial_joints=current_joint)
+            take_cover_joint = robot.inverse_kinematics(target_pose=take_cover_pose, initial_joints=current_joint)
+            robot.move_by_joint_list(joints=[target_joint, take_cover_joint], speeds=[25, 15])
+            if not already_take_inner_cover:
+                with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    data["PUSH_POINT1"] = target_pose
+                    data["PUSH_POINT2"] = take_cover_pose
+                with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'w', encoding='utf-8') as f:
+                    json.dump(data, f, ensure_ascii=False, indent=4)
+                flow.update_CFG()
+                logger.info('PUSH POINT1 POINT2已写入json.')
+        logger.info("=== STATE_5 完成 ===")
+        return AutoState.STATE_6_GRAB_INNER
+
+    def _step_6_grab_inner():
+        nonlocal already_take_inner_cover
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_6: 夹住小盖并放小盖 → 运动到取枪初始点 ===")
+        flow.run(2)
+        already_take_inner_cover = True
+        logger.info("=== STATE_6 完成 ===")
+        return AutoState.STATE_7_ALIGN_TAKE
+
+    def _step_7_align_take():
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_7: 自动对准取枪 ArUco ===")
+        if robot_connected:
+            success = _execute_auto_align("取枪")
+            if not success:
+                logger.error("STATE_7 失败: 自动对准未达标")
+                return AutoState.IDLE
+        logger.info("=== STATE_7 完成 ===")
+        return AutoState.STATE_8_OFFSET_A
+
+    def _step_8_offset_a():
+        nonlocal moving
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_8: 固定偏移 + 沿法兰z前进 + 夹爪舵机 ===")
+        if robot_connected:
+            current_pose = get_tcp_pose_in_tool_mm(
+                robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
+            if current_pose is None:
+                logger.error("STATE_8 失败: 无法读取 TCP")
+                return AutoState.IDLE
+            current_matrix = pose_to_matrix(current_pose)
+            offset_pose = [51.889, -230.636, 292.904, -14.379, 1.694, 0.214]
+            offset_matrix = pose_to_matrix(offset_pose)
+            target_matrix = current_matrix @ offset_matrix
+            target_pose = matrix_to_pose(target_matrix)
+            logger.info("Applying relative offset:")
+            logger.info("  Current:  X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *current_pose)
+            logger.info("  Target:   X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *target_pose)
+            if not args.no_robot:
+                moving = True
+                motion_success = True
+                robot.set_speed(100)
+                cart = CartesianPose(
+                    x=target_pose[0], y=target_pose[1], z=target_pose[2],
+                    rx=target_pose[3], ry=target_pose[4], rz=target_pose[5],
+                )
+                ok = robot.move_joint_and_wait(cart, speed=10, timeout=args.move_timeout)
+                if ok:
+                    logger.info("Relative offset move complete")
+                    current_tool_pose = get_robot_tcp_pose_mm(robot, robot_cfg)
+                    if current_tool_pose is not None:
+                        advance_pose = offset_pose_along_tool_axis(current_tool_pose, 123.0, axis='z')
+                        logger.info("Take gun: advance 120 mm along tool Z-axis")
+                        logger.info("  Target: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                                    *advance_pose)
+                        robot.set_speed(30)
+                        ok = robot.move_and_wait(CartesianPose(
+                            x=advance_pose[0], y=advance_pose[1], z=advance_pose[2],
+                            rx=advance_pose[3], ry=advance_pose[4], rz=advance_pose[5],
+                        ), timeout=args.move_timeout)
+                        if ok:
+                            logger.info("Take-gun advance 120mm complete")
+                        else:
+                            logger.warning("Take-gun advance 120mm failed")
+                            motion_success = False
+                    else:
+                        logger.warning("Failed to read TCP for 120mm advance")
+                        motion_success = False
+                else:
+                    logger.warning("Relative offset move timed out or failed")
+                    motion_success = False
+                moving = False
+                final_pose = get_robot_tcp_pose_mm(robot, robot_cfg)
+                if final_pose is not None:
+                    logger.info("  Final: X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *final_pose)
+                robot.set_speed(DEFAULT_SPEED)
+                if motion_success:
+                    while robot.is_moving():
+                        time.sleep(0.1)
+                    logger.info("Auto-trigger gripper close + servo press")
+                    flow.gripper.set_speed(30)
+                    flow.gripper.set_force(75)
+                    flow.gripper.set_position(32)
+                    timeout_s = 5.0
+                    t0 = time.time()
+                    while True:
+                        status = flow.gripper.get_grip_status()
+                        if status in (1, 2):
+                            logger.info("Gripper action complete (status=%d)", status)
+                            break
+                        if time.time() - t0 > timeout_s:
+                            logger.warning("Gripper action timeout after %.1fs (status=%s)", timeout_s, status)
+                            break
+                        time.sleep(0.1)
+                    arm_controller = SMSSTSController("/dev/ttysWK1")
+                    arm_controller.connect()
+                    arm_controller.press_trigger()
+                    arm_controller.disconnect()
+                else:
+                    logger.error("STATE_8 失败: 运动失败")
+                    return AutoState.IDLE
+        logger.info("=== STATE_8 完成 ===")
+        return AutoState.STATE_9_RETRACT_C
+
+    def _step_9_retract_c():
+        nonlocal moving
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_9: 沿法兰z退出 + 复位舵机 ===")
+        if robot_connected:
+            current_tool_pose = get_tcp_pose_in_tool_mm(
+                robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
+            if current_tool_pose is None:
+                logger.error("STATE_9 失败: 无法读取 TCP")
+                return AutoState.IDLE
+            before_retract_joint = robot.get_joint_pose()
+            retract_pose = offset_pose_along_tool_axis(current_tool_pose, -100.0, axis='z')
+            retract_joint = robot.inverse_kinematics(target_pose=retract_pose, initial_joints=before_retract_joint)
+            logger.info("Retract 100 mm along tool Z-axis")
+            logger.info("  Current TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                        *current_tool_pose)
+            logger.info("  Target TCP:  X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                        *retract_pose)
+            if not args.no_robot:
+                moving = True
+                motion_success = True
+                robot.set_speed(100)
+                ok = execute_move(robot, retract_pose, timeout=args.move_timeout)
+                if ok:
+                    logger.info("Retract 100mm complete")
+                else:
+                    logger.warning("Retract 100mm failed")
+                    motion_success = False
+                moving = False
+                try:
+                    tcp_after = get_robot_tcp_pose_mm(robot, robot_cfg)
+                except Exception:
+                    tcp_after = None
+                if tcp_after is not None:
+                    logger.info("  After retract TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+                                *tcp_after)
+                if motion_success:
+                    while robot.is_moving():
+                        time.sleep(0.1)
+                    logger.info("Auto-trigger servo reset")
+                    arm_controller = SMSSTSController("/dev/ttysWK1")
+                    arm_controller.connect()
+                    arm_controller.reset_position()
+                    arm_controller.disconnect()
+                else:
+                    logger.error("STATE_9 失败: 运动失败")
+                    return AutoState.IDLE
+                robot.set_speed(DEFAULT_SPEED)
+            with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                data["GUN_HOME2"] = before_retract_joint
+                data["GUN_HOME1"] = retract_joint
+            with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+            flow.update_CFG()
+        logger.info("=== STATE_9 完成 ===")
+        return AutoState.STATE_10_PRE_INSERT
+
+    def _step_10_pre_insert():
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_10: 插枪前运动 ===")
+        flow.run(3)
+        logger.info("=== STATE_10 完成 ===")
+        return AutoState.STATE_11_FORCE_IN
+
+    def _step_11_force_in():
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_11: 力控插枪 ===")
+        force_ctrl.run_forcecontrol_charge_in()
+        logger.info("=== STATE_11 完成 ===")
+        return AutoState.STATE_12_FORCE_OUT
+
+    def _step_12_force_out():
+        nonlocal moving
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_12: 力控拔枪 ===")
+        if robot_connected:
+            arm_controller = SMSSTSController("/dev/ttysWK1")
+            arm_controller.connect()
+            arm_controller.press_trigger()
+            arm_controller.disconnect()
+            force_ctrl.run_forcecontrol_charge_out()
+        logger.info("=== STATE_12 完成 ===")
+        return AutoState.STATE_13_RETURN_GUN
+
+    def _step_13_return_gun():
+        nonlocal already_return_gun
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_13: 归枪运动 ===")
+        flow.run(4)
+        already_return_gun = True
+        logger.info("=== STATE_13 完成 ===")
+        return AutoState.STATE_14_ALIGN_POINT
+
+    def _step_14_align_point():
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_14: 移动至取小盖前点位 ===")
+        flow.run(5)
+        logger.info("=== STATE_14 完成 ===")
+        return AutoState.STATE_15_ALIGN_INNER
+
+    def _step_15_align_inner():
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_15: 自动对准取小盖 ArUco ===")
+        if robot_connected:
+            success = _execute_auto_align("取小盖")
+            if not success:
+                logger.error("STATE_15 失败: 自动对准未达标")
+                return AutoState.IDLE
+        logger.info("=== STATE_15 完成 ===")
+        return AutoState.STATE_16_OFFSET_B2
+
+    def _step_16_offset_b2():
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_16: 对准后固定偏移运动 ===")
+        if robot_connected:
+            current_pose = robot.get_tcp_pose()
+            current_matrix = pose_to_matrix(current_pose)
+            offset_pose_cover = [-2.515, -153.797, 267.396, -2.225, 7.054, -3.599]
+            offset_matrix = pose_to_matrix(offset_pose_cover)
+            target_matrix = current_matrix @ offset_matrix
+            target_pose = matrix_to_pose(target_matrix)
+            take_cover_pose = robot.relative_tool_pose(dz=50, init_pose=target_pose).to_list()
+            current_joint = robot.get_joint_pose()
+            target_joint = robot.inverse_kinematics(target_pose=target_pose, initial_joints=current_joint)
+            take_cover_joint = robot.inverse_kinematics(target_pose=take_cover_pose, initial_joints=current_joint)
+            robot.move_by_joint_list(joints=[target_joint, take_cover_joint], speeds=[25, 15])
+        logger.info("=== STATE_16 完成 ===")
+        return AutoState.STATE_17_CLOSE_COVER
+
+    def _step_17_close_cover():
+        if _check_abort(): return AutoState.IDLE
+        logger.info("=== STATE_17: 夹住小盖放回充电口 + 关大盖 → 回到初始点 ===")
+        flow.run(7)
+        flow.run(6)
+        logger.info("=== STATE_17 完成 === 全流程结束")
+        return AutoState.IDLE
+
+    _STEP_DISPATCH = {
+        AutoState.STATE_1_INIT_COVER: _step_1_init_cover,
+        AutoState.STATE_2_FORCE_OPEN: _step_2_force_open,
+        AutoState.STATE_3_COVER_ACTION: _step_3_cover_action,
+        AutoState.STATE_4_ALIGN_INSERT: _step_4_align_insert,
+        AutoState.STATE_5_OFFSET_B: _step_5_offset_b,
+        AutoState.STATE_6_GRAB_INNER: _step_6_grab_inner,
+        AutoState.STATE_7_ALIGN_TAKE: _step_7_align_take,
+        AutoState.STATE_8_OFFSET_A: _step_8_offset_a,
+        AutoState.STATE_9_RETRACT_C: _step_9_retract_c,
+        AutoState.STATE_10_PRE_INSERT: _step_10_pre_insert,
+        AutoState.STATE_11_FORCE_IN: _step_11_force_in,
+        AutoState.STATE_12_FORCE_OUT: _step_12_force_out,
+        AutoState.STATE_13_RETURN_GUN: _step_13_return_gun,
+        AutoState.STATE_14_ALIGN_POINT: _step_14_align_point,
+        AutoState.STATE_15_ALIGN_INNER: _step_15_align_inner,
+        AutoState.STATE_16_OFFSET_B2: _step_16_offset_b2,
+        AutoState.STATE_17_CLOSE_COVER: _step_17_close_cover,
+    }
+
+    def _execute_auto_step(state):
+        fn = _STEP_DISPATCH.get(state)
+        if fn is None:
+            logger.error("Unknown auto state: %s", state)
+            return AutoState.IDLE
+        return fn()
 
     try:
         first_move = 0 # 随动标志位
+        auto_state = AutoState.IDLE
         while True:
             with open('/home/nvidia/Downloads/HD/HD_0323/Intergration/stereo_camera_calib/yrq/first_move.json', 'r', encoding='utf-8') as f:
                 fcntl.flock(f, fcntl.LOCK_SH)
@@ -818,15 +1308,9 @@ def main():
                 y += 30
 
             # Display insert distance info
-            if current_marker_type == "插枪" and args.insert_cm_insert <= 0:
-                put_text(vis, "Set --insert-cm-insert > 0 to enable insert action", y, PROMPT_TEXT_COLOR)
-                y += 28
-            elif current_marker_type == "取枪" and args.insert_cm_take <= 0:
-                put_text(vis, "Set --insert-cm-take > 0 to enable insert action", y, PROMPT_TEXT_COLOR)
-                y += 28
-            elif current_marker_type is not None:
+            if current_marker_type is not None:
                 insert_cm = args.insert_cm_insert if current_marker_type == "插枪" else args.insert_cm_take
-                put_text(vis, f"Press i to move from current coord sys 2 TCP ({insert_cm} cm)", y, PROMPT_TEXT_COLOR)
+                put_text(vis, f"{current_marker_type} insert distance: {insert_cm} cm", y, PROMPT_TEXT_COLOR)
                 y += 28
 
             if moving:
@@ -860,15 +1344,15 @@ def main():
             lr_flag = " LR" if args.lighting_robust else ""
             robot_str = "Robot:ON" if robot_connected else ("Robot:OFF(dry)" if args.no_robot else "Robot:OFF")
             ref_str = f"Ref:Insert{'SET' if ref_set_insert else 'NONE'} Take{'SET' if ref_set_takegun else 'NONE'}"
-            status = (f"ONESHOT+INSERT{lr_flag} | {ref_str} | {robot_str} | "
-                      "r=Ref m=Move b=Back i=Insert f=ForceIn o=ForceOut q=Quit")
+            auto_state_str = f"State:{auto_state.name}" if auto_state != AutoState.IDLE else ""
+            status = (f"V4.6 AUTO{lr_flag} | {ref_str} | {robot_str} | {auto_state_str} | "
+                      "r=Ref q=Quit")
             put_text(vis, status, h_disp - 15, (140, 140, 140))
 
             cv2.imshow(win, vis)
             key = cv2.waitKey(1) & 0xFF
 
             if first_move == 1:
-                # TODO:机械臂随动至设定好的位置
                 robot.move_linear(CartesianPose(355.697, -335.04, 182.446, 103.439, -25.092, 37.714))
 
                 first_move = 0
@@ -879,16 +1363,35 @@ def main():
                     os.fsync(f.fileno())
                     fcntl.flock(f, fcntl.LOCK_UN)
 
-            
+            # ── 自动化流程状态机 | Auto Flow State Machine ──
+            if auto_state > AutoState.IDLE:
+                if key in (ord('q'), 27):
+                    logger.info("Auto flow aborted by user")
+                    moving = False
+                    auto_state = AutoState.IDLE
+                    continue
+                auto_state = _execute_auto_step(auto_state)
+                if auto_state == AutoState.IDLE:
+                    logger.info("Auto flow terminated (back to IDLE)")
+                continue
+
+            # ── IDLE 模式: UDS 触发 + 手动按键 ──
             if key in (ord('q'), 27):
                 break
 
-            elif key == ord('r'):
-                # 保存当前检测到的 marker 位姿和 TCP 为参考
+            # 检查 UDS 自动触发信号
+            if auto_trigger_event.is_set():
+                auto_trigger_event.clear()
+                auto_state = AutoState.STATE_1_INIT_COVER
+                logger.info("Auto flow triggered by UDS signal")
+                continue
+
+            # --- 手动按键（IDLE 状态下） | Manual Keys ---
+            if key == ord('r'):
                 if current_marker_id is None:
                     logger.warning("No marker detected, cannot save reference")
                     continue
-                
+
                 if current_marker_type == "插枪":
                     T_aruco2cam_ref_insert = aruco_to_matrix(target_data)
                     ref_pose_vec = matrix_to_pose(T_aruco2cam_ref_insert)
@@ -903,7 +1406,6 @@ def main():
                         logger.info("Insert ref TCP (tool %d) saved: t=[%.2f, %.2f, %.2f] mm",
                                     BASE_TOOL_ID, T_g2b_cur[0, 3], T_g2b_cur[1, 3], T_g2b_cur[2, 3])
 
-                    # 保存 marker ROI 亮度参考
                     if det_frame is not None:
                         try:
                             bri = _marker_roi_brightness(det_frame, target_data)
@@ -916,7 +1418,7 @@ def main():
                                 logger.info("Insert bri ref saved: %.0f", bri)
                         except Exception:
                             logger.warning("Failed to save insert bri ref", exc_info=True)
-                else:  # 取枪
+                else:
                     T_aruco2cam_ref_takegun = aruco_to_matrix(target_data)
                     ref_pose_vec = matrix_to_pose(T_aruco2cam_ref_takegun)
                     os.makedirs(os.path.dirname(args.aruco_ref_takegun) or '.', exist_ok=True)
@@ -930,7 +1432,6 @@ def main():
                         logger.info("Take ref TCP (tool %d) saved: t=[%.2f, %.2f, %.2f] mm",
                                     BASE_TOOL_ID, T_g2b_cur[0, 3], T_g2b_cur[1, 3], T_g2b_cur[2, 3])
 
-                    # 保存 marker ROI 亮度参考
                     if det_frame is not None:
                         try:
                             bri = _marker_roi_brightness(det_frame, target_data)
@@ -945,11 +1446,11 @@ def main():
                             logger.warning("Failed to save take bri ref", exc_info=True)
 
             elif key == ord('m'):
-                # v4.5: 自动多次视觉对准
+                # 手动自动多次视觉对准
                 if moving:
                     logger.warning("Motion in progress, please wait")
                     continue
-                if current_marker_type is None: 
+                if current_marker_type is None:
                     logger.warning("No marker detected, cannot align")
                     continue
                 if T_aruco2cam_ref is None:
@@ -960,7 +1461,6 @@ def main():
                     logger.warning("Robot not connected, cannot align")
                     continue
 
-                # === 自动循环对准 ===
                 moving = True
                 align_success = False
                 logger.info("=== 开始自动对准 %s (max=%d, success<%.1fmm, min=%d) ===",
@@ -1001,13 +1501,11 @@ def main():
                         logger.warning("对准 #%d 运动失败", attempt)
                         break
 
-                    # 运动完成后 log 当前 TCP
                     new_tcp = get_robot_tcp_pose_mm(robot, robot_cfg)
                     if new_tcp is not None:
                         logger.info("  对准 #%d 运动后 TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                                     attempt, *new_tcp)
 
-                # 循环结束后最终检查
                 if not align_success:
                     ctx = _wait_alignment_context(current_marker_type)
                     if ctx is not None and ctx["aruco_norm"] <= args.align_success_mm:
@@ -1021,7 +1519,6 @@ def main():
                 moving = False
                 logger.info("=== 自动对准结束: %s ===", "成功" if align_success else "未达标")
 
-                # 对准后残差日志
                 if robot_connected:
                     new_tcp = get_robot_tcp_pose_mm(robot, robot_cfg)
                     if new_tcp is not None:
@@ -1035,7 +1532,6 @@ def main():
                         logger.info("  Actual TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                                     *new_tcp)
 
-                # 插枪后处理: 更新 poses_config.json
                 if (current_marker_type == "插枪") and (already_return_gun == False) and robot_connected:
                     current_tcp = robot.get_tcp_pose()
                     current_matrix = pose_to_matrix(current_tcp)
@@ -1053,40 +1549,27 @@ def main():
 
                     flow.update_CFG()
 
-            elif key == ord('e'):
-                
-                # force_ctrl.run_power_on_ppmode()
-                force_ctrl.run_forcecontrol_charge_in()
-                # force_ctrl.run_ForceControl_return_the_gun()
-
-                #force_ctrl.run_ForceControl_OpenCover()
-                # force_controller.stop_state_monitor()
-
             elif key == ord('d'):
-                # force_ctrl.run_power_on_ppmode()
-                # force_ctrl.run_forcecontrol_pose_adjust()
                 force_ctrl.run_ForceControl_OpenCover()
-                # robot.set_speed(DEFAULT_SPEED)
+
+            elif key == ord('e'):
+                force_ctrl.run_forcecontrol_charge_in()
 
             elif key == ord('s'):
-                # 舵机按下
                 arm_controller = SMSSTSController("/dev/ttysWK1")
                 arm_controller.connect()
                 arm_controller.press_trigger()
                 arm_controller.disconnect()
 
-                # force_ctrl.run_power_on_ppmode()
-                # 力控拔出
                 force_ctrl.run_forcecontrol_charge_out()
 
-                # 沿法兰z退3cm
                 if moving:
                     logger.warning("Motion in progress, please wait")
                     continue
                 if not robot_connected:
                     logger.warning("Robot not connected, cannot read tool TCP")
                     continue
-                    
+
                 robot.set_speed(100)
                 current_tool_pose = get_tcp_pose_in_tool_mm(
                     robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
@@ -1128,152 +1611,17 @@ def main():
                                     *tcp_after_insert)
 
                     ensure_tool_id(robot, BASE_TOOL_ID, label=f"tool {BASE_TOOL_ID}(flange)")
-                
+
                 robot.set_speed(DEFAULT_SPEED)
 
-                # 舵机抬起
                 arm_controller.connect()
                 arm_controller.reset_position()
                 arm_controller.disconnect()
-         
-
-            elif key == ord('i'):
-                # 沿工具坐标系 z 轴前进 (插入) | Move along tool Z-axis (insert)
-                if moving:
-                    logger.warning("Motion in progress, please wait")
-                    continue
-                if not robot_connected:
-                    logger.warning("Robot not connected, cannot read tool TCP")
-                    continue
-                if current_marker_type is None:
-                    logger.warning("No marker detected, cannot determine insert distance")
-                    continue
-
-                # 根据当前检测到的 marker 类型选择插入距离
-                if current_marker_type == "插枪":
-                    insert_mm = insert_offset_mm
-                    insert_cm = args.insert_cm_insert
-                    marker_type = "插枪"
-                else:
-                    insert_mm = take_offset_mm
-                    insert_cm = args.insert_cm_take
-                    marker_type = "取枪"
-
-                current_tool_pose = get_tcp_pose_in_tool_mm(
-                    robot, robot_cfg, INSERT_TOOL_ID,
-                    label=f"tool {INSERT_TOOL_ID}(insert)")
-                if current_tool_pose is None:
-                    logger.warning("Failed to read tool %d TCP", INSERT_TOOL_ID)
-                    continue
-
-                insert_pose = offset_pose_along_tool_axis(current_tool_pose, float(insert_mm), axis='z')
-                safe, reason = check_oneshot_safety(abs(insert_mm), 0.0, args.max_trans, args.max_rot)
-                if not safe:
-                    logger.warning(reason)
-                    continue
-
-                logger.info("Insert %s: advance %.2f cm (%.2f mm) along tool Z-axis",
-                            marker_type, insert_cm, insert_mm)
-                logger.info("  Current TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                            *current_tool_pose)
-                logger.info("  Target TCP:  X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                            *insert_pose)
-
-                if args.no_robot:
-                    logger.info("[DRY RUN] Skip %s insert motion", marker_type)
-                else:
-                    if not ensure_tool_id(robot, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)"):
-                        continue
-                    moving = True
-                    ok = execute_move(robot, insert_pose, timeout=args.move_timeout)
-                    moving = False
-
-                    try:
-                        tcp_after_insert = get_robot_tcp_pose_mm(robot, robot_cfg)
-                    except Exception:
-                        tcp_after_insert = None
-
-                    if tcp_after_insert is not None:
-                        logger.info("  After %s insert TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                                    marker_type, *tcp_after_insert)
-
-                    ensure_tool_id(robot, BASE_TOOL_ID, label=f"tool {BASE_TOOL_ID}(flange)")
-
-            elif key == ord('f'):
-                # KEBA 力控插枪 (mode_1)
-                if moving:
-                    logger.warning("Motion in progress, please wait")
-                    continue
-                if not robot_connected:
-                    logger.warning("Robot not connected, cannot execute KEBA force insert")
-                    continue
-                if args.no_robot:
-                    logger.info("[DRY RUN] Skip KEBA force insert")
-                    continue
-                moving = True
-                execute_keba_force_mode(robot, 1)
-                moving = False
-
-            elif key == ord('o'):
-                # KEBA 力控拔枪 (mode_3)
-                if moving:
-                    logger.warning("Motion in progress, please wait")
-                    continue
-                if not robot_connected:
-                    logger.warning("Robot not connected, cannot execute KEBA force extract")
-                    continue
-                if args.no_robot:
-                    logger.info("[DRY RUN] Skip KEBA force extract")
-                    continue
-                moving = True
-                execute_keba_force_mode(robot, 3, displace_target=args.force_retract_target)
-                moving = False
-
-            elif key == ord('v'):
-                # 夹爪控制: 关闭夹爪 → 等待完成 → 自动触发舵机按下
-                flow.gripper.set_speed(15)
-                flow.gripper.set_position(32)
-                # 等待夹爪动作完成（0=运动中, 1=到达位置, 2=夹住物体, 3=物体掉落）
-                timeout_s = 5.0
-                t0 = time.time()
-                while True:
-                    status = flow.gripper.get_grip_status()
-                    if status in (1, 2):
-                        logger.info("Gripper action complete (status=%d)", status)
-                        break
-                    if time.time() - t0 > timeout_s:
-                        logger.warning("Gripper action timeout after %.1fs (status=%s)", timeout_s, status)
-                        break
-                    time.sleep(0.1)
-                # 自动触发舵机按下
-                arm_controller = SMSSTSController("/dev/ttysWK1")
-                arm_controller.connect()
-                arm_controller.press_trigger()
-                arm_controller.disconnect()
-               
-            elif key == ord('2'):
-                # 硬编码: 取枪初始位置 (调试用)
-                robot.set_speed(100)
-                robot.move_linear(CartesianPose(585.525,300.417,318.319,114.3886,-31.4888,134.5344))
-
-            elif key == ord('4'):
-                # 硬编码: 插枪初始位置 (调试用)
-                robot.set_speed(100)
-                robot.move_linear(CartesianPose(697.509, -202.016, 184.404, 105.993, -26.083, 27.85))
-            
-            elif key == ord('1'):
-                # 双目开盖初始位置
-                robot.move_joint([112.196, 99.884, -56.131, 128.446, -5.912, -17.849], speed=40)
-            
-            elif key == ord('z'):
-                robot.move_joint([85.793, 91.365, -66.574, 139.191, -2.617, -18.839], speed=25)
 
             elif key == ord('3'):
-                # key = 1
                 robot.move_joint([112.196, 99.884, -56.131, 128.446, -5.912, -17.849], speed=40)
 
                 flow.gripper.set_position(45)
-                # 插座盖 3D 位姿估计 → 粗定位运动 (CoverPoseEstimator)
                 if moving:
                     logger.warning("Motion in progress, please wait")
                     continue
@@ -1290,26 +1638,31 @@ def main():
                         continue
                     cur_tcp_matrix = pose_to_matrix(current_tool_pose)
 
-                    # cover_offset_pose = [77.095, 18.253, -298.781, 3.657, -2.192, -1.198]
-                    # cover_offset_pose = [60.251, 13.522, -293.08, 0.897, 1.649, -0.852]
-                    # cover_offset_pose = [66.834, 19.923, -299.825, 1.916, -1.491, -1.663]
                     cover_offset_pose = [0, 0, 0, 0, 0, 0]
 
                     cover_offset_matrix = pose_to_matrix(cover_offset_pose)
                     target_matrix = cur_tcp_matrix @ (cover_3D_matrix @ cover_offset_matrix)
 
-                    # target_matrix = cur_tcp_matrix @ cover_3D_matrix
                     target_pose = matrix_to_pose(target_matrix)
                     print(f" pose: {target_pose}")
                     logger.info("  Target TCP for coarse alignment: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                                 *target_pose)
-                    
+
                     cur_joint = robot.get_joint_pose()
                     target_joint = robot.inverse_kinematics(target_pose=target_pose, initial_joints=cur_joint)
                     robot.move_by_joint_list(joints=[target_joint], speeds=[40])
                     robot.move_linear(CartesianPose(*target_pose))
-                           
-            elif key == ord('5'):
+
+            elif key == ord('a'):
+                if moving:
+                    logger.warning("Motion in progress, please wait")
+                    continue
+                if not robot_connected:
+                    logger.warning("Robot not connected, cannot read tool TCP")
+                    continue
+                if takegun_offset is None:
+                    logger.warning("No relative offset set; record positions 1 & 2 or load from file first")
+                    continue
 
                 current_pose = get_tcp_pose_in_tool_mm(
                     robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
@@ -1317,12 +1670,25 @@ def main():
                     logger.warning("Failed to read current pose")
                     continue
 
-                # target_pose = apply_relative_pose(current_pose, charging_offset)
                 current_matrix = pose_to_matrix(current_pose)
-                offset_pose = [85.38998138966815, -113.95230931001532, -5.829060832306595, 4.563053297458938, -11.804965761109615, -4.385023510262975]
+                offset_pose = [51.889, -230.636, 292.904, -14.379, 1.694, 0.214]
+
                 offset_matrix = pose_to_matrix(offset_pose)
                 target_matrix = current_matrix @ offset_matrix
                 target_pose = matrix_to_pose(target_matrix)
+
+                dist_trans, dist_rot = compute_distance(current_pose, target_pose)
+                if dist_trans > args.max_trans or dist_rot > args.max_rot:
+                    logger.warning("Motion distance too large: trans=%.2f mm (max %.2f), rot=%.2f deg (max %.2f)",
+                                   dist_trans, args.max_trans, dist_rot, args.max_rot)
+                    response = input("Continue? (y/n): ")
+                    if response.lower() != 'y':
+                        continue
+
+                logger.info("Applying relative offset:")
+                logger.info("  Current:  X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *current_pose)
+                logger.info("  Delta:    dX=%.2f dY=%.2f dZ=%.2f mm, dRx=%.2f dRy=%.2f dRz=%.2f deg", *takegun_offset)
+                logger.info("  Target:   X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *target_pose)
 
                 if args.no_robot:
                     logger.info("[DRY RUN] Skip relative offset move + 120mm advance")
@@ -1334,16 +1700,16 @@ def main():
                         x=target_pose[0], y=target_pose[1], z=target_pose[2],
                         rx=target_pose[3], ry=target_pose[4], rz=target_pose[5],
                     )
-                    ok = robot.move_and_wait(cart, timeout=args.move_timeout)
+                    ok = robot.move_joint_and_wait(cart, speed=10, timeout=args.move_timeout)
                     if ok:
                         logger.info("Relative offset move complete")
                         current_tool_pose = get_robot_tcp_pose_mm(robot, robot_cfg)
                         if current_tool_pose is not None:
-                            advance_pose = offset_pose_along_tool_axis(current_tool_pose, 100.0, axis='z')
+                            advance_pose = offset_pose_along_tool_axis(current_tool_pose, 123.0, axis='z')
                             logger.info("Take gun: advance 120 mm along tool Z-axis")
                             logger.info("  Target: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                                         *advance_pose)
-                            robot.set_speed(100)
+                            robot.set_speed(30)
                             ok = robot.move_and_wait(CartesianPose(
                                 x=advance_pose[0], y=advance_pose[1], z=advance_pose[2],
                                 rx=advance_pose[3], ry=advance_pose[4], rz=advance_pose[5],
@@ -1365,165 +1731,60 @@ def main():
                     if final_pose is not None:
                         logger.info("  Final: X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *final_pose)
 
+                    robot.set_speed(DEFAULT_SPEED)
+                    if motion_success:
+                        while robot.is_moving():
+                            logger.info("Waiting for robot to stop before gripper action...")
+                            time.sleep(0.1)
+                        logger.info("Auto-trigger gripper close + servo press")
+                        flow.gripper.set_speed(30)
+                        flow.gripper.set_force(75)
+                        flow.gripper.set_position(32)
+                        timeout_s = 5.0
+                        t0 = time.time()
+                        while True:
+                            status = flow.gripper.get_grip_status()
+                            if status in (1, 2):
+                                logger.info("Gripper action complete (status=%d)", status)
+                                break
+                            if time.time() - t0 > timeout_s:
+                                logger.warning("Gripper action timeout after %.1fs (status=%s)", timeout_s, status)
+                                break
+                            time.sleep(0.1)
+                        arm_controller = SMSSTSController("/dev/ttysWK1")
+                        arm_controller.connect()
+                        arm_controller.press_trigger()
+                        arm_controller.disconnect()
+                    else:
+                        logger.warning("Skipping gripper+servo due to motion failure")
 
-                # # 复合动作: offset [-110, -130] → 前进 100mm | Insert offset → advance 100mm
-                # if moving:
-                #     logger.warning("Motion in progress, please wait")
-                #     continue
-                # if not robot_connected:
-                #     logger.warning("Robot not connected, cannot read tool TCP")
-                #     continue
+            elif key == ord('b'):
+                current_pose = robot.get_tcp_pose()
+                current_matrix = pose_to_matrix(current_pose)
+                offset_pose_cover = [-2.515, -153.797, 267.396, -2.225, 7.054, -3.599]
+                offset_matrix = pose_to_matrix(offset_pose_cover)
+                target_matrix = current_matrix @ offset_matrix
+                target_pose = matrix_to_pose(target_matrix)
+                take_cover_pose = robot.relative_tool_pose(dz=50, init_pose=target_pose).to_list()
+                current_joint = robot.get_joint_pose()
+                target_joint = robot.inverse_kinematics(target_pose=target_pose, initial_joints=current_joint)
+                take_cover_joint = robot.inverse_kinematics(target_pose=take_cover_pose, initial_joints=current_joint)
 
-                # current_tool_pose = get_tcp_pose_in_tool_mm(
-                #     robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
-                # if current_tool_pose is None:
-                #     logger.warning("Failed to read tool TCP")
-                #     continue
+                robot.move_by_joint_list(joints=[target_joint, take_cover_joint], speeds=[25, 15])
 
-                # # 第一步: offset [-110, -130]
-                # offset_pose = [-30, -200, 0, 0, 0, 0]
-                # offset_matrix = pose_to_matrix(offset_pose)
-                # current_tool_matrix = pose_to_matrix(current_tool_pose)
-                # target_matrix = current_tool_matrix @ offset_matrix
-                # target_pose = matrix_to_pose(target_matrix)
+                if already_take_inner_cover == False:
+                    with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                        data["PUSH_POINT1"] = target_pose
+                        data["PUSH_POINT2"] = take_cover_pose
 
-                # # 第二步: 沿工具 z 轴前进 100mm
-                # advance_pose = offset_pose_along_tool_axis(target_pose, 65.0, axis='z')
+                    with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'w', encoding='utf-8') as f:
+                        json.dump(data, f, ensure_ascii=False, indent=4)
 
-                # logger.info("Insert offset [-110, -130] + advance 100mm along Z")
-                # logger.info("  Current TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                #             *current_tool_pose)
-
-                # if args.no_robot:
-                #     logger.info("[DRY RUN] Skip insert offset + 100mm advance")
-                # else:
-                #     moving = True
-                #     robot.set_speed(100)
-                #     ok = execute_move(robot, target_pose, timeout=args.move_timeout)
-                #     if ok:
-                #         logger.info("Offset move complete")
-                #         robot.set_speed(80)
-                #         ok = execute_move(robot, advance_pose, timeout=args.move_timeout)
-                #         if ok:
-                #             logger.info("Advance 100mm complete")
-                #         else:
-                #             logger.warning("Advance 100mm failed")
-                #     else:
-                #         logger.warning("Offset move failed")
-                #     moving = False
-
-                #     try:
-                #         tcp_after = get_robot_tcp_pose_mm(robot, robot_cfg)
-                #     except Exception:
-                #         tcp_after = None
-                #     if tcp_after is not None:
-                #         logger.info("  After offset+advance TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                #                     *tcp_after)
-                
-
-
-            elif key == ord('0'):
-                # 调试按键
-                if moving:
-                    logger.warning("Motion in progress, please wait")
-                    continue
-                if not robot_connected:
-                    logger.warning("Robot not connected, cannot read tool TCP")
-                    continue
-
-                current_tool_pose = get_tcp_pose_in_tool_mm(
-                    robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
-                if current_tool_pose is None:
-                    logger.warning("Failed to read tool %d TCP", INSERT_TOOL_ID)
-                    continue
-
-                retract_offset_mm = -120
-
-                insert_pose = offset_pose_along_tool_axis(current_tool_pose, float(retract_offset_mm), axis='z')
-                safe, reason = check_oneshot_safety(abs(retract_offset_mm), 0.0, args.max_trans, args.max_rot)
-                if not safe:
-                    logger.warning(reason)
-                    continue
-
-                logger.info("Take gun: retract %.2f mm (%.1f mm) along tool Z-axis",
-                            retract_offset_mm, retract_offset_mm)
-                logger.info("  Current TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                            *current_tool_pose)
-                logger.info("  Target TCP:  X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                            *insert_pose)
-
-                if args.no_robot:
-                    logger.info("[DRY RUN] Skip take-gun retract")
-                else:
-                    if not ensure_tool_id(robot, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)"):
-                        continue
-                    moving = True
-                    ok = execute_move(robot, insert_pose, timeout=args.move_timeout)
-                    moving = False
-
-                    try:
-                        tcp_after_insert = get_robot_tcp_pose_mm(robot, robot_cfg)
-                    except Exception:
-                        tcp_after_insert = None
-
-                    if tcp_after_insert is not None:
-                        logger.info("  After retract TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                                    *tcp_after_insert)
-
-                    ensure_tool_id(robot, BASE_TOOL_ID, label=f"tool {BASE_TOOL_ID}(flange)")
-
-            elif key == ord('w'):
-                # 力控拔枪结束后，直线退出
-                if moving:
-                    logger.warning("Motion in progress, please wait")
-                    continue
-                if not robot_connected:
-                    logger.warning("Robot not connected, cannot read tool TCP")
-                    continue
-
-                current_tool_pose = get_tcp_pose_in_tool_mm(
-                    robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
-                if current_tool_pose is None:
-                    logger.warning("Failed to read tool %d TCP", INSERT_TOOL_ID)
-                    continue
-
-                retract_offset_mm = -150
-
-                insert_pose = offset_pose_along_tool_axis(current_tool_pose, float(retract_offset_mm), axis='z')
-                safe, reason = check_oneshot_safety(abs(retract_offset_mm), 0.0, args.max_trans, args.max_rot)
-                if not safe:
-                    logger.warning(reason)
-                    continue
-
-                logger.info("Take gun: retract %.2f mm (%.1f mm) along tool Z-axis",
-                            retract_offset_mm, retract_offset_mm)
-                logger.info("  Current TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                            *current_tool_pose)
-                logger.info("  Target TCP:  X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                            *insert_pose)
-
-                if args.no_robot:
-                    logger.info("[DRY RUN] Skip take-gun retract")
-                else:
-                    if not ensure_tool_id(robot, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)"):
-                        continue
-                    moving = True
-                    ok = execute_move(robot, insert_pose, timeout=args.move_timeout)
-                    moving = False
-
-                    try:
-                        tcp_after_insert = get_robot_tcp_pose_mm(robot, robot_cfg)
-                    except Exception:
-                        tcp_after_insert = None
-
-                    if tcp_after_insert is not None:
-                        logger.info("  After retract TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                                    *tcp_after_insert)
-
-                    ensure_tool_id(robot, BASE_TOOL_ID, label=f"tool {BASE_TOOL_ID}(flange)")
+                    flow.update_CFG()
+                    logger.info('PUSH POINT1 POINT2已写入json.')
 
             elif key == ord('c'):
-                # 拔出 100mm + 自动舵机复位 | Retract 100mm + auto servo reset
                 if moving:
                     logger.warning("Motion in progress, please wait")
                     continue
@@ -1569,7 +1830,6 @@ def main():
                         logger.info("  After retract TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                                     *tcp_after)
 
-                    # 自动触发舵机复位（原按键 9），仅在运动成功后执行
                     if motion_success:
                         while robot.is_moving():
                             logger.info("Waiting for robot to stop before servo reset...")
@@ -1582,8 +1842,7 @@ def main():
                     else:
                         logger.warning("Skipping servo reset due to motion failure")
                     robot.set_speed(DEFAULT_SPEED)
-                
-                # 归枪点写入json
+
                 with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'r', encoding='utf-8') as f:
                     data = json.load(f)
                     data["GUN_HOME2"] = before_retract_joint
@@ -1591,196 +1850,31 @@ def main():
 
                 with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'w', encoding='utf-8') as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
-                
+
                 flow.update_CFG()
 
-            elif key == ord('6'):
-                # 硬编码: 关节运动到预定义位置 1 (调试用)
-                robot.move_joint([6.938, -67.507, 83.516, 140.491, 86.041, -90.24])
-            elif key == ord('7'):
-                # 硬编码: 关节运动到预定义位置 2 (调试用)
-                robot.move_joint([6.364, -77.978, 58.77, 126.224, 86.605, -90.345])
-
-            elif key == ord('8'):
-                # 舵机: 按下扳机 (SMSSTSController)
-                arm_controller = SMSSTSController("/dev/ttysWK1")
-                arm_controller.connect()
-                arm_controller.press_trigger()
-                arm_controller.disconnect()
-
-            elif key == ord('9'):
-                # 舵机: 松开扳机 / 复位 (SMSSTSController)
-                arm_controller = SMSSTSController("/dev/ttysWK1")
-                arm_controller.connect()
-                arm_controller.reset_position()
-                arm_controller.disconnect()
-            
-            elif key == ord('a'):            
-                # 复合动作: 应用相对位移 → 前进 120mm | Apply relative offset → advance 120mm
-                if moving:
-                    logger.warning("Motion in progress, please wait")
-                    continue
-                if not robot_connected:
-                    logger.warning("Robot not connected, cannot read tool TCP")
-                    continue
-                if takegun_offset is None:
-                    logger.warning("No relative offset set; record positions 1 & 2 or load from file first")
-                    continue
-
-                current_pose = get_tcp_pose_in_tool_mm(
-                    robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
-                if current_pose is None:
-                    logger.warning("Failed to read current pose")
-                    continue
-
-                # target_pose = apply_relative_pose(current_pose, takegun_offset)
-                current_matrix = pose_to_matrix(current_pose)
-                offset_pose = [51.889, -230.636, 292.904, -14.379, 1.694, 0.214]
-                
-                offset_matrix = pose_to_matrix(offset_pose)
-                target_matrix = current_matrix @ offset_matrix
-                target_pose = matrix_to_pose(target_matrix)
-
-                dist_trans, dist_rot = compute_distance(current_pose, target_pose)
-                if dist_trans > args.max_trans or dist_rot > args.max_rot:
-                    logger.warning("Motion distance too large: trans=%.2f mm (max %.2f), rot=%.2f deg (max %.2f)",
-                                   dist_trans, args.max_trans, dist_rot, args.max_rot)
-                    response = input("Continue? (y/n): ")
-                    if response.lower() != 'y':
-                        continue
-
-                logger.info("Applying relative offset:")
-                logger.info("  Current:  X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *current_pose)
-                logger.info("  Delta:    dX=%.2f dY=%.2f dZ=%.2f mm, dRx=%.2f dRy=%.2f dRz=%.2f deg", *takegun_offset)
-                logger.info("  Target:   X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *target_pose)
-
-                if args.no_robot:
-                    logger.info("[DRY RUN] Skip relative offset move + 120mm advance")
-                else:
-                    moving = True
-                    motion_success = True
-                    robot.set_speed(100)
-                    cart = CartesianPose(
-                        x=target_pose[0], y=target_pose[1], z=target_pose[2],
-                        rx=target_pose[3], ry=target_pose[4], rz=target_pose[5],
-                    )
-                    ok = robot.move_joint_and_wait(cart, speed = 10, timeout=args.move_timeout)
-                    if ok:
-                        logger.info("Relative offset move complete")
-                        current_tool_pose = get_robot_tcp_pose_mm(robot, robot_cfg)
-                        if current_tool_pose is not None:
-                            advance_pose = offset_pose_along_tool_axis(current_tool_pose, 123.0, axis='z')
-                            logger.info("Take gun: advance 120 mm along tool Z-axis")
-                            logger.info("  Target: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                                        *advance_pose)
-                            robot.set_speed(30)
-                            ok = robot.move_and_wait(CartesianPose(
-                                x=advance_pose[0], y=advance_pose[1], z=advance_pose[2],
-                                rx=advance_pose[3], ry=advance_pose[4], rz=advance_pose[5],
-                            ), timeout=args.move_timeout)
-                            if ok:
-                                logger.info("Take-gun advance 120mm complete")
-                            else:
-                                logger.warning("Take-gun advance 120mm failed")
-                                motion_success = False
-                        else:
-                            logger.warning("Failed to read TCP for 120mm advance")
-                            motion_success = False
-                    else:
-                        logger.warning("Relative offset move timed out or failed")
-                        motion_success = False
-                    moving = False
-
-                    final_pose = get_robot_tcp_pose_mm(robot, robot_cfg)
-                    if final_pose is not None:
-                        logger.info("  Final: X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *final_pose)
-
-                    robot.set_speed(DEFAULT_SPEED)
-                    # 自动触发夹爪闭合 + 舵机按下（原按键 v，已合并按键 8）
-                    if motion_success:
-                        while robot.is_moving():
-                            logger.info("Waiting for robot to stop before gripper action...")
-                            time.sleep(0.1)
-                        logger.info("Auto-trigger gripper close + servo press")
-                        flow.gripper.set_speed(30)
-                        flow.gripper.set_force(75)
-                        flow.gripper.set_position(32)
-                        timeout_s = 5.0
-                        t0 = time.time()
-                        while True:
-                            status = flow.gripper.get_grip_status()
-                            if status in (1, 2):
-                                logger.info("Gripper action complete (status=%d)", status)
-                                break
-                            if time.time() - t0 > timeout_s:
-                                logger.warning("Gripper action timeout after %.1fs (status=%s)", timeout_s, status)
-                                break
-                            time.sleep(0.1)
-                        arm_controller = SMSSTSController("/dev/ttysWK1")
-                        arm_controller.connect()
-                        arm_controller.press_trigger()
-                        arm_controller.disconnect()
-                    else:
-                        logger.warning("Skipping gripper+servo due to motion failure")
-                        
-            elif key == ord('b'):
-                # 取小盖对准后的相对运动
-                current_pose = robot.get_tcp_pose()
-                current_matrix = pose_to_matrix(current_pose)
-                offset_pose_cover = [-2.515, -153.797, 267.396, -2.225, 7.054, -3.599]
-                offset_matrix = pose_to_matrix(offset_pose_cover)
-                target_matrix = current_matrix @ offset_matrix
-                target_pose = matrix_to_pose(target_matrix)
-                # robot.move_linear(CartesianPose(*target_pose))
-                take_cover_pose = robot.relative_tool_pose(dz = 50, init_pose = target_pose).to_list()
-                # robot.move_by_pose_list(poses = [target_pose , take_cover_pose], speeds = [100, 50])
-                current_joint = robot.get_joint_pose()
-                target_joint = robot.inverse_kinematics(target_pose=target_pose, initial_joints=current_joint)
-                take_cover_joint = robot.inverse_kinematics(target_pose=take_cover_pose, initial_joints=current_joint)
-
-                robot.move_by_joint_list(joints = [target_joint , take_cover_joint], speeds = [25, 15])
-
-                if already_take_inner_cover == False:
-                    with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'r', encoding='utf-8') as f:
-                        data = json.load(f)
-                        data["PUSH_POINT1"] = target_pose
-                        data["PUSH_POINT2"] = take_cover_pose
-
-                    with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'w', encoding='utf-8') as f:
-                        json.dump(data, f, ensure_ascii=False, indent=4)
-                    
-                    flow.update_CFG()
-                    logger.info('PUSH POINT1 POINT2已写入json.')
-
             elif key == ord('g'):
-                # 步骤 1: 开大盖
                 if outer_cover_is_opened == False:
                     flow.run(1)
                 else:
                     flow.run(8)
 
             elif key == ord('h'):
-                # 步骤 2: 夹住小盖并放盖
                 flow.run(2)
                 already_take_inner_cover = True
 
             elif key == ord('j'):
-                # 步骤 3: 移动到插枪点并沿法兰z insert
                 flow.run(3)
 
             elif key == ord('k'):
-                # 步骤 4: 归枪
                 flow.run(4)
                 already_return_gun = True
 
-
             elif key == ord('l'):
-                # 步骤 5： 移动到取小盖的对准点
                 flow.run(5)
+
             elif key == ord('p'):
-                # 步骤 6：夹住小盖并放回、关大盖
                 flow.run(7)
-                # 回到初始点
                 flow.run(6)
         
     finally:

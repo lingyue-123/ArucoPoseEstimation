@@ -229,3 +229,123 @@ python scripts/aruco_lighting_robustness_v2.py   --camera mecheye --lighting-rob
 | `--lighting-robust` | False | 启用光照鲁棒线程 |
 | `--record-interval` | 1.0 | `s` 键最小记录间隔（秒） |
 | `--debug` | False | 调试日志 |
+
+---
+
+## v4.6 全流程自动化 (`oneshot_move_crobot_insert_auto_brightness_v4.6.py`)
+
+### 概述
+
+在 v4.5 基础上新增 **Unix Domain Socket 触发 + 17 步状态机**，通过外部进程发送 `{"auto_insert_gun": 1}` 即可自动按序完成充电枪插入→拔出→归枪→取小盖→放回小盖的完整流程。
+
+### 架构
+
+```
+外部进程 ──UDS──► _socket_server() ──► trigger_control(1) ──► auto_trigger_event.set()
+                                                                        │
+                                                              主循环 IDLE 检测
+                                                                        │
+                                                              auto_state = STATE_1
+                                                                        │
+                                              ┌─────────────────────────┘
+                                              ▼
+                              STATE_1 → STATE_2 → ... → STATE_17 → IDLE
+                                │          │                    │
+                                └──────────┴── 失败/q/ESC ──► IDLE
+```
+
+### 状态机流程（17 步）
+
+| 状态 | 步骤 | 对应按键 | 动作 |
+|------|------|---------|------|
+| `STATE_1` | 1 | `3` | 机械臂回初始关节位 + 双目粗定位充电口盖 → 粗定位运动 |
+| `STATE_2` | 2 | `d` | 力控按压开盖 |
+| `STATE_3` | 3 | `g` | 拨盖运动 (CoverActionFlow) |
+| `STATE_4` | 4 | `m` | 自动多次视觉对准 (插枪 ArUco) |
+| `STATE_5` | 5 | `b` | 对准后固定偏移运动 |
+| `STATE_6` | 6 | `h` | 夹住小盖并放小盖 → 运动到取枪初始点 |
+| `STATE_7` | 7 | `m` | 自动多次视觉对准 (取枪 ArUco) |
+| `STATE_8` | 8 | `a` | 固定偏移 + 沿法兰z向直线运动 → 触发夹爪和舵机 |
+| `STATE_9` | 9 | `c` | 沿法兰z向退出 → 取出充电枪并复位舵机 |
+| `STATE_10` | 10 | `j` | 插枪前运动 |
+| `STATE_11` | 11 | `e` | 力控插枪 |
+| `STATE_12` | 12 | `s` | 力控拔枪 |
+| `STATE_13` | 13 | `k` | 归枪运动 |
+| `STATE_14` | 14 | `l` | 移动至取小盖前点位 |
+| `STATE_15` | 15 | `m` | 自动多次视觉对准 (取小盖 ArUco) |
+| `STATE_16` | 16 | `b` | 对准后固定偏移运动 |
+| `STATE_17` | 17 | `p` | 夹住小盖放回充电口 + 关大盖 → 回到初始点 |
+
+### UDS 触发
+
+```bash
+# 发送触发信号
+echo '{"auto_insert_gun": 1}' | nc -U /tmp/auto_gun.sock
+```
+
+### 运行方式
+
+```bash
+python scripts/oneshot_move_crobot_insert_auto_brightness_v4.6.py --camera mecheye
+python scripts/oneshot_move_crobot_insert_auto_brightness_v4.6.py --camera mecheye --no-robot   # 干运行
+python scripts/oneshot_move_crobot_insert_auto_brightness_v4.6.py --camera mecheye --lighting-robust
+```
+
+### AutoState 枚举定义
+
+```python
+class AutoState(IntEnum):
+    IDLE = -1                    # 等待触发
+    STATE_1_INIT_COVER = 1       # ... STATE_17
+    STATE_2_FORCE_OPEN = 2
+    STATE_3_COVER_ACTION = 3
+    STATE_4_ALIGN_INSERT = 4
+    STATE_5_OFFSET_B = 5
+    STATE_6_GRAB_INNER = 6
+    STATE_7_ALIGN_TAKE = 7
+    STATE_8_OFFSET_A = 8
+    STATE_9_RETRACT_C = 9
+    STATE_10_PRE_INSERT = 10
+    STATE_11_FORCE_IN = 11
+    STATE_12_FORCE_OUT = 12
+    STATE_13_RETURN_GUN = 13
+    STATE_14_ALIGN_POINT = 14
+    STATE_15_ALIGN_INNER = 15
+    STATE_16_OFFSET_B2 = 16
+    STATE_17_CLOSE_COVER = 17
+```
+
+### 主循环调度逻辑
+
+```
+每帧循环:
+  if auto_state > IDLE:                    # 自动流程进行中
+      if key == 'q'/ESC → auto_state = IDLE   # 用户中止
+      auto_state = _execute_auto_step(auto_state)  # 执行当前状态 → 返回下一个状态
+      continue
+  if key == 'q'/ESC → break               # IDLE 下退出程序
+  if auto_trigger_event.is_set() → auto_state = STATE_1  # UDS 触发
+  手动按键处理 (r, 3, d, g, m, b, h, a, c, j, e, s, k, l, p)
+```
+
+### 与 v4.5 的差异
+
+| 项目 | v4.5 | v4.6 |
+|------|------|------|
+| 触发方式 | 纯手动按键 | UDS 自动 + 手动按键 |
+| 流程控制 | 人工逐键操作 | 状态机自动流转，严格有序 |
+| 中止方式 | 无（等运动完成） | `q`/ESC 立即回 IDLE |
+| 重复执行 | 手动重来 | 流程结束后回 IDLE，可再次 UDS 触发 |
+| 保留按键 | 全部（20+键） | 仅保留流程用键 + `r` + `q` |
+| CLI 参数 | 含 `--force-retract-target` 等 | 移除未使用的 3 个参数 |
+
+### 关键实现位置
+
+| 模块 | 文件行号 |
+|------|---------|
+| `AutoState` 枚举 | `v4.6.py:100-117` |
+| `auto_trigger_event` + UDS 连接 | `v4.6.py:119-143` |
+| 17 个 `_step_N_*()` 函数 | `v4.6.py:789-1199` |
+| `_STEP_DISPATCH` 字典 | `v4.6.py:1201-1219` |
+| `_execute_auto_step()` 分发器 | `v4.6.py:1221-1226` |
+| 主循环状态机调度 | `v4.6.py:1410-1430` |

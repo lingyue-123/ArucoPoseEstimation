@@ -320,10 +320,10 @@ class MotionSegmentTimer:
         seg_idx = self._seg_idx + 1
         self._seg_idx = seg_idx
         tcp_before = self._read_tcp()
-        t0 = time.time()
         logger.info("[计时] %s | #%d %s 开始", self._step_name, seg_idx, label)
         if tcp_before is not None:
             logger.info("[计时]  %s | #%d 位姿(前): %s", self._step_name, seg_idx, self._format_pose(tcp_before))
+        t0 = time.time()
         yield
         dt = time.time() - t0
         tcp_after = self._read_tcp()

@@ -6,7 +6,7 @@ import time
 import threading
 import argparse
 import argcomplete
-
+import asyncio
 
 class GripperController:
     """基于 Modbus RTU 的夹爪控制器（纯 serial + CRC，无任何第三方库依赖）"""
@@ -163,6 +163,9 @@ class GripperController:
 
     def set_position(self, permille):
         return self._write_register(self.REG_POSITION, permille)
+    
+    async def async_set_position(self, permille):
+        return await asyncio.get_event_loop().run_in_executor(None, self.set_position, permille)
 
     def set_speed(self, percent):
         if not 1 <= percent <= 100:

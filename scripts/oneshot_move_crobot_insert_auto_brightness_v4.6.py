@@ -51,7 +51,9 @@ import time
 import fcntl
 import json
 import socket
-
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _ROOT not in sys.path:
@@ -97,6 +99,10 @@ from third_party.force_control_crp import RobotController, BridgeCRobotAdapter
 # 发送 JSON 报文 {"auto_insert_gun": 1} 触发自动化流程。
 SOCK = "/tmp/auto_gun.sock"
 
+async def to_thread(func,/,*args,**kwargs):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None,func,*args,**kwargs)
+
 # ── 自动化状态机 | Auto State Machine ──
 class AutoState(IntEnum):
     IDLE = -1
@@ -121,14 +127,18 @@ class AutoState(IntEnum):
 # ── UDS 触发事件（线程安全） ──
 auto_trigger_event = threading.Event()
 trigger_count = 0
+auto_trigger_time = None  # 接收到触发信号的时间戳（用于统计全流程总耗时）
+global fullworkflow
 
 def trigger_control(auto_gun: int):
     """收到 auto_gun=1 信号后设置触发事件，主循环检测到后启动自动化流程。"""
-    global trigger_count
+    global trigger_count, auto_trigger_time
     trigger_count += 1
     logger.info("[trigger_control] auto_insert_gun=%s (第%d次)", auto_gun, trigger_count)
     if auto_gun == 1:
+        auto_trigger_time = time.time()
         auto_trigger_event.set()
+        fullworkflow()
 
 def _socket_server():
     """后台 UDS 监听线程：接收外部进程发来的 JSON 控制信号。
@@ -222,6 +232,16 @@ MOVE_TIMEOUT = 30.0            # 运动超时 (s)
 INSERT_TOOL_ID = 0             # 工具坐标系 ID (0 = 法兰，用于沿工具轴执行插入/拔出)
 BASE_TOOL_ID = 0               # 参考点保存时使用的法兰坐标系 ID
 
+# 关节角 (deg) | Joint poses
+INIT_JOINT = [112.196, 99.884, -56.131, 128.446, -5.912, -17.849]            # 初始关节位 step_1
+STEREO_IK_REF_JOINT = [118.086, 30.858, 5.595, 129.986, -9.015, -17.671]     # 双目逆解参考位姿
+
+# 笛卡尔偏移位姿 [x, y, z, rx, ry, rz] (mm/deg) | Cartesian offset poses
+STEREO_DETECT_OFFSET_POSE = [52.306, 11.298, -287.556, 0.744, 2.402, -1.644]  # 双目识别 offset
+INSERT_BEFORE_OFFSET_POSE = [1.699, -226.26, -41.071, -6.271, 2.87, -1.234]   # 插枪前模板偏移 原按键‘m’
+INNER_COVER_OFFSET_POSE = [15.786, -187.891, 263.694, -9.333, 2.806, -4.281]  # 取小盖偏移 原按键‘b’
+TAKEGUN_OFFSET_POSE = [96.934, -163.317, 242.083, -4.635, -4.807, -1.68]      # 取枪偏移 原按键‘a’
+
 _FONT = cv2.FONT_HERSHEY_SIMPLEX
 _FONT_SCALE = 0.5
 _FONT_THICK = 1
@@ -243,6 +263,139 @@ MARKER_DISPLAY_NAMES = {
     "插枪": "Insert",
     "取枪": "Take",
 }
+
+
+# ============================================================
+# 细粒度运动分段计时器 | Motion Segment Timer
+# ============================================================
+
+class MotionSegmentTimer:
+    """记录每段机械臂/夹爪/舵机运动的耗时与TCP位姿，最终导出txt汇总。"""
+
+    def __init__(self, robot, robot_cfg, robot_connected, output_dir="data"):
+        self._segments = []
+        self._robot = robot
+        self._robot_cfg = robot_cfg
+        self._robot_connected = robot_connected
+        self._output_dir = output_dir
+        self._step_name = "UNKNOWN"
+        self._seg_idx = 0
+        self._start_time = time.time()
+
+    def set_step(self, name):
+        self._step_name = name
+        self._seg_idx = 0
+
+    @staticmethod
+    def _format_pose(pose):
+        if pose is None:
+            return "N/A"
+        return "X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f" % tuple(pose)
+
+    @staticmethod
+    def _pose_csv(pose):
+        if pose is None:
+            return "N/A"
+        return ", ".join("%.2f" % v for v in pose)
+
+    def _read_tcp(self):
+        if not self._robot_connected or self._robot is None:
+            return None
+        try:
+            tcp = self._robot.get_tcp_pose()
+            if tcp is None:
+                return None
+            pose = [float(v) for v in tcp]
+            unit = getattr(self._robot_cfg, 'tcp_position_unit', 'mm')
+            if unit == 'm':
+                pose[:3] = [v * 1000.0 for v in pose[:3]]
+            elif unit != 'mm':
+                raise ValueError(f"Unsupported TCP position unit: {unit}")
+            return pose
+        except Exception:
+            return None
+
+    @contextmanager
+    def segment(self, label):
+        seg_idx = self._seg_idx + 1
+        self._seg_idx = seg_idx
+        tcp_before = self._read_tcp()
+        t0 = time.time()
+        logger.info("[计时] %s | #%d %s 开始", self._step_name, seg_idx, label)
+        if tcp_before is not None:
+            logger.info("[计时]  %s | #%d 位姿(前): %s", self._step_name, seg_idx, self._format_pose(tcp_before))
+        yield
+        dt = time.time() - t0
+        tcp_after = self._read_tcp()
+        logger.info("[计时] %s | #%d %s 完成 耗时=%.3fs", self._step_name, seg_idx, label, dt)
+        if tcp_after is not None:
+            logger.info("[计时]  %s | #%d 位姿(后): %s", self._step_name, seg_idx, self._format_pose(tcp_after))
+        self._segments.append({
+            'step': self._step_name,
+            'idx': seg_idx,
+            'label': label,
+            'dt': dt,
+            'tcp_before': list(tcp_before) if tcp_before is not None else None,
+            'tcp_after': list(tcp_after) if tcp_after is not None else None,
+        })
+
+    def export_txt(self, path=None):
+        if not self._segments:
+            return
+
+        if path is None:
+            os.makedirs(self._output_dir, exist_ok=True)
+            ts = time.strftime("%Y%m%d_%H%M%S")
+            path = os.path.join(self._output_dir, f"timing_log_{ts}.txt")
+
+        total_time = time.time() - self._start_time
+
+        lines = []
+        lines.append("=" * 100)
+        lines.append("  细粒度运动计时汇总")
+        lines.append(f"  工作时间: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+        lines.append(f"  总耗时: {total_time:.3f}s")
+        lines.append(f"  总运动段数: {len(self._segments)}")
+        lines.append("=" * 100)
+        lines.append("")
+
+        step_times = {}
+        for seg in self._segments:
+            sn = seg['step']
+            if sn not in step_times:
+                step_times[sn] = {'total': 0.0, 'count': 0}
+            step_times[sn]['total'] += seg['dt']
+            step_times[sn]['count'] += 1
+
+        step_order = list(dict.fromkeys(s['step'] for s in self._segments))
+        for sn in step_order:
+            info = step_times[sn]
+            lines.append("-" * 100)
+            lines.append(f"  Step: {sn} | 耗时: {info['total']:.3f}s | {info['count']}段")
+            lines.append("-" * 100)
+            for seg in self._segments:
+                if seg['step'] != sn:
+                    continue
+                lines.append(f"  #{seg['idx']:<2} {seg['label']:<50} {seg['dt']:.3f}s")
+                lines.append(f"      前: {self._pose_csv(seg['tcp_before'])}")
+                lines.append(f"      后: {self._pose_csv(seg['tcp_after'])}")
+
+        lines.append("")
+        lines.append("=" * 100)
+        lines.append("  Step 耗时汇总")
+        lines.append("=" * 100)
+        for sn in step_order:
+            info = step_times[sn]
+            lines.append(f"  {sn:<12}: {info['total']:.3f}s ({info['count']}段)")
+        lines.append("-" * 100)
+        lines.append(f"  {'Total':<12}: {total_time:.3f}s ({len(self._segments)}段)")
+        lines.append("=" * 100)
+
+        content = "\n".join(lines)
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        logger.info("[计时] 汇总已导出: %s", path)
+        return path
 
 
 # ============================================================
@@ -650,6 +803,9 @@ def main():
         lr_thread.start()
         logger.info("Lighting robustness thread started (gain-first then exp, deadband=%d)", LR_DEADBAND)
 
+    # --- 细粒度运动计时器 ---
+    timer = MotionSegmentTimer(robot, robot_cfg, robot_connected, output_dir="data")
+
     # --- v4.5: 自动对准闭包 ---
     def _read_alignment_context(marker_type):
         """读取一帧对准上下文（ArUco 误差 + 目标位姿），返回 dict 或 None。"""
@@ -774,7 +930,8 @@ def main():
                 logger.info("[DRY RUN] 跳过对准运动 #%d", attempt)
                 align_success = True
                 break
-            ok = execute_move(robot, ctx["target_pose"], timeout=args.move_timeout)
+            with timer.segment("对准%s #%d/%d" % (detected_type, attempt, args.align_max_attempts)):
+                ok = execute_move(robot, ctx["target_pose"], timeout=args.move_timeout)
             if not ok:
                 logger.warning("对准 #%d 运动失败", attempt)
                 break
@@ -809,10 +966,16 @@ def main():
 
     def _step_1_init_cover():
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_1")
         logger.info("=== STATE_1: 初始关节运动 + 双目粗定位 ===")
         if robot_connected:
-            robot.move_joint([112.196, 99.884, -56.131, 128.446, -5.912, -17.849], speed=40)
-            flow.gripper.set_position(45)
+            # 夹爪机械臂异步运动
+            with timer.segment("夹爪(45)+机械臂(INIT_JOINT)(异步)"):
+                async def parallel_task():
+                    await asyncio.gather(to_thread(flow.gripper.set_position, 45),
+                                    to_thread(robot.move_joint, INIT_JOINT, 60))
+                asyncio.run(parallel_task())
+
             cover_3D_pose = cover_pose_estimator.pose_estimation()
             if cover_3D_pose is not None:
                 logger.info("Cover 3D pose: %s", cover_3D_pose)
@@ -823,16 +986,19 @@ def main():
                     logger.error("STATE_1 失败: 无法读取 TCP")
                     return AutoState.IDLE
                 cur_tcp_matrix = pose_to_matrix(current_tool_pose)
-                cover_offset_pose = [0, 0, 0, 0, 0, 0]
+                cover_offset_pose = STEREO_DETECT_OFFSET_POSE
                 cover_offset_matrix = pose_to_matrix(cover_offset_pose)
                 target_matrix = cur_tcp_matrix @ (cover_3D_matrix @ cover_offset_matrix)
                 target_pose = matrix_to_pose(target_matrix)
                 logger.info("  Target TCP for coarse alignment: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                             *target_pose)
+                # 参考关节角（某个停车位置）
+                ref_joint = STEREO_IK_REF_JOINT
                 cur_joint = robot.get_joint_pose()
-                target_joint = robot.inverse_kinematics(target_pose=target_pose, initial_joints=cur_joint)
-                robot.move_by_joint_list(joints=[target_joint], speeds=[40])
-                robot.move_linear(CartesianPose(*target_pose))
+                target_joint = robot.inverse_kinematics(target_pose=target_pose, initial_joints=ref_joint)
+                with timer.segment("双目粗定位运动"):
+                    robot.move_by_joint_list(joints=[target_joint], speeds=[60])
+                # robot.move_linear(CartesianPose(*target_pose))
             else:
                 logger.error("STATE_1 失败: 双目姿态估计返回 None")
                 return AutoState.IDLE
@@ -843,26 +1009,30 @@ def main():
 
     def _step_2_force_open():
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_2")
         logger.info("=== STATE_2: 力控按压开盖 ===")
         if robot_connected:
-            force_ctrl.run_ForceControl_OpenCover()
+            with timer.segment("力控按压开盖"):
+                force_ctrl.run_ForceControl_OpenCover()
         logger.info("=== STATE_2 完成 ===")
         return AutoState.STATE_3_COVER_ACTION
 
     def _step_3_cover_action():
         nonlocal outer_cover_is_opened
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_3")
         logger.info("=== STATE_3: 拨盖运动 ===")
         if not outer_cover_is_opened:
-            flow.run(1)
+            flow.run(1, timer=timer)
         else:
-            flow.run(8)
+            flow.run(8, timer=timer)
         logger.info("=== STATE_3 完成 ===")
         return AutoState.STATE_4_ALIGN_INSERT
 
     def _step_4_align_insert():
         nonlocal already_return_gun
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_4")
         logger.info("=== STATE_4: 自动对准插枪 ArUco ===")
         if robot_connected:
             success = _execute_auto_align("插枪")
@@ -872,7 +1042,7 @@ def main():
             if not already_return_gun:
                 current_tcp = robot.get_tcp_pose()
                 current_matrix = pose_to_matrix(current_tcp)
-                offset_pose = [-4.203, -204.682, -35.227, -4.467, 4.029, -1.981]
+                offset_pose = INSERT_BEFORE_OFFSET_POSE
                 offset_matrix = pose_to_matrix(offset_pose)
                 target_matrix = current_matrix @ offset_matrix
                 target_pose = matrix_to_pose(target_matrix)
@@ -888,11 +1058,12 @@ def main():
     def _step_5_offset_b():
         nonlocal already_take_inner_cover
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_5")
         logger.info("=== STATE_5: 对准后固定偏移运动 ===")
         if robot_connected:
             current_pose = robot.get_tcp_pose()
             current_matrix = pose_to_matrix(current_pose)
-            offset_pose_cover = [-2.515, -153.797, 267.396, -2.225, 7.054, -3.599]
+            offset_pose_cover = INNER_COVER_OFFSET_POSE
             offset_matrix = pose_to_matrix(offset_pose_cover)
             target_matrix = current_matrix @ offset_matrix
             target_pose = matrix_to_pose(target_matrix)
@@ -900,7 +1071,8 @@ def main():
             current_joint = robot.get_joint_pose()
             target_joint = robot.inverse_kinematics(target_pose=target_pose, initial_joints=current_joint)
             take_cover_joint = robot.inverse_kinematics(target_pose=take_cover_pose, initial_joints=current_joint)
-            robot.move_by_joint_list(joints=[target_joint, take_cover_joint], speeds=[25, 15])
+            with timer.segment("固定偏移运动(两点轨迹)"):
+                robot.move_by_joint_list(joints=[target_joint, take_cover_joint], speeds=[25, 15])
             if not already_take_inner_cover:
                 with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'r', encoding='utf-8') as f:
                     data = json.load(f)
@@ -916,16 +1088,19 @@ def main():
     def _step_6_grab_inner():
         nonlocal already_take_inner_cover
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_6")
         logger.info("=== STATE_6: 夹住小盖并放小盖 → 运动到取枪初始点 ===")
-        flow.run(2)
+        flow.run(2, timer=timer)
         already_take_inner_cover = True
         logger.info("=== STATE_6 完成 ===")
         return AutoState.STATE_7_ALIGN_TAKE
 
     def _step_7_align_take():
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_7")
         logger.info("=== STATE_7: 自动对准取枪 ArUco ===")
         if robot_connected:
+            time.sleep(0.2)
             success = _execute_auto_align("取枪")
             if not success:
                 logger.error("STATE_7 失败: 自动对准未达标")
@@ -936,6 +1111,7 @@ def main():
     def _step_8_offset_a():
         nonlocal moving
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_8")
         logger.info("=== STATE_8: 固定偏移 + 沿法兰z前进 + 夹爪舵机 ===")
         if robot_connected:
             current_pose = get_tcp_pose_in_tool_mm(
@@ -944,7 +1120,7 @@ def main():
                 logger.error("STATE_8 失败: 无法读取 TCP")
                 return AutoState.IDLE
             current_matrix = pose_to_matrix(current_pose)
-            offset_pose = [51.889, -230.636, 292.904, -14.379, 1.694, 0.214]
+            offset_pose = TAKEGUN_OFFSET_POSE
             offset_matrix = pose_to_matrix(offset_pose)
             target_matrix = current_matrix @ offset_matrix
             target_pose = matrix_to_pose(target_matrix)
@@ -959,20 +1135,22 @@ def main():
                     x=target_pose[0], y=target_pose[1], z=target_pose[2],
                     rx=target_pose[3], ry=target_pose[4], rz=target_pose[5],
                 )
-                ok = robot.move_joint_and_wait(cart, speed=10, timeout=args.move_timeout)
+                with timer.segment("固定偏移运动"):
+                    ok = robot.move_joint_and_wait(cart, speed=50, timeout=args.move_timeout)
                 if ok:
                     logger.info("Relative offset move complete")
                     current_tool_pose = get_robot_tcp_pose_mm(robot, robot_cfg)
                     if current_tool_pose is not None:
-                        advance_pose = offset_pose_along_tool_axis(current_tool_pose, 123.0, axis='z')
+                        advance_pose = offset_pose_along_tool_axis(current_tool_pose, 122.0, axis='z')
                         logger.info("Take gun: advance 120 mm along tool Z-axis")
                         logger.info("  Target: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                                     *advance_pose)
-                        robot.set_speed(30)
-                        ok = robot.move_and_wait(CartesianPose(
-                            x=advance_pose[0], y=advance_pose[1], z=advance_pose[2],
-                            rx=advance_pose[3], ry=advance_pose[4], rz=advance_pose[5],
-                        ), timeout=args.move_timeout)
+                        robot.set_speed(50) # 直线插入运动速度
+                        with timer.segment("沿法兰z前进122mm"):
+                            ok = robot.move_and_wait(CartesianPose(
+                                x=advance_pose[0], y=advance_pose[1], z=advance_pose[2],
+                                rx=advance_pose[3], ry=advance_pose[4], rz=advance_pose[5],
+                            ), timeout=args.move_timeout)
                         if ok:
                             logger.info("Take-gun advance 120mm complete")
                         else:
@@ -993,24 +1171,26 @@ def main():
                     while robot.is_moving():
                         time.sleep(0.1)
                     logger.info("Auto-trigger gripper close + servo press")
-                    flow.gripper.set_speed(30)
-                    flow.gripper.set_force(75)
-                    flow.gripper.set_position(32)
-                    timeout_s = 5.0
-                    t0 = time.time()
-                    while True:
-                        status = flow.gripper.get_grip_status()
-                        if status in (1, 2):
-                            logger.info("Gripper action complete (status=%d)", status)
-                            break
-                        if time.time() - t0 > timeout_s:
-                            logger.warning("Gripper action timeout after %.1fs (status=%s)", timeout_s, status)
-                            break
-                        time.sleep(0.1)
-                    arm_controller = SMSSTSController("/dev/ttysWK1")
-                    arm_controller.connect()
-                    arm_controller.press_trigger()
-                    arm_controller.disconnect()
+                    with timer.segment("夹爪闭合"):
+                        flow.gripper.set_speed(30)
+                        flow.gripper.set_force(100)
+                        flow.gripper.set_position(32)
+                        timeout_s = 5.0
+                        t0 = time.time()
+                        while True:
+                            status = flow.gripper.get_grip_status()
+                            if status in (1, 2):
+                                logger.info("Gripper action complete (status=%d)", status)
+                                break
+                            if time.time() - t0 > timeout_s:
+                                logger.warning("Gripper action timeout after %.1fs (status=%s)", timeout_s, status)
+                                break
+                            time.sleep(0.1)
+                    with timer.segment("舵机按压"):
+                        arm_controller = SMSSTSController("/dev/ttysWK1")
+                        arm_controller.connect()
+                        arm_controller.press_trigger()
+                        arm_controller.disconnect()
                 else:
                     logger.error("STATE_8 失败: 运动失败")
                     return AutoState.IDLE
@@ -1020,6 +1200,7 @@ def main():
     def _step_9_retract_c():
         nonlocal moving
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_9")
         logger.info("=== STATE_9: 沿法兰z退出 + 复位舵机 ===")
         if robot_connected:
             current_tool_pose = get_tcp_pose_in_tool_mm(
@@ -1039,7 +1220,8 @@ def main():
                 moving = True
                 motion_success = True
                 robot.set_speed(100)
-                ok = execute_move(robot, retract_pose, timeout=args.move_timeout)
+                with timer.segment("沿法兰z退出100mm"):
+                    ok = execute_move(robot, retract_pose, timeout=args.move_timeout)
                 if ok:
                     logger.info("Retract 100mm complete")
                 else:
@@ -1053,75 +1235,70 @@ def main():
                 if tcp_after is not None:
                     logger.info("  After retract TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                                 *tcp_after)
-                if motion_success:
-                    while robot.is_moving():
-                        time.sleep(0.1)
-                    logger.info("Auto-trigger servo reset")
-                    arm_controller = SMSSTSController("/dev/ttysWK1")
-                    arm_controller.connect()
-                    arm_controller.reset_position()
-                    arm_controller.disconnect()
-                else:
-                    logger.error("STATE_9 失败: 运动失败")
-                    return AutoState.IDLE
                 robot.set_speed(DEFAULT_SPEED)
-            with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                data["GUN_HOME2"] = before_retract_joint
-                data["GUN_HOME1"] = retract_joint
-            with open('/home/nvidia/Downloads/HD/HD_0323/scripts/poses_config.json', 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
-            flow.update_CFG()
         logger.info("=== STATE_9 完成 ===")
         return AutoState.STATE_10_PRE_INSERT
 
     def _step_10_pre_insert():
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_10")
         logger.info("=== STATE_10: 插枪前运动 ===")
-        flow.run(3)
+        logger.info("Auto-trigger servo reset")
+        flow.run(3, timer=timer)
         logger.info("=== STATE_10 完成 ===")
         return AutoState.STATE_11_FORCE_IN
 
     def _step_11_force_in():
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_11")
         logger.info("=== STATE_11: 力控插枪 ===")
-        force_ctrl.run_forcecontrol_charge_in()
+        with timer.segment("力控插枪"):
+            force_ctrl.run_forcecontrol_charge_in()
         logger.info("=== STATE_11 完成 ===")
         return AutoState.STATE_12_FORCE_OUT
 
     def _step_12_force_out():
         nonlocal moving
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_12")
         logger.info("=== STATE_12: 力控拔枪 ===")
+        logger.info("=== 正在充电 ===")
+        time.sleep(12)
         if robot_connected:
-            arm_controller = SMSSTSController("/dev/ttysWK1")
-            arm_controller.connect()
-            arm_controller.press_trigger()
-            arm_controller.disconnect()
-            force_ctrl.run_forcecontrol_charge_out()
+            with timer.segment("舵机按压"):
+                arm_controller = SMSSTSController("/dev/ttysWK1")
+                arm_controller.connect()
+                arm_controller.press_trigger()
+                arm_controller.disconnect()
+            with timer.segment("力控拔枪"):
+                force_ctrl.run_forcecontrol_charge_out()
         logger.info("=== STATE_12 完成 ===")
         return AutoState.STATE_13_RETURN_GUN
 
     def _step_13_return_gun():
         nonlocal already_return_gun
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_13")
         logger.info("=== STATE_13: 归枪运动 ===")
-        flow.run(4)
+        flow.run(4, timer=timer)
         already_return_gun = True
         logger.info("=== STATE_13 完成 ===")
         return AutoState.STATE_14_ALIGN_POINT
 
     def _step_14_align_point():
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_14")
         logger.info("=== STATE_14: 移动至取小盖前点位 ===")
-        flow.run(5)
+        flow.run(5, timer=timer)
         logger.info("=== STATE_14 完成 ===")
         return AutoState.STATE_15_ALIGN_INNER
 
     def _step_15_align_inner():
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_15")
         logger.info("=== STATE_15: 自动对准取小盖 ArUco ===")
         if robot_connected:
+            time.sleep(0.2)
             success = _execute_auto_align("取小盖")
             if not success:
                 logger.error("STATE_15 失败: 自动对准未达标")
@@ -1131,11 +1308,12 @@ def main():
 
     def _step_16_offset_b2():
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_16")
         logger.info("=== STATE_16: 对准后固定偏移运动 ===")
         if robot_connected:
             current_pose = robot.get_tcp_pose()
             current_matrix = pose_to_matrix(current_pose)
-            offset_pose_cover = [-2.515, -153.797, 267.396, -2.225, 7.054, -3.599]
+            offset_pose_cover = INNER_COVER_OFFSET_POSE
             offset_matrix = pose_to_matrix(offset_pose_cover)
             target_matrix = current_matrix @ offset_matrix
             target_pose = matrix_to_pose(target_matrix)
@@ -1143,15 +1321,17 @@ def main():
             current_joint = robot.get_joint_pose()
             target_joint = robot.inverse_kinematics(target_pose=target_pose, initial_joints=current_joint)
             take_cover_joint = robot.inverse_kinematics(target_pose=take_cover_pose, initial_joints=current_joint)
-            robot.move_by_joint_list(joints=[target_joint, take_cover_joint], speeds=[25, 15])
+            with timer.segment("固定偏移运动(两点轨迹)"):
+                robot.move_by_joint_list(joints=[target_joint, take_cover_joint], speeds=[30, 20])
         logger.info("=== STATE_16 完成 ===")
         return AutoState.STATE_17_CLOSE_COVER
 
     def _step_17_close_cover():
         if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_17")
         logger.info("=== STATE_17: 夹住小盖放回充电口 + 关大盖 → 回到初始点 ===")
-        flow.run(7)
-        flow.run(6)
+        flow.run(7, timer=timer)
+        flow.run(6, timer=timer)
         logger.info("=== STATE_17 完成 === 全流程结束")
         return AutoState.IDLE
 
@@ -1175,16 +1355,23 @@ def main():
         AutoState.STATE_17_CLOSE_COVER: _step_17_close_cover,
     }
 
+
     def _execute_auto_step(state):
         fn = _STEP_DISPATCH.get(state)
         if fn is None:
             logger.error("Unknown auto state: %s", state)
             return AutoState.IDLE
-        return fn()
+        _step_t0 = time.time()
+        next_state = fn()
+        _step_dt = time.time() - _step_t0
+        logger.info("[计时] %s 耗时 %.3f 秒", state.name, _step_dt)
+        return next_state
 
     try:
+        fullworkflow = _step_1_init_cover
         first_move = 0 # 随动标志位
         auto_state = AutoState.IDLE
+        auto_flow_start_time = None  # 本轮自动流程的起始时间（从触发信号算起）
         while True:
             with open('/home/nvidia/Downloads/HD/HD_0323/Intergration/stereo_camera_calib/yrq/first_move.json', 'r', encoding='utf-8') as f:
                 fcntl.flock(f, fcntl.LOCK_SH)
@@ -1346,14 +1533,14 @@ def main():
             ref_str = f"Ref:Insert{'SET' if ref_set_insert else 'NONE'} Take{'SET' if ref_set_takegun else 'NONE'}"
             auto_state_str = f"State:{auto_state.name}" if auto_state != AutoState.IDLE else ""
             status = (f"V4.6 AUTO{lr_flag} | {ref_str} | {robot_str} | {auto_state_str} | "
-                      "r=Ref q=Quit")
+                      "f=Run r=Ref q=Quit")
             put_text(vis, status, h_disp - 15, (140, 140, 140))
 
             cv2.imshow(win, vis)
             key = cv2.waitKey(1) & 0xFF
 
             if first_move == 1:
-                robot.move_linear(CartesianPose(355.697, -335.04, 182.446, 103.439, -25.092, 37.714))
+                robot.move_joint(INIT_JOINT, speed=50)
 
                 first_move = 0
                 with open('/home/nvidia/Downloads/HD/HD_0323/Intergration/stereo_camera_calib/yrq/first_move.json', 'w', encoding='utf-8') as f:
@@ -1369,9 +1556,19 @@ def main():
                     logger.info("Auto flow aborted by user")
                     moving = False
                     auto_state = AutoState.IDLE
+                    if auto_flow_start_time is not None:
+                        logger.info("[计时] 自动流程总耗时（从触发到中止）: %.3f 秒",
+                                    time.time() - auto_flow_start_time)
+                        auto_flow_start_time = None
+                    timer.export_txt()
                     continue
                 auto_state = _execute_auto_step(auto_state)
                 if auto_state == AutoState.IDLE:
+                    if auto_flow_start_time is not None:
+                        logger.info("[计时] 自动流程总耗时（从触发到17步全部结束）: %.3f 秒",
+                                    time.time() - auto_flow_start_time)
+                        auto_flow_start_time = None
+                    timer.export_txt()
                     logger.info("Auto flow terminated (back to IDLE)")
                 continue
 
@@ -1383,7 +1580,15 @@ def main():
             if auto_trigger_event.is_set():
                 auto_trigger_event.clear()
                 auto_state = AutoState.STATE_1_INIT_COVER
+                auto_flow_start_time = auto_trigger_time if auto_trigger_time is not None else time.time()
                 logger.info("Auto flow triggered by UDS signal")
+                continue
+
+            # 手动启动全流程（等效 UDS 触发，从 STATE_1 顺序执行 17 步）
+            if key == ord('f'):
+                auto_state = AutoState.STATE_1_INIT_COVER
+                auto_flow_start_time = time.time()
+                logger.info("Auto flow started by manual key 'f'")
                 continue
 
             # --- 手动按键（IDLE 状态下） | Manual Keys ---
@@ -1535,7 +1740,7 @@ def main():
                 if (current_marker_type == "插枪") and (already_return_gun == False) and robot_connected:
                     current_tcp = robot.get_tcp_pose()
                     current_matrix = pose_to_matrix(current_tcp)
-                    offset_pose = [-4.203, -204.682, -35.227, -4.467, 4.029, -1.981]
+                    offset_pose = INSERT_BEFORE_OFFSET_POSE
                     offset_matrix = pose_to_matrix(offset_pose)
                     target_matrix = current_matrix @ offset_matrix
                     target_pose = matrix_to_pose(target_matrix)
@@ -1563,65 +1768,42 @@ def main():
 
                 force_ctrl.run_forcecontrol_charge_out()
 
-                if moving:
-                    logger.warning("Motion in progress, please wait")
-                    continue
-                if not robot_connected:
-                    logger.warning("Robot not connected, cannot read tool TCP")
-                    continue
-
-                robot.set_speed(100)
-                current_tool_pose = get_tcp_pose_in_tool_mm(
-                    robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
-                if current_tool_pose is None:
-                    logger.warning("Failed to read tool %d TCP", INSERT_TOOL_ID)
-                    continue
-
-                retract_offset_mm = -60
-
-                insert_pose = offset_pose_along_tool_axis(current_tool_pose, float(retract_offset_mm), axis='z')
-                safe, reason = check_oneshot_safety(abs(retract_offset_mm), 0.0, args.max_trans, args.max_rot)
-                if not safe:
-                    logger.warning(reason)
-                    continue
-
-                logger.info("Take gun: retract %.2f mm (%.1f mm) along tool Z-axis",
-                            retract_offset_mm, retract_offset_mm)
-                logger.info("  Current TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                            *current_tool_pose)
-                logger.info("  Target TCP:  X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                            *insert_pose)
-
-                if args.no_robot:
-                    logger.info("[DRY RUN] Skip take-gun retract")
-                else:
-                    if not ensure_tool_id(robot, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)"):
-                        continue
-                    moving = True
-                    ok = execute_move(robot, insert_pose, timeout=args.move_timeout)
-                    moving = False
-
-                    try:
-                        tcp_after_insert = get_robot_tcp_pose_mm(robot, robot_cfg)
-                    except Exception:
-                        tcp_after_insert = None
-
-                    if tcp_after_insert is not None:
-                        logger.info("  After retract TCP: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
-                                    *tcp_after_insert)
-
-                    ensure_tool_id(robot, BASE_TOOL_ID, label=f"tool {BASE_TOOL_ID}(flange)")
-
-                robot.set_speed(DEFAULT_SPEED)
-
                 arm_controller.connect()
                 arm_controller.reset_position()
                 arm_controller.disconnect()
+            elif key == ord('x'):
+                flow.gripper.set_speed(100)
+                
+                async def parallel_task():
+                    await asyncio.gather(to_thread(flow.gripper.open),
+                                   to_thread(robot.move_joint,INIT_JOINT, 5))
+
+                asyncio.run(parallel_task())
+
+            elif key == ord('z'):
+                def _servo_press():
+                    arm_controller = SMSSTSController("/dev/ttysWK1")
+                    arm_controller.connect()
+                    arm_controller.press_trigger()
+                    arm_controller.disconnect()
+
+                async def parallel_task():
+                    await asyncio.gather(to_thread(_servo_press),
+                                   to_thread(robot.move_joint,INIT_JOINT, 5))
+
+                asyncio.run(parallel_task())
 
             elif key == ord('3'):
-                robot.move_joint([112.196, 99.884, -56.131, 128.446, -5.912, -17.849], speed=40)
+                # robot.move_joint([112.196, 99.884, -56.131, 128.446, -5.912, -17.849], speed=40)
 
-                flow.gripper.set_position(45)
+                flow.gripper.set_speed(100)
+                # flow.gripper.set_position(45)
+                async def parallel_task():
+                    await asyncio.gather(to_thread(flow.gripper.set_position,45),
+                                   to_thread(robot.move_joint,INIT_JOINT,40))
+
+                asyncio.run(parallel_task())
+
                 if moving:
                     logger.warning("Motion in progress, please wait")
                     continue
@@ -1638,7 +1820,8 @@ def main():
                         continue
                     cur_tcp_matrix = pose_to_matrix(current_tool_pose)
 
-                    cover_offset_pose = [0, 0, 0, 0, 0, 0]
+                    # cover_offset_pose = [0, 0, 0, 0, 0, 0]
+                    cover_offset_pose = STEREO_DETECT_OFFSET_POSE
 
                     cover_offset_matrix = pose_to_matrix(cover_offset_pose)
                     target_matrix = cur_tcp_matrix @ (cover_3D_matrix @ cover_offset_matrix)
@@ -1648,10 +1831,12 @@ def main():
                     logger.info("  Target TCP for coarse alignment: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                                 *target_pose)
 
+                    # 参考关节角（某个停车位置）
+                    ref_joint = STEREO_IK_REF_JOINT
                     cur_joint = robot.get_joint_pose()
-                    target_joint = robot.inverse_kinematics(target_pose=target_pose, initial_joints=cur_joint)
+                    target_joint = robot.inverse_kinematics(target_pose=target_pose, initial_joints=ref_joint)
                     robot.move_by_joint_list(joints=[target_joint], speeds=[40])
-                    robot.move_linear(CartesianPose(*target_pose))
+                    # robot.move_linear(CartesianPose(*target_pose))
 
             elif key == ord('a'):
                 if moving:
@@ -1671,7 +1856,7 @@ def main():
                     continue
 
                 current_matrix = pose_to_matrix(current_pose)
-                offset_pose = [51.889, -230.636, 292.904, -14.379, 1.694, 0.214]
+                offset_pose = TAKEGUN_OFFSET_POSE
 
                 offset_matrix = pose_to_matrix(offset_pose)
                 target_matrix = current_matrix @ offset_matrix
@@ -1738,7 +1923,7 @@ def main():
                             time.sleep(0.1)
                         logger.info("Auto-trigger gripper close + servo press")
                         flow.gripper.set_speed(30)
-                        flow.gripper.set_force(75)
+                        flow.gripper.set_force(100)
                         flow.gripper.set_position(32)
                         timeout_s = 5.0
                         t0 = time.time()
@@ -1761,7 +1946,7 @@ def main():
             elif key == ord('b'):
                 current_pose = robot.get_tcp_pose()
                 current_matrix = pose_to_matrix(current_pose)
-                offset_pose_cover = [-2.515, -153.797, 267.396, -2.225, 7.054, -3.599]
+                offset_pose_cover = INNER_COVER_OFFSET_POSE
                 offset_matrix = pose_to_matrix(offset_pose_cover)
                 target_matrix = current_matrix @ offset_matrix
                 target_pose = matrix_to_pose(target_matrix)
@@ -1876,6 +2061,10 @@ def main():
             elif key == ord('p'):
                 flow.run(7)
                 flow.run(6)
+            
+            elif key == ord('t'):
+                # 测试直线运动间隔耗时
+                robot.move_linear
         
     finally:
         stop_event.set()

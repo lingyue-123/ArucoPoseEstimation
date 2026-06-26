@@ -18,13 +18,13 @@
     STATE_9  → 沿法兰z向退出 → 取出充电枪并复位舵机
     STATE_10 → 插枪前运动
     STATE_11  → 力控插枪
-    STATE_11B → 开夹爪+沿法兰z退150mm+记驻停位姿+去FINALL_POINT → 等12s → 回取枪逼近位姿→视觉对准(同STATE_7)→STATE_8取枪逻辑
-    STATE_12  → 力控拔枪
-    STATE_13 → 归枪运动
-    STATE_14 → 移动至取小盖前点位
-    STATE_15 → 自动多次视觉对准 (取小盖 ArUco)
-    STATE_16 → 对准后固定偏移运动
-    STATE_17 → 夹住小盖放回充电口 + 关大盖 → 回到初始点
+    STATE_12 → 开夹爪+沿法兰z退150mm+记驻停位姿+去FINALL_POINT → 等12s → 回取枪逼近位姿→视觉对准(同STATE_7)→STATE_8取枪逻辑
+    STATE_13  → 力控拔枪
+    STATE_14 → 归枪运动
+    STATE_15 → 移动至取小盖前点位
+    STATE_16 → 自动多次视觉对准 (取小盖 ArUco)
+    STATE_17 → 对准后固定偏移运动
+    STATE_18 → 夹住小盖放回充电口 + 关大盖 → 回到初始点
 
     IDLE → 等待 UDS 触发或手动按键操作
     任何步骤失败或按 'q'/ESC 中止自动流程 → 回到 IDLE
@@ -118,13 +118,13 @@ class AutoState(IntEnum):
     STATE_9_RETRACT_C = 9
     STATE_10_PRE_INSERT = 10
     STATE_11_FORCE_IN = 11
-    STATE_11B_PARK_RETURN = 110
-    STATE_12_FORCE_OUT = 12
-    STATE_13_RETURN_GUN = 13
-    STATE_14_ALIGN_POINT = 14
-    STATE_15_ALIGN_INNER = 15
-    STATE_16_OFFSET_B2 = 16
-    STATE_17_CLOSE_COVER = 17
+    STATE_12_PARK_RETURN = 12
+    STATE_13_FORCE_OUT = 13
+    STATE_14_RETURN_GUN = 14
+    STATE_15_ALIGN_POINT = 15
+    STATE_16_ALIGN_INNER = 16
+    STATE_17_OFFSET_B2 = 17
+    STATE_18_CLOSE_COVER = 18
 
 # ── UDS 触发事件（线程安全） ──
 auto_trigger_event = threading.Event()
@@ -552,13 +552,13 @@ def main():
         AutoState.STATE_9_RETRACT_C,
         AutoState.STATE_10_PRE_INSERT,
         AutoState.STATE_11_FORCE_IN,
-        AutoState.STATE_11B_PARK_RETURN,
-        AutoState.STATE_12_FORCE_OUT,
-        AutoState.STATE_13_RETURN_GUN,
-        AutoState.STATE_14_ALIGN_POINT,
-        AutoState.STATE_15_ALIGN_INNER,
-        AutoState.STATE_16_OFFSET_B2,
-        AutoState.STATE_17_CLOSE_COVER,
+        AutoState.STATE_12_PARK_RETURN,
+        AutoState.STATE_13_FORCE_OUT,
+        AutoState.STATE_14_RETURN_GUN,
+        AutoState.STATE_15_ALIGN_POINT,
+        AutoState.STATE_16_ALIGN_INNER,
+        AutoState.STATE_17_OFFSET_B2,
+        AutoState.STATE_18_CLOSE_COVER,
     ]
 
     # 启动 Unix Domain Socket 监听线程（接收外部进程控制信号）
@@ -1296,19 +1296,19 @@ def main():
         with timer.segment("力控插枪"):
             force_ctrl.run_forcecontrol_charge_in()
         logger.info("=== STATE_11 完成 ===")
-        return AutoState.STATE_11B_PARK_RETURN
+        return AutoState.STATE_12_PARK_RETURN
 
-    def _step_11b_park_return():
+    def _step_12_park_return():
         nonlocal moving
         if _check_abort(): return AutoState.IDLE
-        timer.set_step("STATE_11B")
-        logger.info("=== STATE_11B: 开夹爪→退150mm→记驻停位姿→去FINALL_POINT→等12s→回逼近位姿→视觉对准→STATE_8取枪逻辑 ===")
+        timer.set_step("STATE_12")
+        logger.info("=== STATE_12: 开夹爪→退150mm→记驻停位姿→去FINALL_POINT→等12s→回逼近位姿→视觉对准→STATE_8取枪逻辑 ===")
         if robot_connected:
             # 力控插枪后当前 TCP (tool 0 = 法兰)
             force_in_tcp = get_tcp_pose_in_tool_mm(
                 robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
             if force_in_tcp is None:
-                logger.error("STATE_11B 失败: 无法读取 TCP")
+                logger.error("STATE_12 失败: 无法读取 TCP")
                 return AutoState.IDLE
             # 1) 开夹爪 (释放枪)
             with timer.segment("开夹爪"):
@@ -1351,7 +1351,7 @@ def main():
             moving = True
             # 6) 计算取枪逼近位姿 (驻停位姿 ) 并用关节运动回去
             if parked_cart is None:
-                logger.error("STATE_11B 失败: 驻停笛卡尔位姿为空，无法计算逼近位姿")
+                logger.error("STATE_12 失败: 驻停笛卡尔位姿为空，无法计算逼近位姿")
                 return AutoState.IDLE
             parked_matrix = pose_to_matrix(parked_cart)
             parked_offset_matrix = pose_to_matrix(PARKED_OFFSET)
@@ -1367,16 +1367,16 @@ def main():
             moving = False
             # 6.5) 自动对准取枪 ArUco (同 STATE_7)
             time.sleep(0.2)
-            logger.info("=== STATE_11B 内自动对准取枪 ArUco ===")
+            logger.info("=== STATE_12 内自动对准取枪 ArUco ===")
             success = _execute_auto_align("取枪")
             if not success:
-                logger.error("STATE_11B 失败: 取枪视觉对准未达标")
+                logger.error("STATE_12 失败: 取枪视觉对准未达标")
                 return AutoState.IDLE
             # 7) 执行与 STATE_8 相同的取枪逻辑：固定偏移 + 沿法兰z前进 + 夹爪舵机
             current_pose = get_tcp_pose_in_tool_mm(
                 robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
             if current_pose is None:
-                logger.error("STATE_11B 失败: 无法读取 TCP")
+                logger.error("STATE_12 失败: 无法读取 TCP")
                 return AutoState.IDLE
             current_matrix = pose_to_matrix(current_pose)
             offset_pose = TAKEGUN_OFFSET_POSE
@@ -1451,58 +1451,58 @@ def main():
                         arm_controller.press_trigger()
                         arm_controller.disconnect()
                 else:
-                    logger.error("STATE_11B 失败: 运动失败")
+                    logger.error("STATE_12 失败: 运动失败")
                     return AutoState.IDLE
         else:
-            logger.info("[DRY RUN] STATE_11B skipped")
-        logger.info("=== STATE_11B 完成 ===")
-        return AutoState.STATE_12_FORCE_OUT
+            logger.info("[DRY RUN] STATE_12 skipped")
+        logger.info("=== STATE_12 完成 ===")
+        return AutoState.STATE_13_FORCE_OUT
 
-    def _step_12_force_out():
+    def _step_13_force_out():
         if _check_abort(): return AutoState.IDLE
-        timer.set_step("STATE_12")
-        logger.info("=== STATE_12: 力控拔枪 ===")
+        timer.set_step("STATE_13")
+        logger.info("=== STATE_13: 力控拔枪 ===")
         if robot_connected:
             with timer.segment("力控拔枪"):
                 force_ctrl.run_forcecontrol_charge_out()
-        logger.info("=== STATE_12 完成 ===")
-        return AutoState.STATE_13_RETURN_GUN
+        logger.info("=== STATE_13 完成 ===")
+        return AutoState.STATE_14_RETURN_GUN
 
-    def _step_13_return_gun():
+    def _step_14_return_gun():
         nonlocal already_return_gun
         if _check_abort(): return AutoState.IDLE
-        timer.set_step("STATE_13")
-        logger.info("=== STATE_13: 归枪运动 ===")
+        timer.set_step("STATE_14")
+        logger.info("=== STATE_14: 归枪运动 ===")
         flow.run(4, timer=timer)
         already_return_gun = True
-        logger.info("=== STATE_13 完成 ===")
-        return AutoState.STATE_14_ALIGN_POINT
-
-    def _step_14_align_point():
-        if _check_abort(): return AutoState.IDLE
-        timer.set_step("STATE_14")
-        logger.info("=== STATE_14: 移动至取小盖前点位 ===")
-        flow.run(5, timer=timer)
         logger.info("=== STATE_14 完成 ===")
-        return AutoState.STATE_15_ALIGN_INNER
+        return AutoState.STATE_15_ALIGN_POINT
 
-    def _step_15_align_inner():
+    def _step_15_align_point():
         if _check_abort(): return AutoState.IDLE
         timer.set_step("STATE_15")
-        logger.info("=== STATE_15: 自动对准取小盖 ArUco ===")
+        logger.info("=== STATE_15: 移动至取小盖前点位 ===")
+        flow.run(5, timer=timer)
+        logger.info("=== STATE_15 完成 ===")
+        return AutoState.STATE_16_ALIGN_INNER
+
+    def _step_16_align_inner():
+        if _check_abort(): return AutoState.IDLE
+        timer.set_step("STATE_16")
+        logger.info("=== STATE_16: 自动对准取小盖 ArUco ===")
         if robot_connected:
             time.sleep(0.2)
             success = _execute_auto_align("取小盖")
             if not success:
-                logger.error("STATE_15 失败: 自动对准未达标")
+                logger.error("STATE_16 失败: 自动对准未达标")
                 return AutoState.IDLE
-        logger.info("=== STATE_15 完成 ===")
-        return AutoState.STATE_16_OFFSET_B2
+        logger.info("=== STATE_16 完成 ===")
+        return AutoState.STATE_17_OFFSET_B2
 
-    def _step_16_offset_b2():
+    def _step_17_offset_b2():
         if _check_abort(): return AutoState.IDLE
-        timer.set_step("STATE_16")
-        logger.info("=== STATE_16: 对准后固定偏移运动 ===")
+        timer.set_step("STATE_17")
+        logger.info("=== STATE_17: 对准后固定偏移运动 ===")
         if robot_connected:
             current_pose = robot.get_tcp_pose()
             current_matrix = pose_to_matrix(current_pose)
@@ -1516,16 +1516,16 @@ def main():
             take_cover_joint = robot.inverse_kinematics(target_pose=take_cover_pose, initial_joints=current_joint)
             with timer.segment("固定偏移运动(两点轨迹)"):
                 robot.move_by_joint_list(joints=[target_joint, take_cover_joint], speeds=[30, 20])
-        logger.info("=== STATE_16 完成 ===")
-        return AutoState.STATE_17_CLOSE_COVER
+        logger.info("=== STATE_17 完成 ===")
+        return AutoState.STATE_18_CLOSE_COVER
 
-    def _step_17_close_cover():
+    def _step_18_close_cover():
         if _check_abort(): return AutoState.IDLE
-        timer.set_step("STATE_17")
-        logger.info("=== STATE_17: 夹住小盖放回充电口 + 关大盖 → 回到初始点 ===")
+        timer.set_step("STATE_18")
+        logger.info("=== STATE_18: 夹住小盖放回充电口 + 关大盖 → 回到初始点 ===")
         flow.run(7, timer=timer)
         flow.run(6, timer=timer)
-        logger.info("=== STATE_17 完成 === 全流程结束")
+        logger.info("=== STATE_18 完成 === 全流程结束")
         return AutoState.IDLE
 
     _STEP_DISPATCH = {
@@ -1540,13 +1540,13 @@ def main():
         AutoState.STATE_9_RETRACT_C: _step_9_retract_c,
         AutoState.STATE_10_PRE_INSERT: _step_10_pre_insert,
         AutoState.STATE_11_FORCE_IN: _step_11_force_in,
-        AutoState.STATE_11B_PARK_RETURN: _step_11b_park_return,
-        AutoState.STATE_12_FORCE_OUT: _step_12_force_out,
-        AutoState.STATE_13_RETURN_GUN: _step_13_return_gun,
-        AutoState.STATE_14_ALIGN_POINT: _step_14_align_point,
-        AutoState.STATE_15_ALIGN_INNER: _step_15_align_inner,
-        AutoState.STATE_16_OFFSET_B2: _step_16_offset_b2,
-        AutoState.STATE_17_CLOSE_COVER: _step_17_close_cover,
+        AutoState.STATE_12_PARK_RETURN: _step_12_park_return,
+        AutoState.STATE_13_FORCE_OUT: _step_13_force_out,
+        AutoState.STATE_14_RETURN_GUN: _step_14_return_gun,
+        AutoState.STATE_15_ALIGN_POINT: _step_15_align_point,
+        AutoState.STATE_16_ALIGN_INNER: _step_16_align_inner,
+        AutoState.STATE_17_OFFSET_B2: _step_17_offset_b2,
+        AutoState.STATE_18_CLOSE_COVER: _step_18_close_cover,
     }
 
 
@@ -1769,7 +1769,7 @@ def main():
                 auto_state = _execute_auto_step(auto_state)
                 if auto_state == AutoState.IDLE:
                     if auto_flow_start_time is not None:
-                        logger.info("[计时] 自动流程总耗时（从触发到17步全部结束）: %.3f 秒",
+                        logger.info("[计时] 自动流程总耗时（从触发到18步全部结束）: %.3f 秒",
                                     time.time() - auto_flow_start_time)
                         auto_flow_start_time = None
                     timer.export_txt()

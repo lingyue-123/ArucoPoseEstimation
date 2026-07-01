@@ -34,7 +34,7 @@ import threading
 import socket
 import json
 class MotionPauseController:
-    def __init__(self, sock_path: str = "/tmp/auto_gun.sock"):
+    def __init__(self, sock_path: str = "/tmp/gun_pause.sock"):
         self.pause_event = threading.Event()
         self.resume_event = threading.Event()
         self._sock_path = sock_path
@@ -85,7 +85,7 @@ class MotionPauseController:
                                     continue
                                 try:
                                     payload = json.loads(line)
-                                    cmd = payload.get("auto_insert_gun", 0)
+                                    cmd = payload.get("gun_pause", 0)
                                     if cmd == 1:
                                         self.pause_event.set()
                                         self.resume_event.clear()
@@ -114,6 +114,8 @@ class MotionPauseController:
         return self.pause_event.is_set()
     def wait_resume(self, timeout: float = None) -> bool:
         return self.resume_event.wait(timeout)
+    
+
 
 
 def interpolate_path(waypoints: List[List[float]],
@@ -157,32 +159,96 @@ def interpolate_path(waypoints: List[List[float]],
     return result
 
 
-def s_curve_profile(total_distance: float, total_time: float,
-                    dt: float = 0.008):
+def s_curve_profile(total_distance: float, total_time: float, dt: float = 0.008):
+    """
+    正弦S曲线速度规划：起点/终点速度=0，中间平滑加速→减速
+
+    Args:
+        total_distance: 路径总长 (mm)
+        total_time:     目标运动时间 (s)
+        dt:             采样周期 (s)
+
+    Returns:
+        (dist_cum: np.ndarray, t_array: np.ndarray)
+    """
     t = np.arange(0, total_time + dt, dt)
     s = np.sin(np.pi * t / total_time)
     s = s / np.sum(s)
     dist_cum = np.cumsum(s) * total_distance
     return dist_cum, t
 
+def trapezoidal_profile(total_distance: float, total_time: float,
+                        dt: float = 0.008, accel_frac: float = 0.25):
+    """
+    梯形速度规划：起点/终点速度=0，线性加速→匀速→线性减速
 
-def smooth_cartesian_traj(waypoints: List[List[float]],
-                          total_time: float,
-                          dt: float = 0.008) -> List[List[float]]:
+    Args:
+        total_distance: 路径总长 (mm)
+        total_time:     目标运动时间 (s)
+        dt:             采样周期 (s)
+        accel_frac:     加速段占总时间的比例，自动裁剪至 (0, 0.5]，
+                        0.5 表示无匀速段（三角形速度曲线）
+
+    Returns:
+        (dist_cum: np.ndarray, t_array: np.ndarray)
+    """
+    accel_frac = float(min(max(accel_frac, 1e-3), 0.5))
+    t = np.arange(0, total_time + dt, dt)
+    t_acc = accel_frac * total_time
+    t_dec = total_time - t_acc
+
+    v = np.ones_like(t)
+    ramp_up = t < t_acc
+    v[ramp_up] = t[ramp_up] / t_acc
+    ramp_dn = t > t_dec
+    v[ramp_dn] = np.clip((total_time - t[ramp_dn]) / t_acc, 0.0, 1.0)
+
+    total = np.sum(v)
+    if total <= 1e-9:
+        return np.linspace(0, total_distance, len(t)), t
+    v = v / total
+    dist_cum = np.cumsum(v) * total_distance
+    return dist_cum, t
+
+
+def smooth_cartesian_traj(waypoints: List[List[float]], total_time: float,
+                          dt: float = 0.008, profile: str = 'scurve',
+                          accel_frac: float = 0.25) -> List[List[float]]:
+    """
+    几何路径插值 + 时间参数化 → 输出时间确定的平滑轨迹
+
+    Args:
+        waypoints:  笛卡尔路径点 [[x,y,z,rx,ry,rz], ...]
+        total_time: 目标运动总时间 (s)
+        dt:         采样周期/插补周期 (s)，默认 8ms
+        profile:    速度规划类型: 'scurve' 正弦S曲线 / 'trapezoid' 梯形
+        accel_frac: 梯形规划加速段占比 (仅 profile='trapezoid' 时有效)
+
+    Returns:
+        List[List[float]]  时间参数化轨迹点，点数 ≈ total_time / dt
+    """
     if len(waypoints) < 2:
+        logger.error("路径点至少需要2个")
         return []
 
-    path = interpolate_path(waypoints, 2000)
+    N_dense = 2000
+    path = interpolate_path(waypoints, N_dense)
 
     dists = [0.0]
-    for i in range(1, len(path)):
-        dx = path[i][0] - path[i-1][0]
-        dy = path[i][1] - path[i-1][1]
-        dz = path[i][2] - path[i-1][2]
-        dists.append(dists[-1] + np.sqrt(dx*dx + dy*dy + dz*dz))
+    for i in range(1, N_dense):
+        dx = path[i][0] - path[i - 1][0]
+        dy = path[i][1] - path[i - 1][1]
+        dz = path[i][2] - path[i - 1][2]
+        dists.append(dists[-1] + np.sqrt(dx * dx + dy * dy + dz * dz))
     dists = np.array(dists)
 
-    s_curve_dist, _ = s_curve_profile(dists[-1], total_time, dt)
+    if profile == 'trapezoid':
+        s_curve_dist, _ = trapezoidal_profile(dists[-1], total_time, dt, accel_frac)
+    elif profile == 'scurve':
+        s_curve_dist, _ = s_curve_profile(dists[-1], total_time, dt)
+    else:
+        logger.error(f"未知速度规划类型: {profile}，回退至 scurve")
+        s_curve_dist, _ = s_curve_profile(dists[-1], total_time, dt)
 
     xs = np.interp(s_curve_dist, dists, [p[0] for p in path])
     ys = np.interp(s_curve_dist, dists, [p[1] for p in path])
@@ -192,8 +258,7 @@ def smooth_cartesian_traj(waypoints: List[List[float]],
     rys = np.interp(s_curve_dist, dists, [p[4] for p in path])
     rzs = np.interp(s_curve_dist, dists, [p[5] for p in path])
 
-    return [[float(xs[i]), float(ys[i]), float(zs[i]),
-             float(rxs[i]), float(rys[i]), float(rzs[i])]
+    return [[float(xs[i]), float(ys[i]), float(zs[i]),float(rxs[i]), float(rys[i]), float(rzs[i])]
             for i in range(len(xs))]
 
 
@@ -297,11 +362,11 @@ def load_trajectory(filepath: str) -> List[List[float]]:
 
 def save_trajectory(trajectory: List[List[float]], filepath: str,
                     separator: str = ' ') -> None:
-    with open(filepath, 'w') as f:
+    with open(filepath, 'w+') as f:
         for p in trajectory:
-            f.write(f"{p[0]:.6f}{separator}{p[1]:.6f}{separator}"
-                    f"{p[2]:.6f}{separator}{p[3]:.6f}{separator}"
-                    f"{p[4]:.6f}{separator}{p[5]:.6f}\n")
+            s = f"{p[0]:.6f}{separator}{p[1]:.6f}{separator}{p[2]:.6f}{separator}{p[3]:.6f}{separator}{p[4]:.6f}{separator}{p[5]:.6f}\n"
+            # print(s)
+            f.write(s)
     logger.info(f"保存 {len(trajectory)} 个轨迹点至 {filepath}")
 
 
@@ -402,8 +467,51 @@ class BridgeCRobotAdapter:
         self.alpha_deg_list = [90, 0, 0, 90, 90, 0]
         self.offset_deg_list = [0, 0, -90, 90, -90, 0]
 
+        # 预计算固定值（避免重复调用 deg2rad 和三角函数）
+        self.alpha_rad_list = np.deg2rad(self.alpha_deg_list)
+        self.sin_alpha = np.sin(self.alpha_rad_list)
+        self.cos_alpha = np.cos(self.alpha_rad_list)
+        self.offset_rad_list = np.deg2rad(self.offset_deg_list)
+
+            # 关节限位（度）
+        self.joint_limits = [
+            (-360, 360),   # J1
+            (0, 180),      # J2
+            (-75, 250),    # J3
+            (-360, 360),   # J4
+            (-50, 120),   # J5
+            (-360, 360)    # J6
+        ]
+
         self._pause_ctrl = MotionPauseController()
         self._pause_ctrl.start()
+
+    def _dh_matrix(self, a, sin_alpha, cos_alpha, d, theta_rad):
+        """构建单个 DH 变换矩阵（不重复计算 sin/cos alpha）"""
+        st = np.sin(theta_rad)
+        ct = np.cos(theta_rad)
+        return np.array([
+            [ct, -st * cos_alpha,  st * sin_alpha, a * ct],
+            [st,  ct * cos_alpha, -ct * sin_alpha, a * st],
+            [0,          sin_alpha,        cos_alpha,      d],
+            [0,                  0,               0,      1]
+        ])
+    
+    @staticmethod
+    def _rotmat_to_rotvec(R):
+        """从旋转矩阵计算旋转向量（轴角），返回 (3,) 向量，模长为转角（弧度）"""
+        # 公式: theta = arccos((trace-1)/2), 轴 = (R32-R23, R13-R31, R21-R12)/(2*sin(theta))
+        trace = R[0,0] + R[1,1] + R[2,2]
+        theta = np.arccos(np.clip((trace - 1.0) / 2.0, -1.0, 1.0))
+        if theta < 1e-6:
+            return np.zeros(3)
+        r = np.array([
+            R[2,1] - R[1,2],
+            R[0,2] - R[2,0],
+            R[1,0] - R[0,1]
+        ])
+        r = r / (2.0 * np.sin(theta)) * theta
+        return r
 
     def connect(self) -> bool:
         ok = self.bridge_robot.connect(self.ip, disable_hardware=True)
@@ -542,6 +650,16 @@ class BridgeCRobotAdapter:
             time.sleep(0.1)
         logger.info("机械臂运动执行完成...")
 
+    def _wait_for_motion_complete(self, timeout: float = _MOTION_COMPLETE_TIMEOUT_S) -> None:
+        start = time.time()
+        time.sleep(0.1)
+        while self.is_moving():
+            logger.info("机械臂正在执行运动序列...")
+            if time.time() - start > timeout:
+                raise TimeoutError("waiting for robot motion complete timed out")
+            time.sleep(_POLL_INTERVAL_S)
+        logger.info("机械臂运动执行完成...")
+
     def set_speed(self, speed_pct: int) -> bool:
         return self.bridge_robot.set_speed_ratio(speed_pct)
 
@@ -597,6 +715,7 @@ class BridgeCRobotAdapter:
         except Exception as exc:
             logger.error("move_linear failed: %s", exc)
             return 0
+        
     def move_linear_new(self, target: CartesianPose, speed: int = 100,
                     pause_timeout: Optional[float] = None) -> int:
         try:
@@ -610,6 +729,7 @@ class BridgeCRobotAdapter:
             if not ok:
                 return 0
             pause_start = None
+            time.sleep(0.1)
             while self.is_moving():
                 if self._pause_ctrl.pause_event.is_set():
                     logger.info("move_linear_new: pause signal received, stopping motion")
@@ -631,6 +751,9 @@ class BridgeCRobotAdapter:
                     self._pause_ctrl.resume_event.clear()
                     pause_start = None
                 time.sleep(0.1)
+            while(self.bridge_robot.is_moving()):
+                logger.info("等待停止")
+                pass
             self.bridge_robot.motion.finalize(MotionType.Instruction)
             logger.info("move_linear_new: motion completed")
             return 1
@@ -675,12 +798,14 @@ class BridgeCRobotAdapter:
                     return 0
             if end:
                 logger.info('pose moving...')
-                self._wait_for_motion_complete(lambda: self.bridge_robot.motion.move_l(
-                    idx,                          # 捕获当前的 idx
-                    rp,                           # 捕获当前的 RobotPosition
-                    MotionParam(speed=float(speeds[idx]), pl=0.0, smooth=0, acc=1, dec=1),
-                    MoveStrategy.DistanceFirst
-                ))
+                self.bridge_robot.motion.finalize(MotionType.Instruction)
+                self._wait_for_motion_complete()
+                # self._wait_for_motion_complete(lambda: self.bridge_robot.motion.move_l(
+                #     idx,                          # 捕获当前的 idx
+                #     rp,                           # 捕获当前的 RobotPosition
+                #     MotionParam(speed=float(speeds[idx]), pl=0.0, smooth=0, acc=1, dec=1),
+                #     MoveStrategy.DistanceFirst
+                # ))
                 self.bridge_robot.motion.finalize(MotionType.Instruction)
             return 1
         except Exception as exc:
@@ -941,6 +1066,7 @@ class BridgeCRobotAdapter:
 
             self._send_and_start_position_path(positions, ratio, tool_no, user_no)
             logger.info("笛卡尔路径运动启动成功")
+            time.sleep(0.1)
 
             while self.is_moving():
                 if self._pause_ctrl.pause_event.is_set():
@@ -951,6 +1077,7 @@ class BridgeCRobotAdapter:
 
                     self.bridge_robot.stop_program()
                     self._pause_ctrl.pause_event.clear()
+
 
                     pause_start = time.time()
                     while not self._pause_ctrl.resume_event.is_set():
@@ -967,7 +1094,10 @@ class BridgeCRobotAdapter:
                         break
 
                     logger.info("路径运动恢复，从索引 %d 继续", paused_at_index)
+                    # self._ensure_guidance_program()
+                    self._ensure_ready_for_motion()
                     self._ensure_guidance_program()
+                    # self.bridge_robot.resume_program("guidancePos.pro")
                     remaining = original_positions[paused_at_index:]
 
                     # 对剩余段重新做 S 曲线速度规划
@@ -1165,20 +1295,25 @@ class BridgeCRobotAdapter:
     # ── 轨迹规划 ──────────────────────────────────────────────────────────
 
     def plan_cartesian_traj(self, waypoints: List[List[float]],
-                       total_time: float,
-                       dt: float = 0.008) -> List[List[float]]:
+                            total_time: float, dt: float = 0.008,
+                            profile: str = 'scurve',
+                            accel_frac: float = 0.25) -> List[List[float]]:
         """
-        S曲线笛卡尔轨迹规划
+        对笛卡尔路点做时间参数化轨迹规划 (S曲线 / 梯形)
 
         Args:
-            waypoints:  笛卡尔路径点 [[x,y,z,rx,ry,rz], ...]，需>=2个点
+            waypoints:  笛卡尔路径点 [[x,y,z,rx,ry,rz], ...]，需 >= 2 个点
             total_time: 目标运动总时间 (s)
-            dt:         插补周期 (s)，默认8ms
+            dt:         插补周期 (s)，默认 8ms
+            profile:    速度规划类型: 'scurve' 正弦S曲线 / 'trapezoid' 梯形
+            accel_frac: 梯形规划加速段占比 (仅 profile='trapezoid' 时有效)
 
         Returns:
-            时间参数化轨迹点，可传给 move_by_position_path / move_servo_path
+            List[List[float]]  时间参数化轨迹，点数 ≈ total_time / dt，
+                               可直接传给 move_by_position_path()
         """
-        return smooth_cartesian_traj(waypoints, total_time, dt)
+        return smooth_cartesian_traj(waypoints, total_time, dt,
+                                     profile=profile, accel_frac=accel_frac)
 
     def cartesian_to_joint_traj(self, cartesian_traj: List[List[float]],
                                 initial_joints: Optional[List[float]] = None
@@ -1220,14 +1355,28 @@ class BridgeCRobotAdapter:
     def plan_and_move_position(self, waypoints: List[List[float]],
                                 total_time: float, dt: float = 0.008,
                                 tool_no: int = 10, user_no: int = 0,
-                                start: bool = True, end: bool = True) -> int:
+                                start: bool = True, end: bool = True,
+                                profile: str = 'scurve',
+                                accel_frac: float = 0.25) -> int:
         """
-        S曲线规划 + 笛卡尔路径执行
+        规划笛卡尔轨迹 → 自动执行笛卡尔路径运动
+
+        Args:
+            waypoints:  笛卡尔路径点
+            total_time: 目标运动总时间 (s)
+            dt:         插补周期 (s)，默认 8ms → movePath ratio = dt / 0.002
+            tool_no:    工具坐标系编号
+            user_no:    用户坐标系编号
+            start:      是否执行运动前初始化
+            end:        是否执行 finalize
+            profile:    速度规划类型: 'scurve' 正弦S曲线 / 'trapezoid' 梯形
+            accel_frac: 梯形规划加速段占比 (仅 profile='trapezoid' 时有效)
 
         Returns:
-            int: 1=成功, 0=失败
+            int: 成功返回1，失败返回0
         """
-        traj = self.plan_cartesian_traj(waypoints, total_time, dt)
+        traj = self.plan_cartesian_traj(waypoints, total_time, dt,
+                                        profile=profile, accel_frac=accel_frac)
         if not traj:
             return 0
         ratio = int(dt / 0.002)
@@ -1358,7 +1507,7 @@ class BridgeCRobotAdapter:
         rpy = R.from_matrix(rot).as_euler('ZYX', degrees=True)
         return [pos[0], pos[1], pos[2], rpy[2], rpy[1], rpy[0]]
 
-    def inverse_kinematics(self, target_pose: List[float], initial_joints: Optional[List[float]] = None,
+    def inverse_kinematics_no_limit(self, target_pose: List[float], initial_joints: Optional[List[float]] = None,
                            representation: str = 'euler', max_iter: int = 200, tol: float = 1e-6) -> List[float]:
         joint_count = len(self.a_list)
         if initial_joints is None:
@@ -1417,27 +1566,180 @@ class BridgeCRobotAdapter:
 
         return joints.tolist()
     
+    def inverse_kinematics(self, target_pose: List[float], initial_joints: List[float] , representation='euler',
+                       max_iter=200, tol=1e-6):
+        joint_count = len(self.a_list)
+        
+        # 初始化关节角（度）
+        if initial_joints is None:
+            joints = np.zeros(joint_count, dtype=float)
+        else:
+            # init_arr = initial_joints
+            joints = np.array(initial_joints, dtype=float)
+            # init_arr = np.array(initial_joints, dtype=float)
+            # init_arr = joints.copy()
+            # init_arr = initial_joints
+
+        # joint_count = len(self.a_list)
+    
+        # if initial_joints is None:
+        #     joints = np.zeros(joint_count, dtype=np.float64)
+        #     init_arr = None
+        # else:
+        #     # 手动构造数组，避免 np.array 可能的内存问题
+        #     joints = np.empty(joint_count, dtype=np.float64)
+        #     for i in range(joint_count):
+        #         try:
+        #             joints[i] = float(initial_joints[i])
+        #         except (TypeError, ValueError, IndexError) as e:
+        #             raise ValueError(f"Invalid value at index {i}: {e}")
+        #     init_arr = joints.copy()   # 备份初始值
+        
+        # 解析目标位姿
+        target_pos = np.array(target_pose[:3], dtype=float)
+        if representation == 'euler':
+            rx, ry, rz = target_pose[3], target_pose[4], target_pose[5]
+            # 注意：正运动学返回 [x, y, z, roll, pitch, yaw] 对应 ZYX 欧拉角 (yaw, pitch, roll)
+            target_rot = R.from_euler('ZYX', [rz, ry, rx], degrees=True).as_matrix()
+        elif representation == 'rotvec':
+            target_rot = R.from_rotvec(target_pose[3:6], degrees=True).as_matrix()
+        else:
+            raise ValueError(f'Unsupported representation: {representation}')
+        
+        # 阻尼系数初始值
+        lamda = 0.5   # 适当增大初始阻尼，抑制远距离的大步长
+        I6 = np.eye(6)
+        
+        for _ in range(max_iter):
+            # ========== 1. 正运动学 + 保存各关节的位姿（用于雅可比） ==========
+            T = np.eye(4)
+            transforms = []   # 保存每个关节后的变换矩阵（第i个关节后的位姿）
+            for i in range(joint_count):
+                theta_rad = np.deg2rad(joints[i]) + self.offset_rad_list[i]
+                # 使用预计算的 sin/cos alpha
+                T = T @ self._dh_matrix(self.a_list[i], self.sin_alpha[i], self.cos_alpha[i],
+                                        self.d_list[i], theta_rad)
+                transforms.append(T.copy())   # 保存副本（雅可比需要）
+            
+            current_pos = T[:3, 3]
+            current_rot = T[:3, :3]
+            
+            # ========== 2. 计算误差 ==========
+            err_pos = target_pos - current_pos
+            rot_diff = target_rot @ current_rot.T
+            err_rot = self._rotmat_to_rotvec(rot_diff)   # 高效转换
+            error = np.concatenate([err_pos, err_rot])
+            error_norm = np.linalg.norm(error)
+            
+            if error_norm < tol:
+                break
+            
+            # ========== 3. 计算雅可比矩阵（同时利用 transforms） ==========
+            jacobian = np.zeros((6, joint_count))
+            p_end = current_pos
+            for i in range(joint_count):
+                if i == 0:
+                    z_axis = np.array([0.0, 0.0, 1.0])
+                    p_axis = np.array([0.0, 0.0, 0.0])
+                else:
+                    z_axis = transforms[i-1][:3, 2]   # 第i-1个变换后的z轴方向
+                    p_axis = transforms[i-1][:3, 3]   # 第i-1个变换的原点位置
+                jacobian[:3, i] = np.cross(z_axis, p_end - p_axis)
+                jacobian[3:, i] = z_axis
+            
+            # ========== 4. 阻尼最小二乘（DLS）求解增量 ==========
+            JtJ = jacobian.T @ jacobian
+            Jte = jacobian.T @ error
+            delta_theta = np.linalg.solve(JtJ + lamda * I6, Jte)   # 优化：直接解正规方程
+            
+            # ========== 5. 更新关节角（度） ==========
+            new_joints = joints + np.rad2deg(delta_theta)
+            
+            # ----- 动态调整阻尼（根据误差变化） -----
+            # 试算新误差（只做一次正运动学前向传播？为了性能，快速评估误差太耗时，改用启发式）
+            # 简单方法：若误差增大则增大阻尼，否则减小
+            # 计算新误差的近似：快速计算末端位置变化很麻烦，这里采用幅度比较
+            # 若 delta_theta 过大（超过30度），则增大阻尼下次迭代减速
+            if np.max(np.abs(delta_theta)) > 0.5:   # 单步变化超过30度？0.5 rad ≈ 28.6°
+                lamda = min(10.0, lamda * 1.2)
+            else:
+                lamda = max(0.01, lamda * 0.9)
+            
+            # ========== 6. 关节限位处理（核心修复） ==========
+            for i, (low, high) in enumerate(self.joint_limits):
+                # 先归一化到 [-360,360) 对于全周关节
+                if low == -360 and high == 360:
+                    # 映射到 [-360, 360)
+                    new_joints[i] = ((new_joints[i] + 360) % 720) - 360
+                else:
+                    # 有限位关节：直接钳位，并可选映射到周期范围（但一般不需要模运算）
+                    if new_joints[i] < low:
+                        new_joints[i] = low
+                    elif new_joints[i] > high:
+                        new_joints[i] = high
+            joints = new_joints
+        
+        # 最终将关节角限制在物理范围内（确保输出有效）
+        for i, (low, high) in enumerate(self.joint_limits):
+            if low == -360 and high == 360:
+                joints[i] = ((joints[i] + 360) % 720) - 360
+            else:
+                joints[i] = np.clip(joints[i], low, high)
+        
+        # for i, (low, high) in enumerate(self.joint_limits):
+        #     if low == -360 and high == 360:   # 仅对全周关节处理
+        #         # 归一化到 [-360, 360)
+        #         joints[i] = ((joints[i] + 360) % 720) - 360
+        #         # 调整到与初始值最近的周期
+        #         diff = joints[i] - init_arr[i]
+        #         if diff > 180:
+        #             joints[i] -= 360
+        #         elif diff < -180:
+        #             joints[i] += 360
+        #         # 双重保险，确保在限位内（实际已在范围内）
+        #         joints[i] = np.clip(joints[i], low, high)
+
+
+        
+        return joints.tolist()
+    
 def main():
 
-    bridge_robot = BridgeCRobotAdapter(ip='192.168.1.12', so_path='/home/nvidia/Downloads/HD/HD_0323/third_party/crp_robot_sdk/libRobotService.so')
+    bridge_robot = BridgeCRobotAdapter(ip='192.168.1.12', so_path='/home/nvidia/Downloads/HD/HD_0701/third_party/crp_robot_sdk/libRobotService.so')
     bridge_robot.connect()
     bridge_robot.set_speed(5)
     pose = bridge_robot.get_tcp_pose()
     joint = bridge_robot.get_joint_pose()
-    if pose and joint:
-        base_pose = pose
-        waypoints = [
-            base_pose,
-            [base_pose[0] + 100.0, base_pose[1],         base_pose[2],
-                base_pose[3],         base_pose[4],         base_pose[5]],
-            [base_pose[0] + 100.0, base_pose[1] , base_pose[2] + 100.0,
-                base_pose[3],         base_pose[4],         base_pose[5]],
-            base_pose,
-        ]
-        bridge_robot.move_by_pose_list(poses=waypoints, speeds=[50, 50, 50, 50])
+    print('当前关节角：',joint)
+    print('当前位姿：',pose)
+
+    # if pose and joint:
+    #     base_pose = pose
+    #     waypoints = [
+    #         base_pose,
+    #         [base_pose[0] + 50.0, base_pose[1],         base_pose[2],
+    #             base_pose[3],         base_pose[4],         base_pose[5]],
+    #         [base_pose[0] + 50.0, base_pose[1] , base_pose[2] + 50.0,
+    #             base_pose[3],         base_pose[4],         base_pose[5]],
+    #         base_pose,
+    #     ]
+    #     traj = bridge_robot.plan_cartesian_traj(waypoints=waypoints,total_time=5)
+        
+        # save_trajectory(trajectory=traj, filepath='/home/nvidia/Downloads/HD/HD_0701/third_party/force_control_crp/traj.txt ')
+
+        # 逆解测试
+        # bridge_robot.move_by_pose_list(poses=waypoints, speeds=[50, 50, 50, 50])
+        # positions = bridge_robot.plan_cartesian_traj(waypoints=waypoints, total_time=15,profile='trapezoid', accel_frac=0.2)
+        # print("轨迹点：",len(positions))
+        # visualize_trajectory(trajectory=positions)
+        # bridge_robot.move_by_position_path_with_pause(positions=positions,ratio=4,tool_no=10, user_no=0,total_time=5)
+        # bridge_robot.plan_and_move_position(waypoints = waypoints,total_time=10, profile='trapezoid',accel_frac=0.2)
+
+        # bridge_robot.plan_and_move_position(waypoints, total_time=10.0, dt=0.008, tool_no=10, user_no=0)
+        # bridge_robot.move_linear_new(CartesianPose(*waypoints[1]))
     
     #     forward_pose = bridge_robot.relative_tool_pose(dz = 50, init_pose = pose).to_list()
-    #     bridge_robot.move_by_pose_list(poses=[forward_pose, pose], speeds=[50, 50])
+    #     bridge_robot.move_by_pose_list(poses=[forward_pose,[-51.35, 411.64, 259.08, 107.54, 16.32, -154.04] pose], speeds=[50, 50])
     #     start_time = time.time()
     #     bridge_robot.switch_motion_model()
     #     end_time = time.time()
@@ -1448,8 +1750,10 @@ def main():
 
     # target_pose =  [-775.3937383948448, 781.6924120558483, -69.80050462569193, 99.87115777295497, 19.744255861168373, -158.38591186339445]
     # bridge_robot.move_by_pose_list(poses=[target_pose],speeds=[50])
-    # target_joint = bridge_robot.inverse_kinematics(target_pose = pose, initial_joints=joint)
-    # print("目标关节角: ",target_joint)
+    joint = [200.528, 86.671, -59.181, 144.788, -3.059, -17.912]
+    pose = [-51.35, 411.64, 259.08, 107.54, 16.32, -154.04]
+    target_joint = bridge_robot.inverse_kinematics(target_pose = pose, initial_joints=joint)
+    print("目标关节角: ",target_joint)
     # bridge_robot.move_joint([112.196, 99.884, -56.131, 128.446, -5.912, -17.849], speed=40)
 
 

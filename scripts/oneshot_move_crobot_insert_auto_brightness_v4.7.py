@@ -1071,7 +1071,7 @@ def main():
         return AutoState.STATE_4_ALIGN_INSERT
 
     def _step_4_align_insert():
-        nonlocal already_return_gun
+        nonlocal already_return_gun, moving
         if _check_abort(): return AutoState.IDLE
         timer.set_step("STATE_4")
         logger.info("=== STATE_4: 自动对准插枪 ArUco ===")
@@ -1079,6 +1079,10 @@ def main():
             success = _execute_auto_align("插枪")
             if not success:
                 logger.error("STATE_4 失败: 自动对准未达标")
+                with timer.segment("对准失败→FINALL_POINT"):
+                    moving = True
+                    robot.move_by_joint_list(joints=[flow.CFG["FINALL_POINT"]], speeds=[60])
+                    moving = False
                 return AutoState.IDLE
             if not already_return_gun:
                 current_tcp = robot.get_tcp_pose()
@@ -1137,6 +1141,7 @@ def main():
         return AutoState.STATE_7_ALIGN_TAKE
 
     def _step_7_align_take():
+        nonlocal moving
         if _check_abort(): return AutoState.IDLE
         timer.set_step("STATE_7")
         logger.info("=== STATE_7: 自动对准取枪 ArUco ===")
@@ -1145,6 +1150,10 @@ def main():
             success = _execute_auto_align("取枪")
             if not success:
                 logger.error("STATE_7 失败: 自动对准未达标")
+                with timer.segment("对准失败→FINALL_POINT"):
+                    moving = True
+                    robot.move_by_joint_list(joints=[flow.CFG["FINALL_POINT"]], speeds=[60])
+                    moving = False
                 return AutoState.IDLE
         logger.info("=== STATE_7 完成 ===")
         return AutoState.STATE_8_OFFSET_A
@@ -1349,53 +1358,71 @@ def main():
             logger.info("=== 充电等待 12s ===")
             time.sleep(12)
             moving = True
-            # 6) 计算取枪逼近位姿 (驻停位姿 ) 并用关节运动回去
+            # 6) 使用 plan_and_move_position 伺服返回取枪逼近位姿
+            #    路径: FINAL_POINT(当前位置) → INIT_JOINT → 逼近位姿
             if parked_cart is None:
                 logger.error("STATE_12 失败: 驻停笛卡尔位姿为空，无法计算逼近位姿")
                 return AutoState.IDLE
+            final_point_cart = robot.get_tcp_pose()
+            if final_point_cart is None:
+                logger.error("STATE_12 失败: 无法读取 FINAL_POINT 当前笛卡尔位姿")
+                return AutoState.IDLE
+            init_joint_cart = robot.forward_kinematics(INIT_JOINT, representation='euler')
             parked_matrix = pose_to_matrix(parked_cart)
             parked_offset_matrix = pose_to_matrix(PARKED_OFFSET)
             takegun_approach_matrix = parked_matrix @ parked_offset_matrix
             takegun_approach_cart = matrix_to_pose(takegun_approach_matrix)
-            cur_joint = robot.get_joint_pose()
-            takegun_approach_joint = robot.inverse_kinematics(
-                target_pose=takegun_approach_cart, initial_joints=cur_joint)
-            logger.info("返回取枪逼近位姿: 目标 X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
+            logger.info("伺服返回取枪逼近位姿 (FINAL_POINT → INIT_JOINT → 逼近):")
+            logger.info("  FINAL_POINT: X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f", *final_point_cart)
+            logger.info("  INIT_JOINT:  X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f", *init_joint_cart)
+            logger.info("  逼近位姿:    X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                         *takegun_approach_cart)
-            with timer.segment("返回取枪逼近位姿"):
-                robot.move_by_joint_list(joints=[takegun_approach_joint], speeds=[60])
+            waypoints = [final_point_cart, init_joint_cart, takegun_approach_cart]
+            with timer.segment("伺服返回取枪逼近位姿(FINAL_POINT→INIT_JOINT→逼近)"):
+                robot.plan_and_move_position(
+                    waypoints=waypoints, total_time=12.0, dt=0.008,
+                    tool_no=10, user_no=0, profile='trapezoid', accel_frac=0.25)
             moving = False
-            # 6.5) 自动对准取枪 ArUco (同 STATE_7)
+            # 7) 自动对准取枪 ArUco (同 STATE_7)
             time.sleep(0.2)
             logger.info("=== STATE_12 内自动对准取枪 ArUco ===")
             success = _execute_auto_align("取枪")
             if not success:
                 logger.error("STATE_12 失败: 取枪视觉对准未达标")
+                with timer.segment("对准失败→INIT_JOINT→FINALL_POINT"):
+                    moving = True
+                    robot.move_joint(INIT_JOINT, 60)
+                    robot.move_by_joint_list(joints=[flow.CFG["FINALL_POINT"]], speeds=[60])
+                    moving = False
                 return AutoState.IDLE
-            # 7) 执行与 STATE_8 相同的取枪逻辑：固定偏移 + 沿法兰z前进 + 夹爪舵机
+            # 8) 执行与 STATE_8 相同的取枪逻辑：伺服路径(对准点→中间点→目标) + 沿法兰z前进 + 夹爪舵机
             current_pose = get_tcp_pose_in_tool_mm(
                 robot, robot_cfg, INSERT_TOOL_ID, label=f"tool {INSERT_TOOL_ID}(insert)")
             if current_pose is None:
                 logger.error("STATE_12 失败: 无法读取 TCP")
                 return AutoState.IDLE
             current_matrix = pose_to_matrix(current_pose)
+            waypoint_offset = [30.948, -167.045, 22.074, -3.488, 0.181, 2.054]
+            waypoint_offset_matrix = pose_to_matrix(waypoint_offset)
+            waypoint_pose = matrix_to_pose(current_matrix @ waypoint_offset_matrix)
             offset_pose = TAKEGUN_OFFSET_POSE
             offset_matrix = pose_to_matrix(offset_pose)
             target_matrix = current_matrix @ offset_matrix
             target_pose = matrix_to_pose(target_matrix)
-            logger.info("Applying relative offset:")
-            logger.info("  Current:  X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *current_pose)
-            logger.info("  Target:   X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *target_pose)
+            logger.info("固定偏移运动 (伺服路径: 对准点→中间点→目标):")
+            logger.info("  Current(对准): X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *current_pose)
+            logger.info("  Waypoint:     X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *waypoint_pose)
+            logger.info("  Target:       X=%.2f Y=%.2f Z=%.2f mm, Rx=%.2f Ry=%.2f Rz=%.2f deg", *target_pose)
             if not args.no_robot:
                 moving = True
                 motion_success = True
                 robot.set_speed(100)
-                cart = CartesianPose(
-                    x=target_pose[0], y=target_pose[1], z=target_pose[2],
-                    rx=target_pose[3], ry=target_pose[4], rz=target_pose[5],
-                )
-                with timer.segment("固定偏移运动"):
-                    ok = robot.move_joint_and_wait(cart, speed=50, timeout=args.move_timeout)
+                with timer.segment("固定偏移运动(对准点→中间点→目标)"):
+                    ret = robot.plan_and_move_position(
+                        waypoints=[current_pose, waypoint_pose, target_pose],
+                        total_time=10.0, dt=0.008,
+                        tool_no=10, user_no=0, profile='trapezoid', accel_frac=0.25)
+                ok = (ret == 1)
                 if ok:
                     logger.info("Relative offset move complete")
                     current_tool_pose = get_robot_tcp_pose_mm(robot, robot_cfg)
@@ -1487,6 +1514,7 @@ def main():
         return AutoState.STATE_16_ALIGN_INNER
 
     def _step_16_align_inner():
+        nonlocal moving
         if _check_abort(): return AutoState.IDLE
         timer.set_step("STATE_16")
         logger.info("=== STATE_16: 自动对准取小盖 ArUco ===")
@@ -1495,6 +1523,10 @@ def main():
             success = _execute_auto_align("取小盖")
             if not success:
                 logger.error("STATE_16 失败: 自动对准未达标")
+                with timer.segment("对准失败→FINALL_POINT"):
+                    moving = True
+                    robot.move_by_joint_list(joints=[flow.CFG["FINALL_POINT"]], speeds=[60])
+                    moving = False
                 return AutoState.IDLE
         logger.info("=== STATE_16 完成 ===")
         return AutoState.STATE_17_OFFSET_B2

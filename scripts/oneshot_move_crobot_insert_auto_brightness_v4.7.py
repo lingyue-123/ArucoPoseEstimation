@@ -1378,10 +1378,14 @@ def main():
             logger.info("  逼近位姿:    X=%.2f Y=%.2f Z=%.2f Rx=%.2f Ry=%.2f Rz=%.2f",
                         *takegun_approach_cart)
             waypoints = [final_point_cart, init_joint_cart, takegun_approach_cart]
+            with timer.segment("模式切换(PP→CSP)"):
+                robot.switch_motion_model()
             with timer.segment("伺服返回取枪逼近位姿(FINAL_POINT→INIT_JOINT→逼近)"):
                 robot.plan_and_move_position(
                     waypoints=waypoints, total_time=12.0, dt=0.008,
                     tool_no=10, user_no=0, profile='trapezoid', accel_frac=0.25)
+            with timer.segment("模式切换(CSP→PP)"):
+                robot.switch_motion_model()
             moving = False
             # 7) 自动对准取枪 ArUco (同 STATE_7)
             time.sleep(0.2)
@@ -1417,11 +1421,15 @@ def main():
                 moving = True
                 motion_success = True
                 robot.set_speed(100)
+                with timer.segment("模式切换(PP→CSP)"):
+                    robot.switch_motion_model()
                 with timer.segment("固定偏移运动(对准点→中间点→目标)"):
                     ret = robot.plan_and_move_position(
                         waypoints=[current_pose, waypoint_pose, target_pose],
                         total_time=10.0, dt=0.008,
                         tool_no=10, user_no=0, profile='trapezoid', accel_frac=0.25)
+                with timer.segment("模式切换(CSP→PP)"):
+                    robot.switch_motion_model()
                 ok = (ret == 1)
                 if ok:
                     logger.info("Relative offset move complete")
